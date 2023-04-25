@@ -29,6 +29,9 @@ public class Worker {
         this.password = password;
         this.permissions = permissions;
     }
+    public Worker(){
+        
+    }
 
     public int getId() {
         return id;
