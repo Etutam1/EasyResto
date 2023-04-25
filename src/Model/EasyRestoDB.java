@@ -50,16 +50,16 @@ public class EasyRestoDB {
     }
     
     public boolean checkRegisteredWorker(String email) {
-        boolean registered = false;
+        boolean registeredWorker = false;
         try {
             ResultSet mysqlResult = mysqlSelect.executeQuery("SELECT EMAIL FROM TRABAJADORES");
             while (mysqlResult.next()) {
-                registered = mysqlResult.getString("EMAIL").equals(email); 
+                registeredWorker = mysqlResult.getString("EMAIL").equals(email); 
             }
         } catch (SQLException ex) {
             Logger.getLogger(EasyRestoDB.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return registered;
+        return registeredWorker;
     }
     
      public void getWorkerNameButton() {

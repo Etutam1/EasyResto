@@ -60,6 +60,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         passTextField = new javax.swing.JPasswordField();
         passLabel = new javax.swing.JLabel();
         loginButton = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
         adminPanelBackButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -72,7 +73,10 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         workersPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
         workerBackgroundPanel.add(workersPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 120, 345, 510));
 
+        adminSettingsButton.setBackground(new java.awt.Color(102, 102, 102));
+        adminSettingsButton.setForeground(new java.awt.Color(255, 255, 255));
         adminSettingsButton.setText("S");
+        adminSettingsButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         adminSettingsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 adminSettingsButtonActionPerformed(evt);
@@ -95,7 +99,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         enterPasswordLabel.setText("CONTRASEÑA:");
         workerPasswordPanel.add(enterPasswordLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 180, 180, -1));
 
-        loginButton2.setBackground(new java.awt.Color(153, 153, 153));
+        loginButton2.setBackground(new java.awt.Color(102, 102, 102));
         loginButton2.setForeground(new java.awt.Color(255, 255, 255));
         loginButton2.setText("LOGIN");
         loginButton2.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -109,9 +113,9 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         workerNameLabel.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
         workerNameLabel.setForeground(new java.awt.Color(255, 255, 255));
         workerNameLabel.setText("WORKER");
-        workerPasswordPanel.add(workerNameLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 80, 260, 50));
+        workerPasswordPanel.add(workerNameLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 90, 260, 50));
 
-        passwordPanelBackButton.setBackground(new java.awt.Color(153, 153, 153));
+        passwordPanelBackButton.setBackground(new java.awt.Color(102, 102, 102));
         passwordPanelBackButton.setForeground(new java.awt.Color(255, 255, 255));
         passwordPanelBackButton.setText("ATRÁS");
         passwordPanelBackButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -164,8 +168,9 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         passLabel.setText("PASS");
         adminPanel.add(passLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 220, 40, -1));
 
-        loginButton.setBackground(new java.awt.Color(153, 153, 153));
-        loginButton.setText("Login");
+        loginButton.setBackground(new java.awt.Color(102, 102, 102));
+        loginButton.setForeground(new java.awt.Color(255, 255, 255));
+        loginButton.setText("LOGIN");
         loginButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         loginButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -174,15 +179,22 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         });
         adminPanel.add(loginButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 310, 80, 20));
 
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText(" ADMIN ZONE");
+        adminPanel.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 50, 80, 30));
+
         adminBackgroundPanel.add(adminPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 140, 370, 450));
 
+        adminPanelBackButton.setBackground(new java.awt.Color(102, 102, 102));
+        adminPanelBackButton.setForeground(new java.awt.Color(255, 255, 255));
         adminPanelBackButton.setText("ATRÁS");
+        adminPanelBackButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         adminPanelBackButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 adminPanelBackButtonActionPerformed(evt);
             }
         });
-        adminBackgroundPanel.add(adminPanelBackButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 690, -1, -1));
+        adminBackgroundPanel.add(adminPanelBackButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 700, 60, -1));
 
         getContentPane().add(adminBackgroundPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 670, 750));
 
@@ -290,13 +302,17 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String workerName = ((JButton) e.getSource()).getText();
                 changePanelVisibility(workersPanel, false);
                 changePanelVisibility(workerPasswordPanel, true);
-                workerNameLabel.setText(workerName);
+                configWorkerNameLabel(e);
                 passwordButtonPanelTextField.requestFocus();
             }
         });
+    }
+
+    private void configWorkerNameLabel(ActionEvent event) {
+        workerNameLabel.setText(((JButton) event.getSource()).getText());
+        workerNameLabel.setHorizontalAlignment(JLabel.CENTER);
     }
 
     private boolean workerLogin(String workerName, char[] password) throws HeadlessException {
@@ -314,6 +330,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "POR FAVOR, INTRODUCE TU CONTRASEÑA");
         }
         return false;
+        
     }
 
     private void adminSettingsLogin(String email, char[] password) throws HeadlessException {
@@ -491,6 +508,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private javax.swing.JLabel emailLabel;
     private javax.swing.JTextField emailTextField;
     private javax.swing.JLabel enterPasswordLabel;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JButton loginButton;
     private javax.swing.JButton loginButton2;
     private javax.swing.JLabel loginTitleLabel;
