@@ -20,7 +20,7 @@ import java.sql.PreparedStatement;
  */
 public class EasyRestoDB {
 
-    private Connection easyRestoConnection;
+   
     
     private Statement mysqlSelect;
     private String user;
@@ -30,15 +30,11 @@ public class EasyRestoDB {
     private String dataBase;
 
     public EasyRestoDB() {
-        this.easyRestoConnection = this.openConnection();
-        try {
-            this.mysqlSelect = this.easyRestoConnection.createStatement();
-        } catch (SQLException ex) {
-            Logger.getLogger(EasyRestoDB.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
+       
     }
 
-    private Connection openConnection() {
+    public Connection openConnection() {
         Connection conexionServer = null;
         try {
             conexionServer = DriverManager.getConnection("jdbc:mysql://localhost:3306/easyrestobd", "root", "root");
@@ -47,69 +43,56 @@ public class EasyRestoDB {
         }
         return conexionServer;
     }
-    
-    public boolean checkRegisteredWorker(String email) {
-        boolean registeredWorker = false;
-        try {
-            ResultSet mysqlResult = mysqlSelect.executeQuery("SELECT EMAIL FROM TRABAJADORES");
-            while (mysqlResult.next()) {
-                registeredWorker = mysqlResult.getString("EMAIL").equals(email); 
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(EasyRestoDB.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return registeredWorker;
-    }
-    
-     public void getWorkerNameButton() {
-        try {
-            ResultSet workerNameResult = this.mysqlSelect.executeQuery("SELECT NOMBRE FROM TRABAJADORES");
-            while (workerNameResult.next()) {
-                this.easyRestoInterface.configWorkerButton(workerNameResult.getString("NOMBRE"));
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(EasyRestoDB.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
-    public boolean checkCorrectPassword(String emailOrName, String password) {
-        boolean passwordMatchs = false;
-        String instruction = "SELECT PASS FROM TRABAJADORES WHERE NOMBRE= ? OR EMAIL=?";
-        try {
-            PreparedStatement prep = this.easyRestoConnection.prepareStatement(instruction);
-            prep.setString(1, emailOrName);
-            prep.setString(2, emailOrName);
-            ResultSet workerPassResult = prep.executeQuery();
-            while(workerPassResult.next()){
-                 passwordMatchs = workerPassResult.getString("PASS").equals(password);
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(EasyRestoDB.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return passwordMatchs;
+
+  
+
+    public Statement getMysqlSelect() {
+        return mysqlSelect;
     }
 
-    public Worker getWorkerData(String inputText) {
-        Worker worker = null;
-        String instruction = "SELECT ID_TRABAJADOR, NOMBRE, APELLIDOS, NSS, EMAIL, TELEFONO, PASS, PERMISOS FROM TRABAJADORES WHERE EMAIL=? OR NOMBRE=?";
-        try {
-            PreparedStatement prep = this.easyRestoConnection.prepareStatement(instruction);
-            prep.setString(1, inputText);
-            prep.setString(2, inputText);
-            ResultSet workerDataResult = prep.executeQuery();
-            while (workerDataResult.next()) {
-                worker = new Worker(workerDataResult.getInt("ID_TRABAJADOR"),
-                        workerDataResult.getString("NOMBRE"),
-                        workerDataResult.getString("APELLIDOS"),
-                        workerDataResult.getString("NSS"),
-                        workerDataResult.getString("EMAIL"),
-                        workerDataResult.getString("TELEFONO"),
-                        workerDataResult.getString("PASS"),
-                        workerDataResult.getString("PERMISOS"));
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(EasyRestoDB.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return worker;
+    public void setMysqlSelect(Statement mysqlSelect) {
+        this.mysqlSelect = mysqlSelect;
     }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    public String getPass() {
+        return pass;
+    }
+
+    public void setPass(String pass) {
+        this.pass = pass;
+    }
+
+    public String getServer() {
+        return server;
+    }
+
+    public void setServer(String server) {
+        this.server = server;
+    }
+
+    public String getPort() {
+        return port;
+    }
+
+    public void setPort(String port) {
+        this.port = port;
+    }
+
+    public String getDataBase() {
+        return dataBase;
+    }
+
+    public void setDataBase(String dataBase) {
+        this.dataBase = dataBase;
+    }
+    
+   
 }

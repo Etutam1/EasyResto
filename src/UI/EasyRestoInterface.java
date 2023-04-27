@@ -33,7 +33,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         this. changeComponentVisibility(this.adminBackgroundPanel, false);
         this. changeComponentVisibility(this.workerPasswordPanel, false);
-        this.easyRestoDB.getWorkerNameButton();
+        this.claseIntermedia.getWorkerNameButton();
     }
 
     /**
@@ -199,12 +199,12 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
-        this.adminSettingsLogin(this.emailTextField.getText(), this.passTextField.getPassword());
+        this.claseIntermedia.adminSettingsLogin(this.emailTextField.getText(), this.passTextField.getPassword());
         this.emptyPassFieldText(this.passTextField);
     }//GEN-LAST:event_loginButtonActionPerformed
 
     private void passTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passTextFieldActionPerformed
-        this.adminSettingsLogin(this.emailTextField.getText(), this.passTextField.getPassword());
+        this.claseIntermedia.adminSettingsLogin(this.emailTextField.getText(), this.passTextField.getPassword());
         this.emptyPassFieldText(this.passTextField);
     }//GEN-LAST:event_passTextFieldActionPerformed
 
@@ -213,12 +213,12 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     }//GEN-LAST:event_emailTextFieldActionPerformed
 
     private void passwordButtonPanelTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordButtonPanelTextFieldActionPerformed
-        this.workerLogin(this.workerNameLabel.getText(), this.passwordButtonPanelTextField.getPassword());
+        this.claseIntermedia.workerLogin(this.workerNameLabel.getText(), this.passwordButtonPanelTextField.getPassword());
         this.emptyPassFieldText(this.passwordButtonPanelTextField);
     }//GEN-LAST:event_passwordButtonPanelTextFieldActionPerformed
 
     private void loginButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButton2ActionPerformed
-        this.workerLogin(this.workerNameLabel.getText(), this.passwordButtonPanelTextField.getPassword());
+        this.claseIntermedia.workerLogin(this.workerNameLabel.getText(), this.passwordButtonPanelTextField.getPassword());
         this.emptyPassFieldText(this.passwordButtonPanelTextField);
     }//GEN-LAST:event_loginButton2ActionPerformed
                   
@@ -315,43 +315,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         workerNameLabel.setHorizontalAlignment(JLabel.CENTER);
     }
 
-    private boolean workerLogin(String workerName, char[] password) throws HeadlessException {
-        if (!this.checkEmptyWorkerPassField(new String(password))) {
-            if (this.easyRestoDB.checkCorrectPassword(workerName, new String(password))) {
-                this.workerLogged = this.easyRestoDB.getWorkerData(workerName);
-                System.out.println(this.workerLogged.getEmail());
-                JOptionPane.showMessageDialog(this, "BIENVENIDO A EASYRESTO!");
-                return true;
-            } else {
-                JOptionPane.showMessageDialog(this, "CONTRASEÑA INCORRECTA, VUELVE A INTENTARLO");
-                this.emptyPassFieldText(this.passwordButtonPanelTextField);
-            }
-        }else{
-            JOptionPane.showMessageDialog(this, "POR FAVOR, INTRODUCE TU CONTRASEÑA");
-        }
-        return false;
-        
-    }
-
-    private void adminSettingsLogin(String email, char[] password) throws HeadlessException {
-        if (!this.checkEmptyAdminLoginFields(email, new String(password))) {
-            if (this.easyRestoDB.checkRegisteredWorker(email)) {
-                if (this.easyRestoDB.checkCorrectPassword(email, new String(password))) {
-                    this.workerLogged = this.easyRestoDB.getWorkerData(email);
-                    System.out.println(this.workerLogged.getEmail());
-                    JOptionPane.showMessageDialog(this, "BIENVENIDO A EASYRESTO!");
-                } else {
-                    JOptionPane.showMessageDialog(this, "USUARIO O CONTRASEÑA INCORRECTO, VUELVE A INTENTARLO");
-                    this.emptyPassFieldText(this.passTextField);
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "EL CORREO INTRODUCIDO NO SE ENCUENTRA REGISTRADO");
-                this.emptyPassFieldText(this.passTextField);
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, "POR FAVOR RELLENA TODOS LOS CAMPOS");
-        }
-    }
+   
 
     private void  changeComponentVisibility(JPanel panel, boolean visibility) {
         panel.setVisible(visibility);
@@ -363,25 +327,18 @@ public class EasyRestoInterface extends javax.swing.JFrame {
 
     }
 
-    private void emptyPassFieldText(JPasswordField passwordField) {
+    public void emptyPassFieldText(JPasswordField passwordField) {
         passwordField.setText("");
     }
     
-    private boolean checkEmptyWorkerPassField(String password) throws HeadlessException {
+    public boolean checkEmptyWorkerPassField(String password) throws HeadlessException {
         return password.isBlank();
     }
 
-    private boolean checkEmptyAdminLoginFields(String email, String password) throws HeadlessException {
+    public boolean checkEmptyAdminLoginFields(String email, String password) throws HeadlessException {
         return password.isBlank() || email.isBlank();
     }
 
-    public Worker getWorkerLogged() {
-        return workerLogged;
-    }
-
-    public void setWorkerLogged(Worker workerLogged) {
-        this.workerLogged = workerLogged;
-    }
 
     public JPanel getBackgroundPanel() {
         return adminBackgroundPanel;
@@ -504,7 +461,6 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     }
 
     private Intermediaria claseIntermedia = new Intermediaria(this);
-    private Worker workerLogged;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel adminBackgroundPanel;
     private javax.swing.JPanel adminPanel;
