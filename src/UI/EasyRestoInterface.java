@@ -48,7 +48,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
 
         mainPanel = new javax.swing.JPanel();
         mainPanelBackButton = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        clockOutButton = new javax.swing.JButton();
         workerPasswordPanel = new javax.swing.JPanel();
         passwordButtonPanelTextField = new javax.swing.JPasswordField();
         enterPasswordLabel = new javax.swing.JLabel();
@@ -90,9 +90,9 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         });
         mainPanel.add(mainPanelBackButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 1130, 65, 65));
 
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resources/img/shutdown.png"))); // NOI18N
-        jButton1.setBorder(null);
-        mainPanel.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1410, 10, 65, 65));
+        clockOutButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resources/img/shutdown.png"))); // NOI18N
+        clockOutButton.setBorder(null);
+        mainPanel.add(clockOutButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(1410, 10, 65, 65));
 
         getContentPane().add(mainPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1500, 1250));
 
@@ -512,10 +512,10 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private javax.swing.JButton adminSettingsButton;
     private javax.swing.JButton admingLoginButton;
     private javax.swing.JPanel backgroundPanel;
+    private javax.swing.JButton clockOutButton;
     private javax.swing.JLabel emailLabel;
     private javax.swing.JTextField emailTextField;
     private javax.swing.JLabel enterPasswordLabel;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel loginTitleLabel;
     private javax.swing.JPanel mainPanel;
