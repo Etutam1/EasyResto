@@ -31,6 +31,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     public EasyRestoInterface() {
         initComponents();
         this.setLocationRelativeTo(null);
+        this.changeComponentVisibility(this.mainPanel, false);
         this.changeComponentVisibility(this.adminBackgroundPanel, false);
         this.changeComponentVisibility(this.workerPasswordPanel, false);
         this.claseIntermedia.getWorkerNameButton();
@@ -45,14 +46,17 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        workerBackgroundPanel = new javax.swing.JPanel();
-        workersPanel = new javax.swing.JPanel();
+        mainPanel = new javax.swing.JPanel();
+        mainPanelBackButton = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
         workerPasswordPanel = new javax.swing.JPanel();
         passwordButtonPanelTextField = new javax.swing.JPasswordField();
         enterPasswordLabel = new javax.swing.JLabel();
         workerLoginButton = new javax.swing.JButton();
         workerNameLabel = new javax.swing.JLabel();
         passwordPanelBackButton = new javax.swing.JButton();
+        workerBackgroundPanel = new javax.swing.JPanel();
+        workersPanel = new javax.swing.JPanel();
         adminSettingsButton = new javax.swing.JButton();
         adminBackgroundPanel = new javax.swing.JPanel();
         adminPanel = new javax.swing.JPanel();
@@ -64,16 +68,33 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         admingLoginButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         adminPanelBackButton = new javax.swing.JButton();
+        backgroundPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(1500, 1250));
+        setSize(new java.awt.Dimension(1500, 1250));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        workerBackgroundPanel.setBackground(new java.awt.Color(0, 112, 115));
-        workerBackgroundPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        mainPanel.setBackground(new java.awt.Color(0, 112, 115));
+        mainPanel.setPreferredSize(new java.awt.Dimension(1500, 1250));
+        mainPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        workersPanel.setBackground(new java.awt.Color(255, 255, 255));
-        workersPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
-        workerBackgroundPanel.add(workersPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 120, 345, 510));
+        mainPanelBackButton.setForeground(new java.awt.Color(51, 51, 51));
+        mainPanelBackButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resources/img/1.png"))); // NOI18N
+        mainPanelBackButton.setBorder(null);
+        mainPanelBackButton.setPreferredSize(new java.awt.Dimension(60, 60));
+        mainPanelBackButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mainPanelBackButtonActionPerformed(evt);
+            }
+        });
+        mainPanel.add(mainPanelBackButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 1130, 65, 65));
+
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resources/img/shutdown.png"))); // NOI18N
+        jButton1.setBorder(null);
+        mainPanel.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1410, 10, 65, 65));
+
+        getContentPane().add(mainPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1500, 1250));
 
         workerPasswordPanel.setBackground(new java.awt.Color(0, 112, 115));
         workerPasswordPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -103,7 +124,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         workerNameLabel.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
         workerNameLabel.setForeground(new java.awt.Color(255, 255, 255));
         workerNameLabel.setText("      WORKER");
-        workerPasswordPanel.add(workerNameLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 120, 260, 50));
+        workerPasswordPanel.add(workerNameLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 130, 260, 50));
 
         passwordPanelBackButton.setForeground(new java.awt.Color(51, 51, 51));
         passwordPanelBackButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resources/img/1.png"))); // NOI18N
@@ -114,9 +135,16 @@ public class EasyRestoInterface extends javax.swing.JFrame {
                 passwordPanelBackButtonActionPerformed(evt);
             }
         });
-        workerPasswordPanel.add(passwordPanelBackButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 610, 60, 60));
+        workerPasswordPanel.add(passwordPanelBackButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 610, 65, 65));
 
-        workerBackgroundPanel.add(workerPasswordPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 50, 610, 680));
+        getContentPane().add(workerPasswordPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 240, 610, 680));
+
+        workerBackgroundPanel.setBackground(new java.awt.Color(0, 112, 115));
+        workerBackgroundPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        workersPanel.setBackground(new java.awt.Color(255, 255, 255));
+        workersPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+        workerBackgroundPanel.add(workersPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 120, 345, 510));
 
         adminSettingsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resources/img/admin.png"))); // NOI18N
         adminSettingsButton.setPreferredSize(new java.awt.Dimension(60, 60));
@@ -125,9 +153,9 @@ public class EasyRestoInterface extends javax.swing.JFrame {
                 adminSettingsButtonActionPerformed(evt);
             }
         });
-        workerBackgroundPanel.add(adminSettingsButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 660, -1, -1));
+        workerBackgroundPanel.add(adminSettingsButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 660, 65, 65));
 
-        getContentPane().add(workerBackgroundPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 670, 750));
+        getContentPane().add(workerBackgroundPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 190, 670, 750));
 
         adminBackgroundPanel.setBackground(new java.awt.Color(0, 112, 115));
         adminBackgroundPanel.setAutoscrolls(true);
@@ -191,9 +219,13 @@ public class EasyRestoInterface extends javax.swing.JFrame {
                 adminPanelBackButtonActionPerformed(evt);
             }
         });
-        adminBackgroundPanel.add(adminPanelBackButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 660, 60, 60));
+        adminBackgroundPanel.add(adminPanelBackButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 670, 65, 65));
 
-        getContentPane().add(adminBackgroundPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 670, 750));
+        getContentPane().add(adminBackgroundPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 180, 670, 750));
+
+        backgroundPanel.setBackground(new java.awt.Color(0, 112, 115));
+        backgroundPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        getContentPane().add(backgroundPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1500, 1250));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -221,12 +253,15 @@ public class EasyRestoInterface extends javax.swing.JFrame {
             if (!this.claseIntermedia.checkClockIn(this.claseIntermedia.getWorkerLogged().getId())) {
                 this.claseIntermedia.clockIn(this.claseIntermedia.getWorkerLogged().getId());
             }
+            this.changeComponentVisibility(this.workerPasswordPanel, false);
+            this.changeComponentVisibility(this.mainPanel, true);
         }
         this.emptyPassFieldText(this.passwordButtonPanelTextField);
     }//GEN-LAST:event_workerLoginButtonActionPerformed
 
     private void passwordPanelBackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordPanelBackButtonActionPerformed
         this.changeComponentVisibility(this.workerPasswordPanel, false);
+        this.changeComponentVisibility(this.workerBackgroundPanel, true);
         this.changeComponentVisibility(this.workersPanel, true);
         this.emptyPassFieldText(this.passwordButtonPanelTextField);
         this.changeComponentVisibility(this.adminSettingsButton, true);
@@ -236,13 +271,21 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private void adminPanelBackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adminPanelBackButtonActionPerformed
         this.changeComponentVisibility(this.adminBackgroundPanel, false);
         this.changeComponentVisibility(this.workerBackgroundPanel, true);
-
+        this.emailTextField.setText("");
+        this.emptyPassFieldText(passTextField);
+        
     }//GEN-LAST:event_adminPanelBackButtonActionPerformed
 
     private void adminSettingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adminSettingsButtonActionPerformed
         this.changeComponentVisibility(this.workerBackgroundPanel, false);
         this.changeComponentVisibility(this.adminBackgroundPanel, true);
     }//GEN-LAST:event_adminSettingsButtonActionPerformed
+
+    private void mainPanelBackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mainPanelBackButtonActionPerformed
+        this.changeComponentVisibility(this.mainPanel, false);
+        this.changeComponentVisibility(this.workerBackgroundPanel, true);
+        this.changeComponentVisibility(this.workersPanel, true);
+    }//GEN-LAST:event_mainPanelBackButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -306,6 +349,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
             public void actionPerformed(ActionEvent e) {
                 changeComponentVisibility(workersPanel, false);
                 changeComponentVisibility(workerPasswordPanel, true);
+                changeComponentVisibility(workerBackgroundPanel, false);
                 configWorkerNameLabel(e);
                 passwordButtonPanelTextField.requestFocus();
                 changeComponentVisibility(adminSettingsButton, true);
@@ -467,11 +511,15 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private javax.swing.JButton adminPanelBackButton;
     private javax.swing.JButton adminSettingsButton;
     private javax.swing.JButton admingLoginButton;
+    private javax.swing.JPanel backgroundPanel;
     private javax.swing.JLabel emailLabel;
     private javax.swing.JTextField emailTextField;
     private javax.swing.JLabel enterPasswordLabel;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel loginTitleLabel;
+    private javax.swing.JPanel mainPanel;
+    private javax.swing.JButton mainPanelBackButton;
     private javax.swing.JLabel passLabel;
     private javax.swing.JPasswordField passTextField;
     private javax.swing.JPasswordField passwordButtonPanelTextField;
