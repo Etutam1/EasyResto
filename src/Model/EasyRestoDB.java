@@ -21,7 +21,7 @@ import java.sql.PreparedStatement;
 public class EasyRestoDB {
 
     private Connection easyRestoConnection;
-    private EasyRestoInterface easyRestoInterface;
+    
     private Statement mysqlSelect;
     private String user;
     private String pass;
@@ -29,8 +29,7 @@ public class EasyRestoDB {
     private String port;
     private String dataBase;
 
-    public EasyRestoDB(EasyRestoInterface easyRestoInterface) {
-        this.easyRestoInterface = easyRestoInterface;
+    public EasyRestoDB() {
         this.easyRestoConnection = this.openConnection();
         try {
             this.mysqlSelect = this.easyRestoConnection.createStatement();
@@ -74,7 +73,6 @@ public class EasyRestoDB {
     }
     
     public boolean checkCorrectPassword(String emailOrName, String password) {
-        
         boolean passwordMatchs = false;
         String instruction = "SELECT PASS FROM TRABAJADORES WHERE NOMBRE= ? OR EMAIL=?";
         try {
@@ -99,12 +97,7 @@ public class EasyRestoDB {
             prep.setString(1, inputText);
             prep.setString(2, inputText);
             ResultSet workerDataResult = prep.executeQuery();
-            
-            if (!workerDataResult.isBeforeFirst()) {
-                System.out.println("null");
-            }
             while (workerDataResult.next()) {
-                System.out.println("1");
                 worker = new Worker(workerDataResult.getInt("ID_TRABAJADOR"),
                         workerDataResult.getString("NOMBRE"),
                         workerDataResult.getString("APELLIDOS"),
@@ -119,6 +112,4 @@ public class EasyRestoDB {
         }
         return worker;
     }
-
-   
 }
