@@ -6,14 +6,13 @@ package Model;
 
 import UI.EasyRestoInterface;
 import java.awt.HeadlessException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
+import java.time.LocalDate;
 
 /**
  *
@@ -23,19 +22,12 @@ public class Intermediaria {
 
     private EasyRestoDB easyRestoDb;
     private EasyRestoInterface easyRestoInterface;
-    private Connection easyRestoConnection;
-    private Statement mysqlSelect;
+
     private Worker workerLogged;
 
     public Intermediaria(EasyRestoInterface easyRestoInterface) {
         this.easyRestoInterface = easyRestoInterface;
         this.easyRestoDb = new EasyRestoDB();
-        this.easyRestoConnection = this.easyRestoDb.openConnection();
-        try {
-            this.mysqlSelect = this.easyRestoConnection.createStatement();
-        } catch (SQLException ex) {
-            Logger.getLogger(Intermediaria.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
     public boolean workerLogin(String workerName, char[] password) throws HeadlessException {
@@ -58,13 +50,16 @@ public class Intermediaria {
     public void adminSettingsLogin(String email, char[] password) throws HeadlessException {
         if (!this.easyRestoInterface.checkEmptyAdminLoginFields(email, new String(password))) {
             if (this.checkRegisteredWorker(email)) {
-                if (this.checkCorrectPassword(email, new String(password))) {
-                    this.workerLogged = this.getWorkerData(email);
-                    System.out.println(this.workerLogged.getEmail());
-                    JOptionPane.showMessageDialog(this.easyRestoInterface, "BIENVENIDO A EASYRESTO!");
+                if (this.checkAdminPermission(email)) {
+                    if (this.checkCorrectPassword(email, new String(password))) {
+                        this.workerLogged = this.getWorkerData(email);
+                        JOptionPane.showMessageDialog(this.easyRestoInterface, "BIENVENIDO A EASYRESTO!");
+                    } else {
+                        JOptionPane.showMessageDialog(this.easyRestoInterface, "USUARIO O CONTRASEÑA INCORRECTO, VUELVE A INTENTARLO");
+                        this.easyRestoInterface.emptyPassFieldText(this.easyRestoInterface.getPassTextField());
+                    }
                 } else {
-                    JOptionPane.showMessageDialog(this.easyRestoInterface, "USUARIO O CONTRASEÑA INCORRECTO, VUELVE A INTENTARLO");
-                    this.easyRestoInterface.emptyPassFieldText(this.easyRestoInterface.getPassTextField());
+                    JOptionPane.showMessageDialog(this.easyRestoInterface, "USTED NO DISPONE DE PERMISOS");
                 }
             } else {
                 JOptionPane.showMessageDialog(this.easyRestoInterface, "EL CORREO INTRODUCIDO NO SE ENCUENTRA REGISTRADO");
@@ -75,22 +70,23 @@ public class Intermediaria {
         }
     }
 
-    public boolean checkRegisteredWorker(String email) {
-        boolean registeredWorker = false;
+    private boolean checkRegisteredWorker(String email) {
         try {
-            ResultSet mysqlResult = this.easyRestoConnection.createStatement().executeQuery("SELECT EMAIL FROM TRABAJADORES");
+            ResultSet mysqlResult = this.easyRestoDb.getEasyRestoConnection().createStatement().executeQuery("SELECT EMAIL FROM TRABAJADORES ");
             while (mysqlResult.next()) {
-                registeredWorker = mysqlResult.getString("EMAIL").equals(email);
+                if(mysqlResult.getString("EMAIL").equals(email)){
+                    return true;
+                }
             }
         } catch (SQLException ex) {
             Logger.getLogger(EasyRestoDB.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return registeredWorker;
+        return false;
     }
 
     public void getWorkerNameButton() {
         try {
-            ResultSet workerNameResult = this.mysqlSelect.executeQuery("SELECT NOMBRE FROM TRABAJADORES");
+            ResultSet workerNameResult = this.easyRestoDb.executeQuery("SELECT NOMBRE FROM TRABAJADORES");
             while (workerNameResult.next()) {
                 this.easyRestoInterface.configWorkerButton(workerNameResult.getString("NOMBRE"));
             }
@@ -99,11 +95,11 @@ public class Intermediaria {
         }
     }
 
-    public boolean checkCorrectPassword(String emailOrName, String password) {
+    private boolean checkCorrectPassword(String emailOrName, String password) {
         boolean passwordMatchs = false;
         String instruction = "SELECT PASS FROM TRABAJADORES WHERE NOMBRE= ? OR EMAIL=?";
         try {
-            PreparedStatement prep = this.easyRestoConnection.prepareStatement(instruction);
+            PreparedStatement prep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(instruction);
             prep.setString(1, emailOrName);
             prep.setString(2, emailOrName);
             ResultSet workerPassResult = prep.executeQuery();
@@ -116,11 +112,11 @@ public class Intermediaria {
         return passwordMatchs;
     }
 
-    public Worker getWorkerData(String inputText) {
+    private Worker getWorkerData(String inputText) {
         Worker worker = null;
         String instruction = "SELECT ID_TRABAJADOR, NOMBRE, APELLIDOS, NSS, EMAIL, TELEFONO, PASS, PERMISOS FROM TRABAJADORES WHERE EMAIL=? OR NOMBRE=?";
         try {
-            PreparedStatement prep = this.easyRestoConnection.prepareStatement(instruction);
+            PreparedStatement prep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(instruction);
             prep.setString(1, inputText);
             prep.setString(2, inputText);
             ResultSet workerDataResult = prep.executeQuery();
@@ -140,6 +136,45 @@ public class Intermediaria {
         return worker;
     }
 
+    public void clockIn(int id) {
+        try {
+            String instruction = "INSERT INTO HORARIOS_TRABAJADORES(ID_TRABAJADOR) VALUES (?)";
+            PreparedStatement prep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(instruction);
+            prep.setString(1, String.valueOf(id));
+            prep.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(Intermediaria.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public boolean checkClockIn(int id) {
+        try {
+            ResultSet clockInDayResult = this.easyRestoDb.executeQuery("SELECT DATE(ENTRADA) FROM horarios_trabajadores WHERE ID_TRABAJADOR =" + String.valueOf(id));
+            while (clockInDayResult.next()) {
+                if (clockInDayResult.getString("DATE(ENTRADA)").equals(LocalDate.now().toString())) {
+                    return true;
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Intermediaria.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    public boolean checkAdminPermission(String email) {
+        try {
+            ResultSet adminPermissionResult = this.easyRestoDb.executeQuery("SELECT PERMISOS FROM TRABAJADORES WHERE EMAIL='" + email + "'");
+            while (adminPermissionResult.next()) {
+                if (adminPermissionResult.getString("PERMISOS").equals("ADMIN")) {
+                    return true;
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Intermediaria.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
     public EasyRestoDB getEasyRestoDb() {
         return easyRestoDb;
     }
@@ -154,22 +189,6 @@ public class Intermediaria {
 
     public void setEasyRestoInterface(EasyRestoInterface easyRestoInterface) {
         this.easyRestoInterface = easyRestoInterface;
-    }
-
-    public Connection getEasyRestoConnection() {
-        return easyRestoConnection;
-    }
-
-    public void setEasyRestoConnection(Connection easyRestoConnection) {
-        this.easyRestoConnection = easyRestoConnection;
-    }
-
-    public Statement getMysqlSelect() {
-        return mysqlSelect;
-    }
-
-    public void setMysqlSelect(Statement mysqlSelect) {
-        this.mysqlSelect = mysqlSelect;
     }
 
     public Worker getWorkerLogged() {

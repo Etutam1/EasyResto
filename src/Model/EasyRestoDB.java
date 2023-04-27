@@ -22,16 +22,22 @@ public class EasyRestoDB {
 
    
     
-    private Statement mysqlSelect;
+    
     private String user;
     private String pass;
     private String server;
     private String port;
     private String dataBase;
+    private Connection easyRestoConnection;
+    private Statement mysqlSelect;
 
     public EasyRestoDB() {
-        
-       
+        try {
+            this.easyRestoConnection=this.openConnection();
+            this.mysqlSelect =this.easyRestoConnection.createStatement();
+        } catch (SQLException ex) {
+            Logger.getLogger(EasyRestoDB.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public Connection openConnection() {
@@ -44,7 +50,9 @@ public class EasyRestoDB {
         return conexionServer;
     }
 
-  
+    public ResultSet executeQuery(String query) throws SQLException{
+        return this.mysqlSelect.executeQuery(query);
+    }
 
     public Statement getMysqlSelect() {
         return mysqlSelect;
@@ -92,6 +100,14 @@ public class EasyRestoDB {
 
     public void setDataBase(String dataBase) {
         this.dataBase = dataBase;
+    }
+
+    public Connection getEasyRestoConnection() {
+        return easyRestoConnection;
+    }
+
+    public void setEasyRestoConnection(Connection easyRestoConnection) {
+        this.easyRestoConnection = easyRestoConnection;
     }
     
    

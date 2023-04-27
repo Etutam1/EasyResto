@@ -31,8 +31,8 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     public EasyRestoInterface() {
         initComponents();
         this.setLocationRelativeTo(null);
-        this. changeComponentVisibility(this.adminBackgroundPanel, false);
-        this. changeComponentVisibility(this.workerPasswordPanel, false);
+        this.changeComponentVisibility(this.adminBackgroundPanel, false);
+        this.changeComponentVisibility(this.workerPasswordPanel, false);
         this.claseIntermedia.getWorkerNameButton();
     }
 
@@ -50,7 +50,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         workerPasswordPanel = new javax.swing.JPanel();
         passwordButtonPanelTextField = new javax.swing.JPasswordField();
         enterPasswordLabel = new javax.swing.JLabel();
-        loginButton2 = new javax.swing.JButton();
+        workerLoginButton = new javax.swing.JButton();
         workerNameLabel = new javax.swing.JLabel();
         passwordPanelBackButton = new javax.swing.JButton();
         adminSettingsButton = new javax.swing.JButton();
@@ -61,7 +61,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         emailLabel = new javax.swing.JLabel();
         passTextField = new javax.swing.JPasswordField();
         passLabel = new javax.swing.JLabel();
-        loginButton = new javax.swing.JButton();
+        admingLoginButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         adminPanelBackButton = new javax.swing.JButton();
 
@@ -90,15 +90,15 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         enterPasswordLabel.setText("CONTRASEÑA:");
         workerPasswordPanel.add(enterPasswordLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 250, 180, -1));
 
-        loginButton2.setForeground(new java.awt.Color(51, 51, 51));
-        loginButton2.setText("LOGIN");
-        loginButton2.setBorder(null);
-        loginButton2.addActionListener(new java.awt.event.ActionListener() {
+        workerLoginButton.setForeground(new java.awt.Color(51, 51, 51));
+        workerLoginButton.setText("LOGIN");
+        workerLoginButton.setBorder(null);
+        workerLoginButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                loginButton2ActionPerformed(evt);
+                workerLoginButtonActionPerformed(evt);
             }
         });
-        workerPasswordPanel.add(loginButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 320, 70, 20));
+        workerPasswordPanel.add(workerLoginButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 320, 70, 20));
 
         workerNameLabel.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
         workerNameLabel.setForeground(new java.awt.Color(255, 255, 255));
@@ -167,15 +167,15 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         passLabel.setText("PASS");
         adminPanel.add(passLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 220, 40, -1));
 
-        loginButton.setForeground(new java.awt.Color(51, 51, 51));
-        loginButton.setText("LOGIN");
-        loginButton.setBorder(null);
-        loginButton.addActionListener(new java.awt.event.ActionListener() {
+        admingLoginButton.setForeground(new java.awt.Color(51, 51, 51));
+        admingLoginButton.setText("LOGIN");
+        admingLoginButton.setBorder(null);
+        admingLoginButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                loginButtonActionPerformed(evt);
+                admingLoginButtonActionPerformed(evt);
             }
         });
-        adminPanel.add(loginButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 310, 80, 20));
+        adminPanel.add(admingLoginButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 310, 80, 20));
 
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText(" ADMIN ZONE");
@@ -198,10 +198,10 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
+    private void admingLoginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_admingLoginButtonActionPerformed
         this.claseIntermedia.adminSettingsLogin(this.emailTextField.getText(), this.passTextField.getPassword());
         this.emptyPassFieldText(this.passTextField);
-    }//GEN-LAST:event_loginButtonActionPerformed
+    }//GEN-LAST:event_admingLoginButtonActionPerformed
 
     private void passTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passTextFieldActionPerformed
         this.claseIntermedia.adminSettingsLogin(this.emailTextField.getText(), this.passTextField.getPassword());
@@ -213,32 +213,35 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     }//GEN-LAST:event_emailTextFieldActionPerformed
 
     private void passwordButtonPanelTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordButtonPanelTextFieldActionPerformed
-        this.claseIntermedia.workerLogin(this.workerNameLabel.getText(), this.passwordButtonPanelTextField.getPassword());
-        this.emptyPassFieldText(this.passwordButtonPanelTextField);
+        this.workerLoginButtonActionPerformed(evt);
     }//GEN-LAST:event_passwordButtonPanelTextFieldActionPerformed
 
-    private void loginButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButton2ActionPerformed
-        this.claseIntermedia.workerLogin(this.workerNameLabel.getText(), this.passwordButtonPanelTextField.getPassword());
+    private void workerLoginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_workerLoginButtonActionPerformed
+        if (this.claseIntermedia.workerLogin(this.workerNameLabel.getText(), this.passwordButtonPanelTextField.getPassword())) {
+            if (!this.claseIntermedia.checkClockIn(this.claseIntermedia.getWorkerLogged().getId())) {
+                this.claseIntermedia.clockIn(this.claseIntermedia.getWorkerLogged().getId());
+            }
+        }
         this.emptyPassFieldText(this.passwordButtonPanelTextField);
-    }//GEN-LAST:event_loginButton2ActionPerformed
-                  
+    }//GEN-LAST:event_workerLoginButtonActionPerformed
+
     private void passwordPanelBackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordPanelBackButtonActionPerformed
-        this. changeComponentVisibility(this.workerPasswordPanel, false);
-        this. changeComponentVisibility(this.workersPanel, true);
+        this.changeComponentVisibility(this.workerPasswordPanel, false);
+        this.changeComponentVisibility(this.workersPanel, true);
         this.emptyPassFieldText(this.passwordButtonPanelTextField);
         this.changeComponentVisibility(this.adminSettingsButton, true);
-        
+
     }//GEN-LAST:event_passwordPanelBackButtonActionPerformed
 
     private void adminPanelBackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adminPanelBackButtonActionPerformed
-        this. changeComponentVisibility(this.adminBackgroundPanel, false);
-        this. changeComponentVisibility(this.workerBackgroundPanel, true);
-        
+        this.changeComponentVisibility(this.adminBackgroundPanel, false);
+        this.changeComponentVisibility(this.workerBackgroundPanel, true);
+
     }//GEN-LAST:event_adminPanelBackButtonActionPerformed
 
     private void adminSettingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adminSettingsButtonActionPerformed
-        this. changeComponentVisibility(this.workerBackgroundPanel, false);
-        this. changeComponentVisibility(this.adminBackgroundPanel, true);
+        this.changeComponentVisibility(this.workerBackgroundPanel, false);
+        this.changeComponentVisibility(this.adminBackgroundPanel, true);
     }//GEN-LAST:event_adminSettingsButtonActionPerformed
 
     /**
@@ -301,8 +304,8 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                 changeComponentVisibility(workersPanel, false);
-                 changeComponentVisibility(workerPasswordPanel, true);
+                changeComponentVisibility(workersPanel, false);
+                changeComponentVisibility(workerPasswordPanel, true);
                 configWorkerNameLabel(e);
                 passwordButtonPanelTextField.requestFocus();
                 changeComponentVisibility(adminSettingsButton, true);
@@ -315,14 +318,12 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         workerNameLabel.setHorizontalAlignment(JLabel.CENTER);
     }
 
-   
-
-    private void  changeComponentVisibility(JPanel panel, boolean visibility) {
+    private void changeComponentVisibility(JPanel panel, boolean visibility) {
         panel.setVisible(visibility);
 
     }
-    
-     private void changeComponentVisibility(Component component, boolean visibility) {
+
+    private void changeComponentVisibility(Component component, boolean visibility) {
         component.setVisible(visibility);
 
     }
@@ -330,7 +331,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     public void emptyPassFieldText(JPasswordField passwordField) {
         passwordField.setText("");
     }
-    
+
     public boolean checkEmptyWorkerPassField(String password) throws HeadlessException {
         return password.isBlank();
     }
@@ -338,7 +339,6 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     public boolean checkEmptyAdminLoginFields(String email, String password) throws HeadlessException {
         return password.isBlank() || email.isBlank();
     }
-
 
     public JPanel getBackgroundPanel() {
         return adminBackgroundPanel;
@@ -365,11 +365,11 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     }
 
     public JButton getLoginButton() {
-        return loginButton;
+        return admingLoginButton;
     }
 
     public void setLoginButton(JButton loginButton) {
-        this.loginButton = loginButton;
+        this.admingLoginButton = loginButton;
     }
 
     public JPanel getLoginButtonsPanel() {
@@ -421,11 +421,11 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     }
 
     public JButton getLoginButton2() {
-        return loginButton2;
+        return workerLoginButton;
     }
 
     public void setLoginButton2(JButton loginButton2) {
-        this.loginButton2 = loginButton2;
+        this.workerLoginButton = loginButton2;
     }
 
     public JPanel getPasswordButtonPanel() {
@@ -466,18 +466,18 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private javax.swing.JPanel adminPanel;
     private javax.swing.JButton adminPanelBackButton;
     private javax.swing.JButton adminSettingsButton;
+    private javax.swing.JButton admingLoginButton;
     private javax.swing.JLabel emailLabel;
     private javax.swing.JTextField emailTextField;
     private javax.swing.JLabel enterPasswordLabel;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JButton loginButton;
-    private javax.swing.JButton loginButton2;
     private javax.swing.JLabel loginTitleLabel;
     private javax.swing.JLabel passLabel;
     private javax.swing.JPasswordField passTextField;
     private javax.swing.JPasswordField passwordButtonPanelTextField;
     private javax.swing.JButton passwordPanelBackButton;
     private javax.swing.JPanel workerBackgroundPanel;
+    private javax.swing.JButton workerLoginButton;
     private javax.swing.JLabel workerNameLabel;
     private javax.swing.JPanel workerPasswordPanel;
     private javax.swing.JPanel workersPanel;
