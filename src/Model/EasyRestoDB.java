@@ -19,10 +19,6 @@ import java.sql.PreparedStatement;
  * @author matut
  */
 public class EasyRestoDB {
-
-   
-    
-    
     private String user;
     private String pass;
     private String server;
