@@ -46,6 +46,9 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        mainPanel = new javax.swing.JPanel();
+        mainPanelBackButton = new javax.swing.JButton();
+        clockOutButton = new javax.swing.JButton();
         workerPasswordPanel = new javax.swing.JPanel();
         passwordButtonPanelTextField = new javax.swing.JPasswordField();
         enterPasswordLabel = new javax.swing.JLabel();
@@ -66,15 +69,34 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         admingLoginButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         adminPanelBackButton = new javax.swing.JButton();
-        mainPanel = new javax.swing.JPanel();
-        mainPanelBackButton = new javax.swing.JButton();
-        clockOutButton = new javax.swing.JButton();
         backgroundPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(910, 840));
         setSize(new java.awt.Dimension(950, 850));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        mainPanel.setBackground(new java.awt.Color(0, 112, 115));
+        mainPanel.setMinimumSize(new java.awt.Dimension(900, 800));
+        mainPanel.setPreferredSize(new java.awt.Dimension(900, 800));
+        mainPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        mainPanelBackButton.setForeground(new java.awt.Color(51, 51, 51));
+        mainPanelBackButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resources/img/1.png"))); // NOI18N
+        mainPanelBackButton.setBorder(null);
+        mainPanelBackButton.setPreferredSize(new java.awt.Dimension(60, 60));
+        mainPanelBackButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mainPanelBackButtonActionPerformed(evt);
+            }
+        });
+        mainPanel.add(mainPanelBackButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 730, 65, 65));
+
+        clockOutButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resources/img/shutdown.png"))); // NOI18N
+        clockOutButton.setBorder(null);
+        mainPanel.add(clockOutButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(830, 10, 65, 65));
+
+        getContentPane().add(mainPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 900, 810));
 
         workerPasswordPanel.setBackground(new java.awt.Color(0, 112, 115));
         workerPasswordPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -85,11 +107,11 @@ public class EasyRestoInterface extends javax.swing.JFrame {
                 passwordButtonPanelTextFieldActionPerformed(evt);
             }
         });
-        workerPasswordPanel.add(passwordButtonPanelTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 270, 190, -1));
+        workerPasswordPanel.add(passwordButtonPanelTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 360, 190, -1));
 
         enterPasswordLabel.setForeground(new java.awt.Color(255, 255, 255));
         enterPasswordLabel.setText("CONTRASEÑA:");
-        workerPasswordPanel.add(enterPasswordLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 250, 180, -1));
+        workerPasswordPanel.add(enterPasswordLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 340, 180, -1));
 
         workerLoginButton.setForeground(new java.awt.Color(51, 51, 51));
         workerLoginButton.setText("LOGIN");
@@ -99,12 +121,12 @@ public class EasyRestoInterface extends javax.swing.JFrame {
                 workerLoginButtonActionPerformed(evt);
             }
         });
-        workerPasswordPanel.add(workerLoginButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 320, 70, 20));
+        workerPasswordPanel.add(workerLoginButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 400, 70, 20));
 
         workerNameLabel.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
         workerNameLabel.setForeground(new java.awt.Color(255, 255, 255));
         workerNameLabel.setText("      WORKER");
-        workerPasswordPanel.add(workerNameLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 130, 260, 50));
+        workerPasswordPanel.add(workerNameLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 210, 260, 50));
 
         passwordPanelBackButton.setForeground(new java.awt.Color(51, 51, 51));
         passwordPanelBackButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resources/img/1.png"))); // NOI18N
@@ -115,18 +137,23 @@ public class EasyRestoInterface extends javax.swing.JFrame {
                 passwordPanelBackButtonActionPerformed(evt);
             }
         });
-        workerPasswordPanel.add(passwordPanelBackButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 600, 65, 65));
+        workerPasswordPanel.add(passwordPanelBackButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 730, 65, 65));
 
-        getContentPane().add(workerPasswordPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 100, 610, 680));
+        getContentPane().add(workerPasswordPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 900, 810));
 
         workerBackgroundPanel.setBackground(new java.awt.Color(0, 112, 115));
         workerBackgroundPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(1000, 1000));
+
         workersPanel.setBackground(new java.awt.Color(255, 255, 255));
+        workersPanel.setMaximumSize(new java.awt.Dimension(420, 610));
+        workersPanel.setPreferredSize(new java.awt.Dimension(420, 2000));
         workersPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
         jScrollPane1.setViewportView(workersPanel);
 
-        workerBackgroundPanel.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 30, 440, 670));
+        workerBackgroundPanel.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 90, 450, 610));
 
         adminSettingsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resources/img/admin.png"))); // NOI18N
         adminSettingsButton.setPreferredSize(new java.awt.Dimension(60, 60));
@@ -135,9 +162,9 @@ public class EasyRestoInterface extends javax.swing.JFrame {
                 adminSettingsButtonActionPerformed(evt);
             }
         });
-        workerBackgroundPanel.add(adminSettingsButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 660, 65, 65));
+        workerBackgroundPanel.add(adminSettingsButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 730, 65, 65));
 
-        getContentPane().add(workerBackgroundPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 20, 670, 750));
+        getContentPane().add(workerBackgroundPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 900, 810));
 
         adminBackgroundPanel.setBackground(new java.awt.Color(0, 112, 115));
         adminBackgroundPanel.setAutoscrolls(true);
@@ -185,13 +212,13 @@ public class EasyRestoInterface extends javax.swing.JFrame {
                 admingLoginButtonActionPerformed(evt);
             }
         });
-        adminPanel.add(admingLoginButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 310, 80, 20));
+        adminPanel.add(admingLoginButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 300, 80, 20));
 
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText(" ADMIN ZONE");
         adminPanel.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 50, 80, 30));
 
-        adminBackgroundPanel.add(adminPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 140, 370, 450));
+        adminBackgroundPanel.add(adminPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 180, 370, 450));
 
         adminPanelBackButton.setForeground(new java.awt.Color(255, 255, 255));
         adminPanelBackButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resources/img/1.png"))); // NOI18N
@@ -201,37 +228,15 @@ public class EasyRestoInterface extends javax.swing.JFrame {
                 adminPanelBackButtonActionPerformed(evt);
             }
         });
-        adminBackgroundPanel.add(adminPanelBackButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 670, 65, 65));
+        adminBackgroundPanel.add(adminPanelBackButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 730, 65, 65));
 
-        getContentPane().add(adminBackgroundPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 10, 670, 750));
-
-        mainPanel.setBackground(new java.awt.Color(0, 112, 115));
-        mainPanel.setMinimumSize(new java.awt.Dimension(900, 800));
-        mainPanel.setPreferredSize(new java.awt.Dimension(900, 800));
-        mainPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        mainPanelBackButton.setForeground(new java.awt.Color(51, 51, 51));
-        mainPanelBackButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resources/img/1.png"))); // NOI18N
-        mainPanelBackButton.setBorder(null);
-        mainPanelBackButton.setPreferredSize(new java.awt.Dimension(60, 60));
-        mainPanelBackButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mainPanelBackButtonActionPerformed(evt);
-            }
-        });
-        mainPanel.add(mainPanelBackButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 720, 65, 65));
-
-        clockOutButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resources/img/shutdown.png"))); // NOI18N
-        clockOutButton.setBorder(null);
-        mainPanel.add(clockOutButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(820, 10, 65, 65));
-
-        getContentPane().add(mainPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 900, 800));
+        getContentPane().add(adminBackgroundPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 900, 810));
 
         backgroundPanel.setBackground(new java.awt.Color(0, 112, 115));
         backgroundPanel.setMinimumSize(new java.awt.Dimension(900, 800));
         backgroundPanel.setPreferredSize(new java.awt.Dimension(900, 800));
         backgroundPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        getContentPane().add(backgroundPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 900, 800));
+        getContentPane().add(backgroundPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 900, 810));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -271,7 +276,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         this.changeComponentVisibility(this.workersPanel, true);
         this.emptyPassFieldText(this.passwordButtonPanelTextField);
         this.changeComponentVisibility(this.adminSettingsButton, true);
-
+        
     }//GEN-LAST:event_passwordPanelBackButtonActionPerformed
 
     private void adminPanelBackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adminPanelBackButtonActionPerformed

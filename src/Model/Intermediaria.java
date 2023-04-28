@@ -44,7 +44,6 @@ public class Intermediaria {
             JOptionPane.showMessageDialog(this.easyRestoInterface, "POR FAVOR, INTRODUCE TU CONTRASEÑA");
         }
         return false;
-
     }
 
     public void adminSettingsLogin(String email, char[] password) throws HeadlessException {
@@ -88,7 +87,8 @@ public class Intermediaria {
         try {
             ResultSet workerNameResult = this.easyRestoDb.executeQuery("SELECT NOMBRE FROM TRABAJADORES");
             while (workerNameResult.next()) {
-                this.easyRestoInterface.configWorkerButton(workerNameResult.getString("NOMBRE"));
+                
+                     this.easyRestoInterface.configWorkerButton(workerNameResult.getString("NOMBRE"));
             }
         } catch (SQLException ex) {
             Logger.getLogger(EasyRestoDB.class.getName()).log(Level.SEVERE, null, ex);
