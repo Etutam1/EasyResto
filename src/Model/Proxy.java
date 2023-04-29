@@ -13,21 +13,56 @@ import java.sql.ResultSet;
 import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  *
  * @author a22lucasmpg
  */
-public class Intermediaria {
+public class Proxy {
 
     private EasyRestoDB easyRestoDb;
     private EasyRestoInterface easyRestoInterface;
-
     private Worker workerLogged;
+    private final String clockOutQuery = "UPDATE HORARIOS_TRABAJADORES SET SALIDA=CURRENT_TIMESTAMP, TOTAL_JORNADA=TIMEDIFF(SALIDA, ENTRADA) WHERE ID_TRABAJADOR =? AND SALIDA IS NULL AND TIMEDIFF(CURRENT_TIMESTAMP, ENTRADA)< '12:00:00'";
+    private final String clockOutRememberQuery = "SELECT * FROM HORARIOS_TRABAJADORES WHERE ID_TRABAJADOR=? AND TIMEDIFF(CURRENT_TIMESTAMP,(SELECT ENTRADA FROM HORARIOS_TRABAJADORES WHERE DATE(ENTRADA) = CURRENT_DATE AND ID_TRABAJADOR=?)) >= '07:50:00' AND SALIDA IS NULL";
+    private final String permissionsQuery = "SELECT PERMISOS FROM TRABAJADORES WHERE EMAIL=?";
+    private final String clockInQuery = "INSERT INTO HORARIOS_TRABAJADORES(ID_TRABAJADOR) VALUES (?)";
+    private final String checkClockInQuery = "SELECT DATE(ENTRADA) FROM HORARIOS_TRABAJADORES WHERE ID_TRABAJADOR =?";
+    private final String workerDataQuery = "SELECT ID_TRABAJADOR, NOMBRE, APELLIDOS, NSS, EMAIL, TELEFONO, PASS, PERMISOS FROM TRABAJADORES WHERE EMAIL=? OR NOMBRE=?";
+    private final String passwordQuery = "SELECT PASS FROM TRABAJADORES WHERE NOMBRE= ? OR EMAIL=?";
+    private final String activeWorkerNameQuery = "SELECT NOMBRE FROM TRABAJADORES WHERE ACTIVO IS TRUE";
+    private final String activeEmailQuery = "SELECT EMAIL FROM TRABAJADORES WHERE ACTIVO IS TRUE";
+    private PreparedStatement clockOutRememberPrep;
+    private PreparedStatement clockOutPrep;
+    private PreparedStatement permissionsPrep;
+    private PreparedStatement clockInPrep;
+    private PreparedStatement checkClockInPrep;
+    private PreparedStatement workerDataPrep;
+    private PreparedStatement passwordPrep;
+    private PreparedStatement activeWorkerNamePrep;
+    private PreparedStatement activeEmailPrep;
 
-    public Intermediaria(EasyRestoInterface easyRestoInterface) {
+    public Proxy(EasyRestoInterface easyRestoInterface) {
         this.easyRestoInterface = easyRestoInterface;
         this.easyRestoDb = new EasyRestoDB();
+        this.loadPreparedStatements();
+    }
+
+    private void loadPreparedStatements() {
+        try {
+            clockOutRememberPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(clockOutRememberQuery);
+            clockOutPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(clockOutQuery);
+            permissionsPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(permissionsQuery);
+            clockInPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(clockInQuery);
+            checkClockInPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(checkClockInQuery);
+            workerDataPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(workerDataQuery);
+            passwordPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(passwordQuery);
+            activeWorkerNamePrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(this.activeWorkerNameQuery);
+            activeEmailPrep =this.easyRestoDb.getEasyRestoConnection().prepareStatement(this.activeEmailQuery);;
+        } catch (SQLException ex) {
+            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public boolean workerLogin(String workerName, char[] password) throws HeadlessException {
@@ -71,9 +106,9 @@ public class Intermediaria {
 
     private boolean checkRegisteredWorker(String email) {
         try {
-            ResultSet mysqlResult = this.easyRestoDb.getEasyRestoConnection().createStatement().executeQuery("SELECT EMAIL FROM TRABAJADORES ");
-            while (mysqlResult.next()) {
-                if(mysqlResult.getString("EMAIL").equals(email)){
+            ResultSet activeEmailResult = this.activeEmailPrep.executeQuery();
+            while (activeEmailResult.next()) {
+                if (activeEmailResult.getString("EMAIL").equals(email)) {
                     return true;
                 }
             }
@@ -85,10 +120,9 @@ public class Intermediaria {
 
     public void getWorkerNameButton() {
         try {
-            ResultSet workerNameResult = this.easyRestoDb.executeQuery("SELECT NOMBRE FROM TRABAJADORES");
-            while (workerNameResult.next()) {
-                
-                     this.easyRestoInterface.configWorkerButton(workerNameResult.getString("NOMBRE"));
+            ResultSet activeWorkerNameResult = this.activeWorkerNamePrep.executeQuery();
+            while (activeWorkerNameResult.next()) {
+                this.easyRestoInterface.configWorkerButton(activeWorkerNameResult.getString("NOMBRE"));
             }
         } catch (SQLException ex) {
             Logger.getLogger(EasyRestoDB.class.getName()).log(Level.SEVERE, null, ex);
@@ -97,12 +131,10 @@ public class Intermediaria {
 
     private boolean checkCorrectPassword(String emailOrName, String password) {
         boolean passwordMatchs = false;
-        String instruction = "SELECT PASS FROM TRABAJADORES WHERE NOMBRE= ? OR EMAIL=?";
         try {
-            PreparedStatement prep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(instruction);
-            prep.setString(1, emailOrName);
-            prep.setString(2, emailOrName);
-            ResultSet workerPassResult = prep.executeQuery();
+            this.passwordPrep.setString(1, emailOrName);
+            this.passwordPrep.setString(2, emailOrName);
+            ResultSet workerPassResult = this.passwordPrep.executeQuery();
             while (workerPassResult.next()) {
                 passwordMatchs = workerPassResult.getString("PASS").equals(password);
             }
@@ -112,14 +144,12 @@ public class Intermediaria {
         return passwordMatchs;
     }
 
-    private Worker getWorkerData(String inputText) {
+    private Worker getWorkerData(String emailOrName) {
         Worker worker = null;
-        String instruction = "SELECT ID_TRABAJADOR, NOMBRE, APELLIDOS, NSS, EMAIL, TELEFONO, PASS, PERMISOS FROM TRABAJADORES WHERE EMAIL=? OR NOMBRE=?";
         try {
-            PreparedStatement prep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(instruction);
-            prep.setString(1, inputText);
-            prep.setString(2, inputText);
-            ResultSet workerDataResult = prep.executeQuery();
+            this.workerDataPrep.setString(1, emailOrName);
+            this.workerDataPrep.setString(2, emailOrName);
+            ResultSet workerDataResult = this.workerDataPrep.executeQuery();
             while (workerDataResult.next()) {
                 worker = new Worker(workerDataResult.getInt("ID_TRABAJADOR"),
                         workerDataResult.getString("NOMBRE"),
@@ -136,41 +166,63 @@ public class Intermediaria {
         return worker;
     }
 
-    public void clockIn(int id) {
+    public boolean checkClockIn(int workerId) {
         try {
-            String instruction = "INSERT INTO HORARIOS_TRABAJADORES(ID_TRABAJADOR) VALUES (?)";
-            PreparedStatement prep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(instruction);
-            prep.setString(1, String.valueOf(id));
-            prep.executeUpdate();
-        } catch (SQLException ex) {
-            Logger.getLogger(Intermediaria.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public boolean checkClockIn(int id) {
-        try {
-            ResultSet clockInDayResult = this.easyRestoDb.executeQuery("SELECT DATE(ENTRADA) FROM horarios_trabajadores WHERE ID_TRABAJADOR =" + String.valueOf(id));
+            this.checkClockInPrep.setString(1, String.valueOf(workerId));
+            ResultSet clockInDayResult = this.checkClockInPrep.executeQuery();
             while (clockInDayResult.next()) {
                 if (clockInDayResult.getString("DATE(ENTRADA)").equals(LocalDate.now().toString())) {
                     return true;
                 }
             }
         } catch (SQLException ex) {
-            Logger.getLogger(Intermediaria.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
 
+    public void clockIn(int workerId) {
+        try {
+            clockInPrep.setString(1, String.valueOf(workerId));
+            clockInPrep.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public boolean rememberClockOut(int workerId) {
+        try {
+            this.clockOutRememberPrep.setString(1, String.valueOf(workerId));
+            this.clockOutRememberPrep.setString(2, String.valueOf(workerId));
+            while (this.clockOutRememberPrep.executeQuery().next()) {
+                return true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    public void clockOut(int workerId) {
+        try {
+            this.clockOutPrep.setString(1, String.valueOf(workerId));
+            this.clockOutPrep.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     public boolean checkAdminPermission(String email) {
         try {
-            ResultSet adminPermissionResult = this.easyRestoDb.executeQuery("SELECT PERMISOS FROM TRABAJADORES WHERE EMAIL='" + email + "'");
-            while (adminPermissionResult.next()) {
-                if (adminPermissionResult.getString("PERMISOS").equals("ADMIN")) {
+            this.permissionsPrep.setString(1, email);
+            ResultSet permissionsResult = this.permissionsPrep.executeQuery();
+            while (permissionsResult.next()) {
+                if (permissionsResult.getString("PERMISOS").equals("ADMIN")) {
                     return true;
                 }
             }
         } catch (SQLException ex) {
-            Logger.getLogger(Intermediaria.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
