@@ -13,8 +13,6 @@ import java.sql.ResultSet;
 import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 /**
  *
  * @author a22lucasmpg
@@ -24,14 +22,14 @@ public class Proxy {
     private EasyRestoDB easyRestoDb;
     private EasyRestoInterface easyRestoInterface;
     private Worker workerLogged;
-    private final String clockOutQuery = "UPDATE HORARIOS_TRABAJADORES SET SALIDA=CURRENT_TIMESTAMP, TOTAL_JORNADA=TIMEDIFF(SALIDA, ENTRADA) WHERE ID_TRABAJADOR =? AND SALIDA IS NULL AND TIMEDIFF(CURRENT_TIMESTAMP, ENTRADA)< '12:00:00'";
-    private final String clockOutRememberQuery = "SELECT * FROM HORARIOS_TRABAJADORES WHERE ID_TRABAJADOR=? AND TIMEDIFF(CURRENT_TIMESTAMP,(SELECT ENTRADA FROM HORARIOS_TRABAJADORES WHERE DATE(ENTRADA) = CURRENT_DATE AND ID_TRABAJADOR=?)) >= '07:50:00' AND SALIDA IS NULL";
+    private final String clockOutQuery = "UPDATE HORARIOS_TRABAJADORES SET SALIDA=CURRENT_TIMESTAMP, TOTAL_JORNADA=TIMEDIFF(SALIDA, ENTRADA) WHERE ID_TRABAJADOR =? AND SALIDA IS NULL AND TIMEDIFF(CURRENT_TIMESTAMP, ENTRADA)< '10:00:00'";
+    private final String clockOutRememberQuery = "SELECT * FROM HORARIOS_TRABAJADORES WHERE ID_TRABAJADOR=? AND TIMEDIFF(CURRENT_TIMESTAMP,(SELECT ENTRADA FROM HORARIOS_TRABAJADORES WHERE DATE(ENTRADA) = CURRENT_DATE AND ID_TRABAJADOR=?)) >= '07:55:00' AND SALIDA IS NULL";
     private final String permissionsQuery = "SELECT PERMISOS FROM TRABAJADORES WHERE EMAIL=?";
     private final String clockInQuery = "INSERT INTO HORARIOS_TRABAJADORES(ID_TRABAJADOR) VALUES (?)";
     private final String checkClockInQuery = "SELECT DATE(ENTRADA) FROM HORARIOS_TRABAJADORES WHERE ID_TRABAJADOR =?";
-    private final String workerDataQuery = "SELECT ID_TRABAJADOR, NOMBRE, APELLIDOS, NSS, EMAIL, TELEFONO, PASS, PERMISOS FROM TRABAJADORES WHERE EMAIL=? OR NOMBRE=?";
-    private final String passwordQuery = "SELECT PASS FROM TRABAJADORES WHERE NOMBRE= ? OR EMAIL=?";
-    private final String activeWorkerNameQuery = "SELECT NOMBRE FROM TRABAJADORES WHERE ACTIVO IS TRUE";
+    private final String workerDataQuery = "SELECT ID_TRABAJADOR, NOMBRE, APELLIDOS, NSS, EMAIL, TELEFONO, PASS, PERMISOS FROM TRABAJADORES WHERE EMAIL=? OR ID_TRABAJADOR=?";
+    private final String passwordQuery = "SELECT PASS FROM TRABAJADORES WHERE ID_TRABAJADOR= ? OR EMAIL=?";
+    private final String activeWorkerNameIDQuery = "SELECT NOMBRE, ID_TRABAJADOR FROM TRABAJADORES WHERE ACTIVO IS TRUE";
     private final String activeEmailQuery = "SELECT EMAIL FROM TRABAJADORES WHERE ACTIVO IS TRUE";
     private PreparedStatement clockOutRememberPrep;
     private PreparedStatement clockOutPrep;
@@ -58,17 +56,17 @@ public class Proxy {
             checkClockInPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(checkClockInQuery);
             workerDataPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(workerDataQuery);
             passwordPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(passwordQuery);
-            activeWorkerNamePrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(this.activeWorkerNameQuery);
-            activeEmailPrep =this.easyRestoDb.getEasyRestoConnection().prepareStatement(this.activeEmailQuery);;
+            activeWorkerNamePrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(activeWorkerNameIDQuery);
+            activeEmailPrep =this.easyRestoDb.getEasyRestoConnection().prepareStatement(activeEmailQuery);
         } catch (SQLException ex) {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public boolean workerLogin(String workerName, char[] password) throws HeadlessException {
+    public boolean workerLogin(String workerID, char[] password) throws HeadlessException {
         if (!this.easyRestoInterface.checkEmptyWorkerPassField(new String(password))) {
-            if (this.checkCorrectPassword(workerName, new String(password))) {
-                this.workerLogged = this.getWorkerData(workerName);
+            if (this.checkCorrectPassword(workerID, new String(password))) {
+                this.workerLogged = this.getWorkerData(workerID);
                 JOptionPane.showMessageDialog(this.easyRestoInterface, "BIENVENIDO A EASYRESTO!");
                 return true;
             } else {
@@ -81,19 +79,20 @@ public class Proxy {
         return false;
     }
 
-    public void adminSettingsLogin(String email, char[] password) throws HeadlessException {
+    public boolean adminSettingsLogin(String email, char[] password) throws HeadlessException {
         if (!this.easyRestoInterface.checkEmptyAdminLoginFields(email, new String(password))) {
             if (this.checkRegisteredWorker(email)) {
                 if (this.checkAdminPermission(email)) {
                     if (this.checkCorrectPassword(email, new String(password))) {
                         this.workerLogged = this.getWorkerData(email);
                         JOptionPane.showMessageDialog(this.easyRestoInterface, "BIENVENIDO A EASYRESTO!");
+                        return true;
                     } else {
                         JOptionPane.showMessageDialog(this.easyRestoInterface, "USUARIO O CONTRASEÑA INCORRECTO, VUELVE A INTENTARLO");
                         this.easyRestoInterface.emptyPassFieldText(this.easyRestoInterface.getPassTextField());
                     }
                 } else {
-                    JOptionPane.showMessageDialog(this.easyRestoInterface, "USTED NO DISPONE DE PERMISOS");
+                    JOptionPane.showMessageDialog(this.easyRestoInterface, "NO DISPONES DE PERMISOS PARA ACCEDER");
                 }
             } else {
                 JOptionPane.showMessageDialog(this.easyRestoInterface, "EL CORREO INTRODUCIDO NO SE ENCUENTRA REGISTRADO");
@@ -102,6 +101,7 @@ public class Proxy {
         } else {
             JOptionPane.showMessageDialog(this.easyRestoInterface, "POR FAVOR RELLENA TODOS LOS CAMPOS");
         }
+        return false;
     }
 
     private boolean checkRegisteredWorker(String email) {
@@ -122,18 +122,18 @@ public class Proxy {
         try {
             ResultSet activeWorkerNameResult = this.activeWorkerNamePrep.executeQuery();
             while (activeWorkerNameResult.next()) {
-                this.easyRestoInterface.configWorkerButton(activeWorkerNameResult.getString("NOMBRE"));
+                this.easyRestoInterface.configWorkerButton(activeWorkerNameResult.getString("NOMBRE"),activeWorkerNameResult.getInt("ID_TRABAJADOR"));
             }
         } catch (SQLException ex) {
             Logger.getLogger(EasyRestoDB.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private boolean checkCorrectPassword(String emailOrName, String password) {
+    private boolean checkCorrectPassword(String emailOrID, String password) {
         boolean passwordMatchs = false;
         try {
-            this.passwordPrep.setString(1, emailOrName);
-            this.passwordPrep.setString(2, emailOrName);
+            this.passwordPrep.setString(1, emailOrID);
+            this.passwordPrep.setString(2, emailOrID);
             ResultSet workerPassResult = this.passwordPrep.executeQuery();
             while (workerPassResult.next()) {
                 passwordMatchs = workerPassResult.getString("PASS").equals(password);
@@ -144,11 +144,11 @@ public class Proxy {
         return passwordMatchs;
     }
 
-    private Worker getWorkerData(String emailOrName) {
+    private Worker getWorkerData(String emailOrID) {
         Worker worker = null;
         try {
-            this.workerDataPrep.setString(1, emailOrName);
-            this.workerDataPrep.setString(2, emailOrName);
+            this.workerDataPrep.setString(1, emailOrID);
+            this.workerDataPrep.setString(2, emailOrID);
             ResultSet workerDataResult = this.workerDataPrep.executeQuery();
             while (workerDataResult.next()) {
                 worker = new Worker(workerDataResult.getInt("ID_TRABAJADOR"),
@@ -211,7 +211,7 @@ public class Proxy {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    
     public boolean checkAdminPermission(String email) {
         try {
             this.permissionsPrep.setString(1, email);

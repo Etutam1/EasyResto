@@ -11,8 +11,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.sql.ResultSet;
 import java.sql.Statement;
-
-
 /**
  *
  * @author matut
@@ -35,7 +33,7 @@ public class EasyRestoDB {
         }
     }
 
-    public Connection openConnection() {
+    private Connection openConnection() {
         Connection conexionServer = null;
         try {
             conexionServer = DriverManager.getConnection("jdbc:mysql://localhost:3306/easyrestobd", "root", "root");
