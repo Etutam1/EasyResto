@@ -5,7 +5,9 @@
 package Model;
 
 import UI.EasyRestoInterface;
+import java.awt.Color;
 import java.awt.HeadlessException;
+import java.awt.Point;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,6 +15,8 @@ import java.sql.ResultSet;
 import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
 import java.time.LocalDate;
+import javax.swing.JButton;
+
 /**
  *
  * @author a22lucasmpg
@@ -31,6 +35,7 @@ public class Proxy {
     private final String passwordQuery = "SELECT PASS FROM TRABAJADORES WHERE ID_TRABAJADOR= ? OR EMAIL=?";
     private final String activeWorkerNameIDQuery = "SELECT NOMBRE, ID_TRABAJADOR FROM TRABAJADORES WHERE ACTIVO IS TRUE";
     private final String activeEmailQuery = "SELECT EMAIL FROM TRABAJADORES WHERE ACTIVO IS TRUE";
+    private final String tablesQuery = "SELECT * FROM MESAS ";
     private PreparedStatement clockOutRememberPrep;
     private PreparedStatement clockOutPrep;
     private PreparedStatement permissionsPrep;
@@ -40,6 +45,7 @@ public class Proxy {
     private PreparedStatement passwordPrep;
     private PreparedStatement activeWorkerNamePrep;
     private PreparedStatement activeEmailPrep;
+    private PreparedStatement tablesPrep;
 
     public Proxy(EasyRestoInterface easyRestoInterface) {
         this.easyRestoInterface = easyRestoInterface;
@@ -57,7 +63,8 @@ public class Proxy {
             workerDataPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(workerDataQuery);
             passwordPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(passwordQuery);
             activeWorkerNamePrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(activeWorkerNameIDQuery);
-            activeEmailPrep =this.easyRestoDb.getEasyRestoConnection().prepareStatement(activeEmailQuery);
+            activeEmailPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(activeEmailQuery);
+            tablesPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(tablesQuery);
         } catch (SQLException ex) {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -118,17 +125,30 @@ public class Proxy {
         return false;
     }
 
-    public void getWorkerNameButton() {
+    public void getWorkerNameIDButton() {
         try {
             ResultSet activeWorkerNameResult = this.activeWorkerNamePrep.executeQuery();
             while (activeWorkerNameResult.next()) {
-                this.easyRestoInterface.configWorkerButton(activeWorkerNameResult.getString("NOMBRE"),activeWorkerNameResult.getInt("ID_TRABAJADOR"));
+                this.easyRestoInterface.configWorkerButton(activeWorkerNameResult.getString("NOMBRE"), activeWorkerNameResult.getInt("ID_TRABAJADOR"));
             }
         } catch (SQLException ex) {
             Logger.getLogger(EasyRestoDB.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    public void getTablesButton() {
+        try {
+            ResultSet tablesResult = this.tablesPrep.executeQuery();
+            while (tablesResult.next()) {
+                this.easyRestoInterface.configTableButton(
+                        tablesResult.getInt("ID_MESA"), 
+                        new Point(tablesResult.getInt("COORD_X"),tablesResult.getInt("COORD_Y")),
+                        tablesResult.getInt("CAPACIDAD"),
+                        tablesResult.getString("ICONO"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     private boolean checkCorrectPassword(String emailOrID, String password) {
         boolean passwordMatchs = false;
         try {
@@ -211,7 +231,7 @@ public class Proxy {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public boolean checkAdminPermission(String email) {
         try {
             this.permissionsPrep.setString(1, email);
