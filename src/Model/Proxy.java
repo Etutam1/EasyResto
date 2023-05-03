@@ -37,7 +37,7 @@ public class Proxy {
     private final String activeEmailQuery = "SELECT EMAIL FROM TRABAJADORES WHERE ACTIVO IS TRUE";
     private final String tablesQuery = "SELECT * FROM MESAS ";
     private final String familyProductQuery= "SELECT * FROM FAMILIAS ";
-    private final String productQuery= "SELECT * FROM PRODUCTOS AS P INNER JOIN FAMILIAS AS F ON P.FAMILIA= F.ID_FAMILIA WHERE F.NOMBRE=?";
+    private final String productQuery= "SELECT * FROM PRODUCTOS AS P INNER JOIN FAMILIAS AS F ON P.FAMILIA= F.ID_FAMILIA WHERE F.NOMBRE=? AND P.ACTIVO IS TRUE";
     private PreparedStatement clockOutRememberPrep;
     private PreparedStatement clockOutPrep;
     private PreparedStatement permissionsPrep;
