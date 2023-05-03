@@ -1,7 +1,6 @@
 package UI;
 
 import Model.Proxy;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.HeadlessException;
@@ -9,7 +8,6 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -41,6 +39,9 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         this.changeComponentVisibility(this.adminBackgroundPanel, false);
         this.changeComponentVisibility(this.workerPasswordPanel, false);
         this.proxy.getWorkerNameIDButton();
+        this.changeComponentVisibility(this.familyScrollPanel, false);
+        this.changeComponentVisibility(this.productScrollPanel, false);
+        this.changeComponentVisibility(productScrollPanel,false);
     }
 
     /**
@@ -59,8 +60,17 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         refuseClockOutButton = new javax.swing.JButton();
         mainPanel = new javax.swing.JPanel();
         tableMapPanel = new javax.swing.JPanel();
-        mainPanelBackButton = new javax.swing.JButton();
+        tableProductsScroll = new javax.swing.JScrollPane();
+        tableProducts = new javax.swing.JTable();
+        familyScrollPanel = new javax.swing.JScrollPane();
+        familyPanel = new javax.swing.JPanel();
+        productScrollPanel = new javax.swing.JScrollPane();
+        productsPanel = new javax.swing.JPanel();
+        ScrollBackButton = new javax.swing.JButton();
         clockOutButton = new javax.swing.JButton();
+        tableIDLabel = new javax.swing.JLabel();
+        tableLabel = new javax.swing.JLabel();
+        mainPanelBackButton = new javax.swing.JButton();
         workerPasswordPanel = new javax.swing.JPanel();
         passwordButtonPanelTextField = new javax.swing.JPasswordField();
         enterPasswordLabel = new javax.swing.JLabel();
@@ -70,7 +80,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         workerIDLabel = new javax.swing.JLabel();
         workerBackgroundPanel = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        workerScrollPanel = new javax.swing.JScrollPane();
         workersPanel = new javax.swing.JPanel();
         adminSettingsButton = new javax.swing.JButton();
         adminBackgroundPanel = new javax.swing.JPanel();
@@ -128,7 +138,94 @@ public class EasyRestoInterface extends javax.swing.JFrame {
 
         tableMapPanel.setBackground(new java.awt.Color(255, 255, 255));
         tableMapPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        tableProducts.setBackground(new java.awt.Color(255, 255, 255));
+        tableProducts.setForeground(new java.awt.Color(0, 153, 153));
+        tableProducts.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Producto", "Precio"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.Double.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tableProducts.setCellSelectionEnabled(true);
+        tableProducts.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        tableProducts.setSelectionBackground(new java.awt.Color(0, 153, 153));
+        tableProducts.setSelectionForeground(new java.awt.Color(0, 0, 0));
+        tableProductsScroll.setViewportView(tableProducts);
+        tableProducts.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+
+        tableMapPanel.add(tableProductsScroll, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 140, -1, -1));
+
         mainPanel.add(tableMapPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 860, 700));
+        tableMapPanel.getAccessibleContext().setAccessibleDescription("");
+
+        familyScrollPanel.setBackground(new java.awt.Color(0, 112, 115));
+        familyScrollPanel.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        familyScrollPanel.setPreferredSize(new java.awt.Dimension(1000, 1000));
+
+        familyPanel.setBackground(new java.awt.Color(0, 112, 115));
+        familyPanel.setForeground(new java.awt.Color(102, 102, 102));
+        familyPanel.setPreferredSize(new java.awt.Dimension(10, 1000));
+        familyPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+        familyScrollPanel.setViewportView(familyPanel);
+
+        mainPanel.add(familyScrollPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 40, 360, 410));
+
+        productScrollPanel.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        productScrollPanel.setPreferredSize(new java.awt.Dimension(1000, 1000));
+
+        productsPanel.setBackground(new java.awt.Color(0, 112, 115));
+        productsPanel.setPreferredSize(new java.awt.Dimension(10, 1000));
+        productsPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+        productScrollPanel.setViewportView(productsPanel);
+
+        mainPanel.add(productScrollPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 40, 360, 410));
+
+        ScrollBackButton.setForeground(new java.awt.Color(51, 51, 51));
+        ScrollBackButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resources/img/1.png"))); // NOI18N
+        ScrollBackButton.setBorder(null);
+        ScrollBackButton.setPreferredSize(new java.awt.Dimension(60, 60));
+        ScrollBackButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ScrollBackButtonActionPerformed(evt);
+            }
+        });
+        mainPanel.add(ScrollBackButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(800, 460, 65, 65));
+
+        clockOutButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resources/img/shutdown.png"))); // NOI18N
+        clockOutButton.setBorder(null);
+        clockOutButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clockOutButtonActionPerformed(evt);
+            }
+        });
+        mainPanel.add(clockOutButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(820, 730, 65, 65));
+
+        tableIDLabel.setBackground(new java.awt.Color(255, 255, 255));
+        tableIDLabel.setForeground(new java.awt.Color(255, 255, 255));
+        mainPanel.add(tableIDLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 10, 60, 30));
+
+        tableLabel.setBackground(new java.awt.Color(255, 255, 255));
+        tableLabel.setForeground(new java.awt.Color(255, 255, 255));
+        tableLabel.setText("MESA:");
+        mainPanel.add(tableLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 60, 30));
 
         mainPanelBackButton.setForeground(new java.awt.Color(51, 51, 51));
         mainPanelBackButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resources/img/1.png"))); // NOI18N
@@ -140,15 +237,6 @@ public class EasyRestoInterface extends javax.swing.JFrame {
             }
         });
         mainPanel.add(mainPanelBackButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 730, 65, 65));
-
-        clockOutButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resources/img/shutdown.png"))); // NOI18N
-        clockOutButton.setBorder(null);
-        clockOutButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                clockOutButtonActionPerformed(evt);
-            }
-        });
-        mainPanel.add(clockOutButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(820, 730, 65, 65));
 
         getContentPane().add(mainPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 900, 810));
 
@@ -206,16 +294,17 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         workerBackgroundPanel.setBackground(new java.awt.Color(0, 112, 115));
         workerBackgroundPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(1000, 1000));
+        workerScrollPanel.setBackground(new java.awt.Color(0, 122, 115));
+        workerScrollPanel.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        workerScrollPanel.setPreferredSize(new java.awt.Dimension(1000, 1000));
 
         workersPanel.setBackground(new java.awt.Color(255, 255, 255));
         workersPanel.setMaximumSize(new java.awt.Dimension(420, 610));
         workersPanel.setPreferredSize(new java.awt.Dimension(420, 2000));
         workersPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
-        jScrollPane1.setViewportView(workersPanel);
+        workerScrollPanel.setViewportView(workersPanel);
 
-        workerBackgroundPanel.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 90, 450, 610));
+        workerBackgroundPanel.add(workerScrollPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 90, 450, 610));
 
         adminSettingsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resources/img/admin.png"))); // NOI18N
         adminSettingsButton.setPreferredSize(new java.awt.Dimension(60, 60));
@@ -356,14 +445,12 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         this.changeComponentVisibility(this.adminBackgroundPanel, true);
     }//GEN-LAST:event_adminSettingsButtonActionPerformed
 
-    private void mainPanelBackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mainPanelBackButtonActionPerformed
-        if (this.proxy.rememberClockOut(this.proxy.getWorkerLogged().getId())) {
-            JOptionPane.showMessageDialog(this, "RECUERDA REGISTRAR TU SALIDA!");
+    private void ScrollBackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ScrollBackButtonActionPerformed
+        if (this.productScrollPanel.isVisible()) {
+            this.changeComponentVisibility(this.productScrollPanel, false);
+            this.changeComponentVisibility(this.familyScrollPanel, true);
         }
-        this.changeComponentVisibility(this.mainPanel, false);
-        this.changeComponentVisibility(this.workerBackgroundPanel, true);
-        this.changeComponentVisibility(this.workersPanel, true);
-    }//GEN-LAST:event_mainPanelBackButtonActionPerformed
+    }//GEN-LAST:event_ScrollBackButtonActionPerformed
 
     private void clockOutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clockOutButtonActionPerformed
         this.clockOutDialog.setLocationRelativeTo(this);
@@ -382,6 +469,21 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private void refuseClockOutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refuseClockOutButtonActionPerformed
         this.changeComponentVisibility(this.clockOutDialog, false);
     }//GEN-LAST:event_refuseClockOutButtonActionPerformed
+
+    private void mainPanelBackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mainPanelBackButtonActionPerformed
+         if (this.proxy.rememberClockOut(this.proxy.getWorkerLogged().getId())) {
+            JOptionPane.showMessageDialog(this, "RECUERDA REGISTRAR TU SALIDA!");
+        }
+        if (this.tableMapPanel.isVisible()) {
+            this.changeComponentVisibility(this.mainPanel, false);
+            this.changeComponentVisibility(this.workerBackgroundPanel, true);
+            this.changeComponentVisibility(this.workersPanel, true);
+        } else {
+            this.changeComponentVisibility(this.tableMapPanel, true);
+            this.changeComponentVisibility(this.familyScrollPanel, false);
+            this.changeComponentVisibility(this.productScrollPanel, false);
+        }
+    }//GEN-LAST:event_mainPanelBackButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -430,25 +532,53 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private void addButtonToPanel(JPanel panel, JButton button) {
         panel.add(button);
     }
-
+    public void configProductButton(String productName){
+        JButton productButton = new JButton(productName);
+        productButton.setPreferredSize(new Dimension(80,80));
+        this.addButtonToPanel(this.productsPanel, productButton);
+        
+    }
+    
+    public void configProductFamilyButton(String familyName) {
+        JButton familyProductButton = new JButton(familyName);
+        familyProductButton.setPreferredSize(new Dimension(80, 80));
+        this.addActionListenerToFamilyProductButton(familyProductButton, familyName);
+        this.addButtonToPanel(this.familyPanel, familyProductButton);
+        
+    }
+    private void addActionListenerToFamilyProductButton(JButton button,String familyName){
+        button.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                changeComponentVisibility(familyScrollPanel,false);
+                changeComponentVisibility(productScrollPanel,true);
+//                changeComponentVisibility(productsPanel,true);
+                productsPanel.removeAll();
+                proxy.getProductButton(familyName);
+                
+            }
+        });
+    }
+    
     public void configWorkerButton(String workerName, int workerID) {
         JButton workerButton = new JButton(workerName);
         workerButton.setPreferredSize(new Dimension(80, 80));
-        this.addActionListenerToWorkerButton(workerButton, workerID);
+        this.addActionListenerToWorkerButton(workerButton, workerID, workerName);
         this.addButtonToPanel(this.workersPanel, workerButton);
     }
 
-    private void addActionListenerToWorkerButton(JButton button, int workerID) {
+    private void addActionListenerToWorkerButton(JButton button, int workerID, String workerName) {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 changeComponentVisibility(workersPanel, false);
                 changeComponentVisibility(workerPasswordPanel, true);
                 changeComponentVisibility(workerBackgroundPanel, false);
-                configWorkerNameLabel(e);
+                configWorkerNameLabel(workerName);
                 configWorkerIDLabel(workerID);
                 passwordButtonPanelTextField.requestFocus();
                 changeComponentVisibility(adminSettingsButton, true);
+                
             }
         });
     }
@@ -456,23 +586,31 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     public void configTableButton(int tableID, Point tableLocation, int capacity, String url) {
         JButton tableButton = new JButton();
         Dimension buttonDimension = configButtonDimensionByCapacity(capacity);
-        
+
         JLabel tableNumberLabel = configTableIDLabel(tableID);
-       
+        Point tableButtonCenterPoint = new Point(tableLocation.x + buttonDimension.width / 2, tableLocation.y + buttonDimension.height / 2);
+
         tableButton.setIcon(getResizedButtonIcon(url, buttonDimension));
         hideButtonBackground(tableButton);
-       
-        Point tableButtonCenterPoint = new Point(tableLocation.x + buttonDimension.width / 2,tableLocation.y + buttonDimension.height / 2);
-        
+
+        addActionListenerToTableButton(tableButton, tableID);
+
+        this.tableMapPanel.add(tableNumberLabel, new AbsoluteConstraints(tableButtonCenterPoint.x - tableNumberLabel.getWidth() / 2, tableButtonCenterPoint.y - tableNumberLabel.getHeight() / 2));
+        this.tableMapPanel.add(tableButton, new AbsoluteConstraints(tableLocation.x, tableLocation.y, buttonDimension.width, buttonDimension.height));
+    }
+
+    private void addActionListenerToTableButton(JButton tableButton, int tableID) {
         tableButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(rootPane, "ENTRASTE EN LA MESA "+String.valueOf(tableID));
+                tableIDLabel.setText(String.valueOf(tableID));
+                changeComponentVisibility(tableMapPanel, false);
+                changeComponentVisibility(familyScrollPanel,true);
+                changeComponentVisibility(productScrollPanel,false);
+                familyPanel.removeAll();
+                proxy.getProductFamilyButton();
             }
         });
-        
-        this.tableMapPanel.add(tableNumberLabel, new AbsoluteConstraints(tableButtonCenterPoint.x - tableNumberLabel.getWidth() / 2, tableButtonCenterPoint.y - tableNumberLabel.getHeight() / 2));
-        this.tableMapPanel.add(tableButton, new AbsoluteConstraints(tableLocation.x, tableLocation.y, buttonDimension.width, buttonDimension.height));
     }
 
     private JLabel configTableIDLabel(int tableID) {
@@ -509,8 +647,8 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         workerIDLabel.setText(String.valueOf(workerID));
     }
 
-    private void configWorkerNameLabel(ActionEvent event) {
-        workerNameLabel.setText(((JButton) event.getSource()).getText());
+    private void configWorkerNameLabel(String workerName) {
+        workerNameLabel.setText(workerName);
         workerNameLabel.setHorizontalAlignment(JLabel.CENTER);
     }
 
@@ -635,11 +773,11 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     }
 
     public JScrollPane getjScrollPane1() {
-        return jScrollPane1;
+        return workerScrollPanel;
     }
 
     public void setjScrollPane1(JScrollPane jScrollPane1) {
-        this.jScrollPane1 = jScrollPane1;
+        this.workerScrollPanel = jScrollPane1;
     }
 
     public JPanel getMainPanel() {
@@ -651,11 +789,11 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     }
 
     public JButton getMainPanelBackButton() {
-        return mainPanelBackButton;
+        return ScrollBackButton;
     }
 
     public void setMainPanelBackButton(JButton mainPanelBackButton) {
-        this.mainPanelBackButton = mainPanelBackButton;
+        this.ScrollBackButton = mainPanelBackButton;
     }
 
     public JButton getRefuseClockOutButton() {
@@ -836,6 +974,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
 
     private Proxy proxy = new Proxy(this);
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton ScrollBackButton;
     private javax.swing.JPanel adminBackgroundPanel;
     private javax.swing.JPanel adminPanel;
     private javax.swing.JButton adminPanelBackButton;
@@ -850,9 +989,10 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private javax.swing.JLabel emailLabel;
     private javax.swing.JTextField emailTextField;
     private javax.swing.JLabel enterPasswordLabel;
+    private javax.swing.JPanel familyPanel;
+    private javax.swing.JScrollPane familyScrollPanel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel loginTitleLabel;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JButton mainPanelBackButton;
@@ -860,13 +1000,20 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private javax.swing.JPasswordField passTextField;
     private javax.swing.JPasswordField passwordButtonPanelTextField;
     private javax.swing.JButton passwordPanelBackButton;
+    private javax.swing.JScrollPane productScrollPanel;
+    private javax.swing.JPanel productsPanel;
     private javax.swing.JButton refuseClockOutButton;
+    private javax.swing.JLabel tableIDLabel;
+    private javax.swing.JLabel tableLabel;
     private javax.swing.JPanel tableMapPanel;
+    private javax.swing.JTable tableProducts;
+    private javax.swing.JScrollPane tableProductsScroll;
     private javax.swing.JPanel workerBackgroundPanel;
     private javax.swing.JLabel workerIDLabel;
     private javax.swing.JButton workerLoginButton;
     private javax.swing.JLabel workerNameLabel;
     private javax.swing.JPanel workerPasswordPanel;
+    private javax.swing.JScrollPane workerScrollPanel;
     private javax.swing.JPanel workersPanel;
     // End of variables declaration//GEN-END:variables
 }

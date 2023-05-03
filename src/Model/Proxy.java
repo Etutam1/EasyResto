@@ -36,6 +36,8 @@ public class Proxy {
     private final String activeWorkerNameIDQuery = "SELECT NOMBRE, ID_TRABAJADOR FROM TRABAJADORES WHERE ACTIVO IS TRUE";
     private final String activeEmailQuery = "SELECT EMAIL FROM TRABAJADORES WHERE ACTIVO IS TRUE";
     private final String tablesQuery = "SELECT * FROM MESAS ";
+    private final String familyProductQuery= "SELECT * FROM FAMILIAS ";
+    private final String productQuery= "SELECT * FROM PRODUCTOS AS P INNER JOIN FAMILIAS AS F ON P.FAMILIA= F.ID_FAMILIA WHERE F.NOMBRE=?";
     private PreparedStatement clockOutRememberPrep;
     private PreparedStatement clockOutPrep;
     private PreparedStatement permissionsPrep;
@@ -46,15 +48,18 @@ public class Proxy {
     private PreparedStatement activeWorkerNamePrep;
     private PreparedStatement activeEmailPrep;
     private PreparedStatement tablesPrep;
+    private PreparedStatement familyProductPrep;
+    private PreparedStatement productPrep;
 
     public Proxy(EasyRestoInterface easyRestoInterface) {
         this.easyRestoInterface = easyRestoInterface;
         this.easyRestoDb = new EasyRestoDB();
-        this.loadPreparedStatements();
+        this.initPreparedStatements();
     }
 
-    private void loadPreparedStatements() {
+    private void initPreparedStatements() {
         try {
+            
             clockOutRememberPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(clockOutRememberQuery);
             clockOutPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(clockOutQuery);
             permissionsPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(permissionsQuery);
@@ -65,6 +70,8 @@ public class Proxy {
             activeWorkerNamePrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(activeWorkerNameIDQuery);
             activeEmailPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(activeEmailQuery);
             tablesPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(tablesQuery);
+            familyProductPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(familyProductQuery);
+            productPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(productQuery);
         } catch (SQLException ex) {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -149,6 +156,32 @@ public class Proxy {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    public void getProductFamilyButton(){
+        try {
+            ResultSet productFamilyResult = this.familyProductPrep.executeQuery();
+            while(productFamilyResult.next()){
+                this.easyRestoInterface.configProductFamilyButton(productFamilyResult.getString("NOMBRE"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void getProductButton(String familyName){
+        
+        try {
+            this.productPrep.setString(1,familyName);
+            ResultSet productResult = this.productPrep.executeQuery();
+            while(productResult.next()){
+               this.easyRestoInterface.configProductButton(productResult.getString("NOMBRE")); 
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    
     private boolean checkCorrectPassword(String emailOrID, String password) {
         boolean passwordMatchs = false;
         try {
