@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
 import org.netbeans.lib.awtextra.AbsoluteConstraints;
 
 /*
@@ -42,6 +43,8 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         this.changeComponentVisibility(this.familyScrollPanel, false);
         this.changeComponentVisibility(this.productScrollPanel, false);
         this.changeComponentVisibility(productScrollPanel,false);
+        this.changeComponentVisibility(this.tableProductsScroll, false);
+        this.changeComponentVisibility(this.billButtonsPanel, false);
     }
 
     /**
@@ -62,6 +65,11 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         tableMapPanel = new javax.swing.JPanel();
         tableProductsScroll = new javax.swing.JScrollPane();
         tableProducts = new javax.swing.JTable();
+        billButtonsPanel = new javax.swing.JPanel();
+        sendProductsButton = new javax.swing.JButton();
+        deleteProductButton = new javax.swing.JButton();
+        chargeButton = new javax.swing.JButton();
+        printBillButton = new javax.swing.JButton();
         familyScrollPanel = new javax.swing.JScrollPane();
         familyPanel = new javax.swing.JPanel();
         productScrollPanel = new javax.swing.JScrollPane();
@@ -71,6 +79,8 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         tableIDLabel = new javax.swing.JLabel();
         tableLabel = new javax.swing.JLabel();
         mainPanelBackButton = new javax.swing.JButton();
+        priceLabel = new javax.swing.JLabel();
+        productPriceLabel = new javax.swing.JLabel();
         workerPasswordPanel = new javax.swing.JPanel();
         passwordButtonPanelTextField = new javax.swing.JPasswordField();
         enterPasswordLabel = new javax.swing.JLabel();
@@ -138,9 +148,11 @@ public class EasyRestoInterface extends javax.swing.JFrame {
 
         tableMapPanel.setBackground(new java.awt.Color(255, 255, 255));
         tableMapPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        mainPanel.add(tableMapPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 860, 700));
+        tableMapPanel.getAccessibleContext().setAccessibleDescription("");
 
         tableProducts.setBackground(new java.awt.Color(255, 255, 255));
-        tableProducts.setForeground(new java.awt.Color(0, 153, 153));
+        tableProducts.setForeground(new java.awt.Color(0, 0, 0));
         tableProducts.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -150,31 +162,58 @@ public class EasyRestoInterface extends javax.swing.JFrame {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.Double.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, false
+                java.lang.String.class, java.lang.String.class
             };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
         });
-        tableProducts.setCellSelectionEnabled(true);
         tableProducts.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        tableProducts.setRowSelectionAllowed(false);
         tableProducts.setSelectionBackground(new java.awt.Color(0, 153, 153));
         tableProducts.setSelectionForeground(new java.awt.Color(0, 0, 0));
         tableProductsScroll.setViewportView(tableProducts);
         tableProducts.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
-        tableMapPanel.add(tableProductsScroll, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 140, -1, -1));
+        mainPanel.add(tableProductsScroll, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 40, 380, 410));
 
-        mainPanel.add(tableMapPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 860, 700));
-        tableMapPanel.getAccessibleContext().setAccessibleDescription("");
+        billButtonsPanel.setBackground(new java.awt.Color(0, 112, 115));
+        billButtonsPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        sendProductsButton.setText("ENVIAR");
+        sendProductsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sendProductsButtonActionPerformed(evt);
+            }
+        });
+        billButtonsPanel.add(sendProductsButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, -1, -1));
+
+        deleteProductButton.setText("BORRAR");
+        deleteProductButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteProductButtonActionPerformed(evt);
+            }
+        });
+        billButtonsPanel.add(deleteProductButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 20, -1, -1));
+
+        chargeButton.setText("COBRAR");
+        chargeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chargeButtonActionPerformed(evt);
+            }
+        });
+        billButtonsPanel.add(chargeButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 20, -1, -1));
+
+        printBillButton.setText("IMPR.");
+        printBillButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                printBillButtonActionPerformed(evt);
+            }
+        });
+        billButtonsPanel.add(printBillButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 20, 80, -1));
+
+        mainPanel.add(billButtonsPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 450, 380, 60));
 
         familyScrollPanel.setBackground(new java.awt.Color(0, 112, 115));
         familyScrollPanel.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -237,6 +276,13 @@ public class EasyRestoInterface extends javax.swing.JFrame {
             }
         });
         mainPanel.add(mainPanelBackButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 730, 65, 65));
+
+        priceLabel.setForeground(new java.awt.Color(255, 255, 255));
+        priceLabel.setText("PRECIO:");
+        mainPanel.add(priceLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 16, 50, 20));
+
+        productPriceLabel.setForeground(new java.awt.Color(255, 255, 255));
+        mainPanel.add(productPriceLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 11, 80, 30));
 
         getContentPane().add(mainPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 900, 810));
 
@@ -449,6 +495,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         if (this.productScrollPanel.isVisible()) {
             this.changeComponentVisibility(this.productScrollPanel, false);
             this.changeComponentVisibility(this.familyScrollPanel, true);
+            this.productPriceLabel.setText("");
         }
     }//GEN-LAST:event_ScrollBackButtonActionPerformed
 
@@ -482,8 +529,27 @@ public class EasyRestoInterface extends javax.swing.JFrame {
             this.changeComponentVisibility(this.tableMapPanel, true);
             this.changeComponentVisibility(this.familyScrollPanel, false);
             this.changeComponentVisibility(this.productScrollPanel, false);
+            this.changeComponentVisibility(this.tableProductsScroll, false);
+            this.productPriceLabel.setText("");
+            this.changeComponentVisibility(this.billButtonsPanel, false);
         }
     }//GEN-LAST:event_mainPanelBackButtonActionPerformed
+
+    private void sendProductsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendProductsButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_sendProductsButtonActionPerformed
+
+    private void deleteProductButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteProductButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_deleteProductButtonActionPerformed
+
+    private void chargeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chargeButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_chargeButtonActionPerformed
+
+    private void printBillButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_printBillButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_printBillButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -532,13 +598,25 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private void addButtonToPanel(JPanel panel, JButton button) {
         panel.add(button);
     }
-    public void configProductButton(String productName){
+    public void configProductButton(String productName, double price){
         JButton productButton = new JButton(productName);
         productButton.setPreferredSize(new Dimension(80,80));
+        this.addActionListenerToProductButton(productButton, productName, price);
         this.addButtonToPanel(this.productsPanel, productButton);
         
     }
-    
+    private void addActionListenerToProductButton(JButton button, String productName, double price){
+        DefaultTableModel tableModel = (DefaultTableModel) this.tableProducts.getModel();
+        button.addActionListener(new ActionListener(){
+        String[] productData = {productName, Double.toString(price)};
+            @Override
+            public void actionPerformed(ActionEvent e) {
+               productPriceLabel.setText(Double.toString(price));
+               tableModel.addRow(productData);
+            }
+            
+        });
+    }
     public void configProductFamilyButton(String familyName) {
         JButton familyProductButton = new JButton(familyName);
         familyProductButton.setPreferredSize(new Dimension(80, 80));
@@ -546,6 +624,9 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         this.addButtonToPanel(this.familyPanel, familyProductButton);
         
     }
+    
+    
+  
     private void addActionListenerToFamilyProductButton(JButton button,String familyName){
         button.addActionListener(new ActionListener(){
             @Override
@@ -605,8 +686,10 @@ public class EasyRestoInterface extends javax.swing.JFrame {
             public void actionPerformed(ActionEvent e) {
                 tableIDLabel.setText(String.valueOf(tableID));
                 changeComponentVisibility(tableMapPanel, false);
+                changeComponentVisibility(tableProductsScroll, true);
                 changeComponentVisibility(familyScrollPanel,true);
                 changeComponentVisibility(productScrollPanel,false);
+                changeComponentVisibility(billButtonsPanel, true);
                 familyPanel.removeAll();
                 proxy.getProductFamilyButton();
             }
@@ -981,11 +1064,14 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private javax.swing.JButton adminSettingsButton;
     private javax.swing.JButton admingLoginButton;
     private javax.swing.JPanel backgroundPanel;
+    private javax.swing.JPanel billButtonsPanel;
+    private javax.swing.JButton chargeButton;
     private javax.swing.JButton clockOutButton;
     private javax.swing.JDialog clockOutDialog;
     private javax.swing.JLabel clockOutDialogLabel;
     private javax.swing.JPanel clockOutDialogPanel;
     private javax.swing.JButton confirmClockOutButton;
+    private javax.swing.JButton deleteProductButton;
     private javax.swing.JLabel emailLabel;
     private javax.swing.JTextField emailTextField;
     private javax.swing.JLabel enterPasswordLabel;
@@ -1000,9 +1086,13 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private javax.swing.JPasswordField passTextField;
     private javax.swing.JPasswordField passwordButtonPanelTextField;
     private javax.swing.JButton passwordPanelBackButton;
+    private javax.swing.JLabel priceLabel;
+    private javax.swing.JButton printBillButton;
+    private javax.swing.JLabel productPriceLabel;
     private javax.swing.JScrollPane productScrollPanel;
     private javax.swing.JPanel productsPanel;
     private javax.swing.JButton refuseClockOutButton;
+    private javax.swing.JButton sendProductsButton;
     private javax.swing.JLabel tableIDLabel;
     private javax.swing.JLabel tableLabel;
     private javax.swing.JPanel tableMapPanel;

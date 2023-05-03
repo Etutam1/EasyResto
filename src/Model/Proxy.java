@@ -174,7 +174,7 @@ public class Proxy {
             this.productPrep.setString(1,familyName);
             ResultSet productResult = this.productPrep.executeQuery();
             while(productResult.next()){
-               this.easyRestoInterface.configProductButton(productResult.getString("NOMBRE")); 
+               this.easyRestoInterface.configProductButton(productResult.getString("NOMBRE"),productResult.getDouble("PRECIO")); 
             }
         } catch (SQLException ex) {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
