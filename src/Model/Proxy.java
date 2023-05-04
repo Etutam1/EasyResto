@@ -15,6 +15,8 @@ import java.sql.ResultSet;
 import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Iterator;
 import javax.swing.JButton;
 
 /**
@@ -26,6 +28,7 @@ public class Proxy {
     private EasyRestoDB easyRestoDb;
     private EasyRestoInterface easyRestoInterface;
     private Worker workerLogged;
+    private Order currentOrder ;
     private final String clockOutQuery = "UPDATE HORARIOS_TRABAJADORES SET SALIDA=CURRENT_TIMESTAMP, TOTAL_JORNADA=TIMEDIFF(SALIDA, ENTRADA) WHERE ID_TRABAJADOR =? AND SALIDA IS NULL AND TIMEDIFF(CURRENT_TIMESTAMP, ENTRADA)< '10:00:00'";
     private final String clockOutRememberQuery = "SELECT * FROM HORARIOS_TRABAJADORES WHERE ID_TRABAJADOR=? AND TIMEDIFF(CURRENT_TIMESTAMP,(SELECT ENTRADA FROM HORARIOS_TRABAJADORES WHERE DATE(ENTRADA) = CURRENT_DATE AND ID_TRABAJADOR=?)) >= '07:55:00' AND SALIDA IS NULL";
     private final String permissionsQuery = "SELECT PERMISOS FROM TRABAJADORES WHERE EMAIL=?";
@@ -36,8 +39,11 @@ public class Proxy {
     private final String activeWorkerNameIDQuery = "SELECT NOMBRE, ID_TRABAJADOR FROM TRABAJADORES WHERE ACTIVO IS TRUE";
     private final String activeEmailQuery = "SELECT EMAIL FROM TRABAJADORES WHERE ACTIVO IS TRUE";
     private final String tablesQuery = "SELECT * FROM MESAS ";
-    private final String familyProductQuery= "SELECT * FROM FAMILIAS ";
-    private final String productQuery= "SELECT * FROM PRODUCTOS AS P INNER JOIN FAMILIAS AS F ON P.FAMILIA= F.ID_FAMILIA WHERE F.NOMBRE=? AND P.ACTIVO IS TRUE";
+    private final String familyProductQuery = "SELECT * FROM FAMILIAS ";
+    private final String productQuery = "SELECT P.ID_PRODUCTO, P.NOMBRE, P.PRECIO FROM PRODUCTOS AS P INNER JOIN FAMILIAS AS F ON P.FAMILIA= F.ID_FAMILIA WHERE F.NOMBRE=? AND P.ACTIVO IS TRUE";
+    private final String insertOrderQuery = "INSERT INTO PEDIDOS VALUES (default,?,?,default,current_timestamp(),default,default,default)";
+    private final String currentOrderQuery = "SELECT ID_PEDIDO FROM PEDIDOS WHERE ID_MESA=? AND ESTADO_PEDIDO='ACTIVO'";
+    private final String insertProductQuery = "INSERT INTO PEDIDOS_PRODUCTOS VALUES(?,?,?)";
     private PreparedStatement clockOutRememberPrep;
     private PreparedStatement clockOutPrep;
     private PreparedStatement permissionsPrep;
@@ -50,6 +56,10 @@ public class Proxy {
     private PreparedStatement tablesPrep;
     private PreparedStatement familyProductPrep;
     private PreparedStatement productPrep;
+    private PreparedStatement insertOrderPrep;
+    private PreparedStatement currentOrderPrep;
+    private PreparedStatement insertProductPrep;
+    private ArrayList<Product> pendingProductsArray = new ArrayList<>();
 
     public Proxy(EasyRestoInterface easyRestoInterface) {
         this.easyRestoInterface = easyRestoInterface;
@@ -59,7 +69,7 @@ public class Proxy {
 
     private void initPreparedStatements() {
         try {
-            
+
             clockOutRememberPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(clockOutRememberQuery);
             clockOutPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(clockOutQuery);
             permissionsPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(permissionsQuery);
@@ -72,6 +82,9 @@ public class Proxy {
             tablesPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(tablesQuery);
             familyProductPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(familyProductQuery);
             productPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(productQuery);
+            insertOrderPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(insertOrderQuery);
+            currentOrderPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(currentOrderQuery);
+            insertProductPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(insertProductQuery);
         } catch (SQLException ex) {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -142,13 +155,14 @@ public class Proxy {
             Logger.getLogger(EasyRestoDB.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
     public void getTablesButton() {
         try {
             ResultSet tablesResult = this.tablesPrep.executeQuery();
             while (tablesResult.next()) {
                 this.easyRestoInterface.configTableButton(
-                        tablesResult.getInt("ID_MESA"), 
-                        new Point(tablesResult.getInt("COORD_X"),tablesResult.getInt("COORD_Y")),
+                        tablesResult.getInt("ID_MESA"),
+                        new Point(tablesResult.getInt("COORD_X"), tablesResult.getInt("COORD_Y")),
                         tablesResult.getInt("CAPACIDAD"),
                         tablesResult.getString("ICONO"));
             }
@@ -156,32 +170,31 @@ public class Proxy {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    public void getProductFamilyButton(){
+
+    public void getProductFamilyButton() {
         try {
             ResultSet productFamilyResult = this.familyProductPrep.executeQuery();
-            while(productFamilyResult.next()){
+            while (productFamilyResult.next()) {
                 this.easyRestoInterface.configProductFamilyButton(productFamilyResult.getString("NOMBRE"));
             }
         } catch (SQLException ex) {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    public void getProductButton(String familyName){
-        
+
+    public void getProductButton(String familyName) {
+
         try {
-            this.productPrep.setString(1,familyName);
+            this.productPrep.setString(1, familyName);
             ResultSet productResult = this.productPrep.executeQuery();
-            while(productResult.next()){
-               this.easyRestoInterface.configProductButton(productResult.getString("NOMBRE"),productResult.getDouble("PRECIO")); 
+            while (productResult.next()) {
+                this.easyRestoInterface.configProductButton(productResult.getInt("ID_PRODUCTO"), productResult.getString("NOMBRE"), productResult.getDouble("PRECIO"));
             }
         } catch (SQLException ex) {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    
+
     private boolean checkCorrectPassword(String emailOrID, String password) {
         boolean passwordMatchs = false;
         try {
@@ -280,6 +293,72 @@ public class Proxy {
         return false;
     }
 
+    public void insertOrder(int workerID, int tableID) {
+        try {
+            this.insertOrderPrep.setString(1, String.valueOf(workerID));
+            this.insertOrderPrep.setString(2, String.valueOf(tableID));
+            this.insertOrderPrep.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public Order checkActiveOrderTable(int tableID) {
+        try {
+            this.currentOrderPrep.setString(1, String.valueOf(tableID));
+            ResultSet orderResult = this.currentOrderPrep.executeQuery();
+            while (orderResult.next()) {
+                return new Order(orderResult.getInt("ID_PEDIDO"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public void addProductToArray(Product product) {
+        Iterator<Product> iteratorProducts = this.pendingProductsArray.iterator();
+        boolean found = false;
+        while (iteratorProducts.hasNext()) {
+            Product pendingProduct = iteratorProducts.next();
+            if (pendingProduct.getProductID() == product.getProductID()) {
+                pendingProduct.setProductQuantity(pendingProduct.getProductQuantity() + 1);
+                found = true;
+            }
+        }
+        if (!found) {
+            this.pendingProductsArray.add(product);
+        }
+    }
+
+    public void sendPendingProducts() {
+        Iterator<Product> iteratorProducts = this.pendingProductsArray.iterator();
+        while (iteratorProducts.hasNext()) {
+            Product productToSend = iteratorProducts.next();
+            System.out.println("order:"+this.currentOrder.getOrderID()+ "productID:"+productToSend.getProductID()+ "quantity:"+productToSend.getProductQuantity());
+            this.insertProduct(this.currentOrder.getOrderID(), productToSend.getProductID(), productToSend.getProductQuantity());
+        }
+    }
+
+    private void insertProduct(int orderID, int productID, int productQuantity) {
+        try {
+            this.insertProductPrep.setString(1, String.valueOf(orderID));
+            this.insertProductPrep.setString(2, String.valueOf(productID));
+            this.insertProductPrep.setString(3, String.valueOf(productQuantity));
+            this.insertProductPrep.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public Order getCurrentOrder() {
+        return currentOrder;
+    }
+
+    public void setCurrentOrder(Order currentOrder) {
+        this.currentOrder = currentOrder;
+    }
+
     public EasyRestoDB getEasyRestoDb() {
         return easyRestoDb;
     }
@@ -302,6 +381,118 @@ public class Proxy {
 
     public void setWorkerLogged(Worker workerLogged) {
         this.workerLogged = workerLogged;
+    }
+
+    public PreparedStatement getClockOutRememberPrep() {
+        return clockOutRememberPrep;
+    }
+
+    public void setClockOutRememberPrep(PreparedStatement clockOutRememberPrep) {
+        this.clockOutRememberPrep = clockOutRememberPrep;
+    }
+
+    public PreparedStatement getClockOutPrep() {
+        return clockOutPrep;
+    }
+
+    public void setClockOutPrep(PreparedStatement clockOutPrep) {
+        this.clockOutPrep = clockOutPrep;
+    }
+
+    public PreparedStatement getPermissionsPrep() {
+        return permissionsPrep;
+    }
+
+    public void setPermissionsPrep(PreparedStatement permissionsPrep) {
+        this.permissionsPrep = permissionsPrep;
+    }
+
+    public PreparedStatement getClockInPrep() {
+        return clockInPrep;
+    }
+
+    public void setClockInPrep(PreparedStatement clockInPrep) {
+        this.clockInPrep = clockInPrep;
+    }
+
+    public PreparedStatement getCheckClockInPrep() {
+        return checkClockInPrep;
+    }
+
+    public void setCheckClockInPrep(PreparedStatement checkClockInPrep) {
+        this.checkClockInPrep = checkClockInPrep;
+    }
+
+    public PreparedStatement getWorkerDataPrep() {
+        return workerDataPrep;
+    }
+
+    public void setWorkerDataPrep(PreparedStatement workerDataPrep) {
+        this.workerDataPrep = workerDataPrep;
+    }
+
+    public PreparedStatement getPasswordPrep() {
+        return passwordPrep;
+    }
+
+    public void setPasswordPrep(PreparedStatement passwordPrep) {
+        this.passwordPrep = passwordPrep;
+    }
+
+    public PreparedStatement getActiveWorkerNamePrep() {
+        return activeWorkerNamePrep;
+    }
+
+    public void setActiveWorkerNamePrep(PreparedStatement activeWorkerNamePrep) {
+        this.activeWorkerNamePrep = activeWorkerNamePrep;
+    }
+
+    public PreparedStatement getActiveEmailPrep() {
+        return activeEmailPrep;
+    }
+
+    public void setActiveEmailPrep(PreparedStatement activeEmailPrep) {
+        this.activeEmailPrep = activeEmailPrep;
+    }
+
+    public PreparedStatement getTablesPrep() {
+        return tablesPrep;
+    }
+
+    public void setTablesPrep(PreparedStatement tablesPrep) {
+        this.tablesPrep = tablesPrep;
+    }
+
+    public PreparedStatement getFamilyProductPrep() {
+        return familyProductPrep;
+    }
+
+    public void setFamilyProductPrep(PreparedStatement familyProductPrep) {
+        this.familyProductPrep = familyProductPrep;
+    }
+
+    public PreparedStatement getProductPrep() {
+        return productPrep;
+    }
+
+    public void setProductPrep(PreparedStatement productPrep) {
+        this.productPrep = productPrep;
+    }
+
+    public PreparedStatement getInsertOrderPrep() {
+        return insertOrderPrep;
+    }
+
+    public void setInsertOrderPrep(PreparedStatement insertOrderPrep) {
+        this.insertOrderPrep = insertOrderPrep;
+    }
+
+    public ArrayList<Product> getPendingProductsArray() {
+        return pendingProductsArray;
+    }
+
+    public void setPendingProductsArray(ArrayList<Product> pendingProductsArray) {
+        this.pendingProductsArray = pendingProductsArray;
     }
 
 }
