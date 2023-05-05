@@ -5,7 +5,6 @@
 package Model;
 
 import UI.EasyRestoInterface;
-import java.awt.Color;
 import java.awt.HeadlessException;
 import java.awt.Point;
 import java.sql.SQLException;
@@ -17,7 +16,6 @@ import javax.swing.JOptionPane;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
-import javax.swing.JButton;
 
 /**
  *
@@ -38,12 +36,13 @@ public class Proxy {
     private final String passwordQuery = "SELECT PASS FROM TRABAJADORES WHERE ID_TRABAJADOR= ? OR EMAIL=?";
     private final String activeWorkerNameIDQuery = "SELECT NOMBRE, ID_TRABAJADOR FROM TRABAJADORES WHERE ACTIVO IS TRUE";
     private final String activeEmailQuery = "SELECT EMAIL FROM TRABAJADORES WHERE ACTIVO IS TRUE";
-    private final String tablesQuery = "SELECT * FROM MESAS ";
-    private final String familyProductQuery = "SELECT * FROM FAMILIAS ";
+    private final String tablesQuery = "SELECT ID_MESA,COORD_X,COORD_Y,CAPACIDAD,ICONO FROM MESAS ";
+    private final String familyQuery = "SELECT NOMBRE FROM FAMILIAS ";
     private final String productQuery = "SELECT P.ID_PRODUCTO, P.NOMBRE, P.PRECIO FROM PRODUCTOS AS P INNER JOIN FAMILIAS AS F ON P.FAMILIA= F.ID_FAMILIA WHERE F.NOMBRE=? AND P.ACTIVO IS TRUE";
     private final String insertOrderQuery = "INSERT INTO PEDIDOS VALUES (default,?,?,default,current_timestamp(),default,default,default)";
     private final String currentOrderQuery = "SELECT ID_PEDIDO FROM PEDIDOS WHERE ID_MESA=? AND ESTADO_PEDIDO='ACTIVO'";
-    private final String insertProductQuery = "INSERT INTO PEDIDOS_PRODUCTOS VALUES(?,?,?)";
+    private final String insertProductQuery = "INSERT INTO PEDIDOS_PRODUCTOS VALUES(?,?,?) ON DUPLICATE KEY UPDATE CANTIDAD=CANTIDAD+?";
+//    private final String 
     private PreparedStatement clockOutRememberPrep;
     private PreparedStatement clockOutPrep;
     private PreparedStatement permissionsPrep;
@@ -69,7 +68,6 @@ public class Proxy {
 
     private void initPreparedStatements() {
         try {
-
             clockOutRememberPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(clockOutRememberQuery);
             clockOutPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(clockOutQuery);
             permissionsPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(permissionsQuery);
@@ -80,7 +78,7 @@ public class Proxy {
             activeWorkerNamePrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(activeWorkerNameIDQuery);
             activeEmailPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(activeEmailQuery);
             tablesPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(tablesQuery);
-            familyProductPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(familyProductQuery);
+            familyProductPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(familyQuery);
             productPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(productQuery);
             insertOrderPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(insertOrderQuery);
             currentOrderPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(currentOrderQuery);
@@ -316,7 +314,7 @@ public class Proxy {
         return null;
     }
 
-    public void addProductToArray(Product product) {
+        public void addProductToArray(Product product) {
         Iterator<Product> iteratorProducts = this.pendingProductsArray.iterator();
         boolean found = false;
         while (iteratorProducts.hasNext()) {
@@ -330,7 +328,7 @@ public class Proxy {
             this.pendingProductsArray.add(product);
         }
     }
-
+        
     public void sendPendingProducts() {
         Iterator<Product> iteratorProducts = this.pendingProductsArray.iterator();
         while (iteratorProducts.hasNext()) {
@@ -345,6 +343,7 @@ public class Proxy {
             this.insertProductPrep.setString(1, String.valueOf(orderID));
             this.insertProductPrep.setString(2, String.valueOf(productID));
             this.insertProductPrep.setString(3, String.valueOf(productQuantity));
+            this.insertProductPrep.setString(4, String.valueOf(productQuantity));
             this.insertProductPrep.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
