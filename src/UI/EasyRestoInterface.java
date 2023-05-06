@@ -17,6 +17,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import org.netbeans.lib.awtextra.AbsoluteConstraints;
@@ -83,6 +84,8 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         mainPanelBackButton = new javax.swing.JButton();
         priceLabel = new javax.swing.JLabel();
         productPriceLabel = new javax.swing.JLabel();
+        totalLabel = new javax.swing.JLabel();
+        totalOrderLabel = new javax.swing.JLabel();
         workerPasswordPanel = new javax.swing.JPanel();
         passwordButtonPanelTextField = new javax.swing.JPasswordField();
         enterPasswordLabel = new javax.swing.JLabel();
@@ -287,6 +290,14 @@ public class EasyRestoInterface extends javax.swing.JFrame {
 
         productPriceLabel.setForeground(new java.awt.Color(255, 255, 255));
         mainPanel.add(productPriceLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 11, 80, 30));
+
+        totalLabel.setForeground(new java.awt.Color(255, 255, 255));
+        totalLabel.setText("TOTAL:");
+        mainPanel.add(totalLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 10, 40, 30));
+
+        totalOrderLabel.setBackground(new java.awt.Color(255, 255, 255));
+        totalOrderLabel.setForeground(new java.awt.Color(255, 255, 255));
+        mainPanel.add(totalOrderLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 10, 70, 30));
 
         getContentPane().add(mainPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 900, 810));
 
@@ -534,32 +545,43 @@ public class EasyRestoInterface extends javax.swing.JFrame {
             this.changeComponentVisibility(this.familyScrollPanel, false);
             this.changeComponentVisibility(this.productScrollPanel, false);
             this.changeComponentVisibility(this.tableProductsScroll, false);
+            this.changeComponentVisibility(this.tableProducts, false);
             this.productPriceLabel.setText("");
             this.changeComponentVisibility(this.billButtonsPanel, false);
             this.proxy.getPendingProductsArray().clear();
             this.tableModel.setRowCount(0);
+            this.tableMapPanel.removeAll();
+            this.proxy.getTablesButton();
+            this.totalOrderLabel.setText("");
         }
     }//GEN-LAST:event_mainPanelBackButtonActionPerformed
 
     private void sendProductsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendProductsButtonActionPerformed
-        if (this.proxy.getCurrentOrder() == null) {
-            this.proxy.insertOrder(this.proxy.getWorkerLogged().getId(), Integer.parseInt(this.tableIDLabel.getText()));
-            this.proxy.setCurrentOrder(proxy.checkActiveOrderTable(Integer.parseInt(this.tableIDLabel.getText())));
+        if (!this.proxy.getPendingProductsArray().isEmpty()) {
+            if (this.proxy.getCurrentOrder() == null) {
+                this.proxy.insertOrder(this.proxy.getWorkerLogged().getId(), Integer.parseInt(this.tableIDLabel.getText()));
+                this.proxy.setCurrentOrder(proxy.checkActiveOrderTable(Integer.parseInt(this.tableIDLabel.getText())));
+            } 
+                this.proxy.sendPendingProducts();
+                this.proxy.getPendingProductsArray().clear();
+                this.totalOrderLabel.setText(String.valueOf(this.proxy.getTotalOrder(this.proxy.getCurrentOrder().getOrderID())));
         }
-        this.proxy.sendPendingProducts();
-        this.proxy.getPendingProductsArray().clear();
     }//GEN-LAST:event_sendProductsButtonActionPerformed
 
     private void deleteProductButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteProductButtonActionPerformed
-        
+
     }//GEN-LAST:event_deleteProductButtonActionPerformed
 
     private void chargeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chargeButtonActionPerformed
-        
+        if (this.proxy.getCurrentOrder() != null) {
+            this.proxy.closeOrder(this.proxy.getCurrentOrder().getOrderID());
+            this.tableModel.setRowCount(0);
+            this.totalOrderLabel.setText("");
+        }
     }//GEN-LAST:event_chargeButtonActionPerformed
 
     private void printBillButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_printBillButtonActionPerformed
-        
+
     }//GEN-LAST:event_printBillButtonActionPerformed
 
     /**
@@ -633,15 +655,15 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private void addProductToTable(Product product) {
         Object[] productRow = {product.getProductName(), product.getProductPrice(), product.getProductQuantity()};
         int numberOfRows = tableModel.getRowCount();
-        
+
         if (numberOfRows == 0 || !checkExistingProductInTable(numberOfRows, product)) {
             tableModel.addRow(productRow);
-        } 
+        }
     }
 
     private boolean checkExistingProductInTable(int tableRowCount, Product product) {
         for (int row = 0; row < tableRowCount; row++) {
-            String productName =  tableModel.getValueAt(row, 0).toString();
+            String productName = tableModel.getValueAt(row, 0).toString();
             if (productName.equals(product.getProductName())) {
                 updateProductQuantity(row);
                 return true;
@@ -650,7 +672,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         return false;
     }
 
-    private void updateProductQuantity (int row) {
+    private void updateProductQuantity(int row) {
         int QUANTITY_COLUMN_INDEX = 2;
         int quantityValue = (int) tableModel.getValueAt(row, QUANTITY_COLUMN_INDEX);
         tableModel.setValueAt(quantityValue + 1, row, QUANTITY_COLUMN_INDEX);
@@ -722,6 +744,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
                 changeComponentVisibility(tableMapPanel, false);
                 changeComponentVisibility(tableProductsScroll, true);
                 changeComponentVisibility(familyScrollPanel, true);
+                changeComponentVisibility(tableProducts, true);
                 changeComponentVisibility(productScrollPanel, false);
                 changeComponentVisibility(billButtonsPanel, true);
                 familyPanel.removeAll();
@@ -731,6 +754,8 @@ public class EasyRestoInterface extends javax.swing.JFrame {
                     System.out.println("al entrar mesa:" + proxy.getCurrentOrder());
                 } else {
                     System.out.println("al entrar mesa:" + proxy.getCurrentOrder().getOrderID());
+                    proxy.getOrderProducts(proxy.getCurrentOrder().getOrderID());
+                    totalOrderLabel.setText(String.valueOf(proxy.getTotalOrder(proxy.getCurrentOrder().getOrderID())));
                 }
             }
         });
@@ -1094,7 +1119,152 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     public void setWorkerNameLabel(JLabel workerNameLabel) {
         this.workerNameLabel = workerNameLabel;
     }
-    private DefaultTableModel  tableModel ;
+
+    public DefaultTableModel getTableModel() {
+        return tableModel;
+    }
+
+    public void setTableModel(DefaultTableModel tableModel) {
+        this.tableModel = tableModel;
+    }
+
+    public JButton getScrollBackButton() {
+        return ScrollBackButton;
+    }
+
+    public void setScrollBackButton(JButton ScrollBackButton) {
+        this.ScrollBackButton = ScrollBackButton;
+    }
+
+    public JPanel getBillButtonsPanel() {
+        return billButtonsPanel;
+    }
+
+    public void setBillButtonsPanel(JPanel billButtonsPanel) {
+        this.billButtonsPanel = billButtonsPanel;
+    }
+
+    public JButton getChargeButton() {
+        return chargeButton;
+    }
+
+    public void setChargeButton(JButton chargeButton) {
+        this.chargeButton = chargeButton;
+    }
+
+    public JButton getDeleteProductButton() {
+        return deleteProductButton;
+    }
+
+    public void setDeleteProductButton(JButton deleteProductButton) {
+        this.deleteProductButton = deleteProductButton;
+    }
+
+    public JPanel getFamilyPanel() {
+        return familyPanel;
+    }
+
+    public void setFamilyPanel(JPanel familyPanel) {
+        this.familyPanel = familyPanel;
+    }
+
+    public JScrollPane getFamilyScrollPanel() {
+        return familyScrollPanel;
+    }
+
+    public void setFamilyScrollPanel(JScrollPane familyScrollPanel) {
+        this.familyScrollPanel = familyScrollPanel;
+    }
+
+    public JLabel getPriceLabel() {
+        return priceLabel;
+    }
+
+    public void setPriceLabel(JLabel priceLabel) {
+        this.priceLabel = priceLabel;
+    }
+
+    public JButton getPrintBillButton() {
+        return printBillButton;
+    }
+
+    public void setPrintBillButton(JButton printBillButton) {
+        this.printBillButton = printBillButton;
+    }
+
+    public JLabel getProductPriceLabel() {
+        return productPriceLabel;
+    }
+
+    public void setProductPriceLabel(JLabel productPriceLabel) {
+        this.productPriceLabel = productPriceLabel;
+    }
+
+    public JScrollPane getProductScrollPanel() {
+        return productScrollPanel;
+    }
+
+    public void setProductScrollPanel(JScrollPane productScrollPanel) {
+        this.productScrollPanel = productScrollPanel;
+    }
+
+    public JPanel getProductsPanel() {
+        return productsPanel;
+    }
+
+    public void setProductsPanel(JPanel productsPanel) {
+        this.productsPanel = productsPanel;
+    }
+
+    public JButton getSendProductsButton() {
+        return sendProductsButton;
+    }
+
+    public void setSendProductsButton(JButton sendProductsButton) {
+        this.sendProductsButton = sendProductsButton;
+    }
+
+    public JLabel getTableIDLabel() {
+        return tableIDLabel;
+    }
+
+    public void setTableIDLabel(JLabel tableIDLabel) {
+        this.tableIDLabel = tableIDLabel;
+    }
+
+    public JLabel getTableLabel() {
+        return tableLabel;
+    }
+
+    public void setTableLabel(JLabel tableLabel) {
+        this.tableLabel = tableLabel;
+    }
+
+    public JTable getTableProducts() {
+        return tableProducts;
+    }
+
+    public void setTableProducts(JTable tableProducts) {
+        this.tableProducts = tableProducts;
+    }
+
+    public JScrollPane getTableProductsScroll() {
+        return tableProductsScroll;
+    }
+
+    public void setTableProductsScroll(JScrollPane tableProductsScroll) {
+        this.tableProductsScroll = tableProductsScroll;
+    }
+
+    public JScrollPane getWorkerScrollPanel() {
+        return workerScrollPanel;
+    }
+
+    public void setWorkerScrollPanel(JScrollPane workerScrollPanel) {
+        this.workerScrollPanel = workerScrollPanel;
+    }
+
+    private DefaultTableModel tableModel;
     private Proxy proxy = new Proxy(this);
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ScrollBackButton;
@@ -1138,6 +1308,8 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private javax.swing.JPanel tableMapPanel;
     private javax.swing.JTable tableProducts;
     private javax.swing.JScrollPane tableProductsScroll;
+    private javax.swing.JLabel totalLabel;
+    private javax.swing.JLabel totalOrderLabel;
     private javax.swing.JPanel workerBackgroundPanel;
     private javax.swing.JLabel workerIDLabel;
     private javax.swing.JButton workerLoginButton;

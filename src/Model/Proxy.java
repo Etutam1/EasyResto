@@ -28,7 +28,7 @@ public class Proxy {
     private Worker workerLogged;
     private Order currentOrder ;
     private final String clockOutQuery = "UPDATE HORARIOS_TRABAJADORES SET SALIDA=CURRENT_TIMESTAMP, TOTAL_JORNADA=TIMEDIFF(SALIDA, ENTRADA) WHERE ID_TRABAJADOR =? AND SALIDA IS NULL AND TIMEDIFF(CURRENT_TIMESTAMP, ENTRADA)< '10:00:00'";
-    private final String clockOutRememberQuery = "SELECT * FROM HORARIOS_TRABAJADORES WHERE ID_TRABAJADOR=? AND TIMEDIFF(CURRENT_TIMESTAMP,(SELECT ENTRADA FROM HORARIOS_TRABAJADORES WHERE DATE(ENTRADA) = CURRENT_DATE AND ID_TRABAJADOR=?)) >= '07:55:00' AND SALIDA IS NULL";
+    private final String clockOutRememberQuery = "SELECT ID_REGISTRO_HORARIO FROM HORARIOS_TRABAJADORES WHERE ID_TRABAJADOR=? AND TIMEDIFF(CURRENT_TIMESTAMP,(SELECT ENTRADA FROM HORARIOS_TRABAJADORES WHERE DATE(ENTRADA) = CURRENT_DATE AND ID_TRABAJADOR=?)) >= '07:55:00' AND SALIDA IS NULL";
     private final String permissionsQuery = "SELECT PERMISOS FROM TRABAJADORES WHERE EMAIL=?";
     private final String clockInQuery = "INSERT INTO HORARIOS_TRABAJADORES(ID_TRABAJADOR) VALUES (?)";
     private final String checkClockInQuery = "SELECT DATE(ENTRADA) FROM HORARIOS_TRABAJADORES WHERE ID_TRABAJADOR =?";
@@ -39,10 +39,13 @@ public class Proxy {
     private final String tablesQuery = "SELECT ID_MESA,COORD_X,COORD_Y,CAPACIDAD,ICONO FROM MESAS ";
     private final String familyQuery = "SELECT NOMBRE FROM FAMILIAS ";
     private final String productQuery = "SELECT P.ID_PRODUCTO, P.NOMBRE, P.PRECIO FROM PRODUCTOS AS P INNER JOIN FAMILIAS AS F ON P.FAMILIA= F.ID_FAMILIA WHERE F.NOMBRE=? AND P.ACTIVO IS TRUE";
-    private final String insertOrderQuery = "INSERT INTO PEDIDOS VALUES (default,?,?,default,current_timestamp(),default,default,default)";
+    private final String insertOrderQuery = "INSERT INTO PEDIDOS VALUES (DEFAULT,?,?,DEFAULT,CURRENT_TIMESTAMP(),DEFAULT,DEFAULT,DEFAULT,DEFAULT)";
     private final String currentOrderQuery = "SELECT ID_PEDIDO FROM PEDIDOS WHERE ID_MESA=? AND ESTADO_PEDIDO='ACTIVO'";
     private final String insertProductQuery = "INSERT INTO PEDIDOS_PRODUCTOS VALUES(?,?,?) ON DUPLICATE KEY UPDATE CANTIDAD=CANTIDAD+?";
-//    private final String 
+    private final String closeOrderQuery= "UPDATE PEDIDOS SET ESTADO_PEDIDO='CERRADO', FECHA_COBRO=CURRENT_TIMESTAMP() WHERE ID_PEDIDO=?";
+    private final String orderProductsQuery="SELECT P.NOMBRE, P.PRECIO, PP.CANTIDAD FROM PEDIDOS_PRODUCTOS AS PP INNER JOIN PRODUCTOS AS P ON PP.ID_PRODUCTO=P.ID_PRODUCTO WHERE ID_PEDIDO=?";
+    private final String totalOrderQuery="SELECT TOTAL_PEDIDO(?) AS TOTAL";
+    
     private PreparedStatement clockOutRememberPrep;
     private PreparedStatement clockOutPrep;
     private PreparedStatement permissionsPrep;
@@ -58,6 +61,10 @@ public class Proxy {
     private PreparedStatement insertOrderPrep;
     private PreparedStatement currentOrderPrep;
     private PreparedStatement insertProductPrep;
+    private PreparedStatement closeOrderPrep;
+    private PreparedStatement orderProductsPrep;
+    private PreparedStatement totalOrderPrep;
+    
     private ArrayList<Product> pendingProductsArray = new ArrayList<>();
 
     public Proxy(EasyRestoInterface easyRestoInterface) {
@@ -83,6 +90,9 @@ public class Proxy {
             insertOrderPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(insertOrderQuery);
             currentOrderPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(currentOrderQuery);
             insertProductPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(insertProductQuery);
+            closeOrderPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(closeOrderQuery);
+            orderProductsPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(orderProductsQuery);
+            totalOrderPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(this.totalOrderQuery);
         } catch (SQLException ex) {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -103,7 +113,8 @@ public class Proxy {
         }
         return false;
     }
-
+    
+    
     public boolean adminSettingsLogin(String email, char[] password) throws HeadlessException {
         if (!this.easyRestoInterface.checkEmptyAdminLoginFields(email, new String(password))) {
             if (this.checkRegisteredWorker(email)) {
@@ -128,7 +139,7 @@ public class Proxy {
         }
         return false;
     }
-
+    
     private boolean checkRegisteredWorker(String email) {
         try {
             ResultSet activeEmailResult = this.activeEmailPrep.executeQuery();
@@ -349,6 +360,43 @@ public class Proxy {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    public void closeOrder(int orderID){
+        try {
+            this.closeOrderPrep.setString(1, String.valueOf(orderID));
+            this.closeOrderPrep.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void getOrderProducts(int orderID){
+        
+        try {
+            this.orderProductsPrep.setString(1, String.valueOf(orderID));
+            ResultSet orderProductsResult = this.orderProductsPrep.executeQuery();
+            while(orderProductsResult.next()){
+                Object[] productRow ={orderProductsResult.getString("NOMBRE"),orderProductsResult.getDouble("PRECIO"),orderProductsResult.getInt("CANTIDAD")};
+                this.easyRestoInterface.getTableModel().addRow(productRow);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public double getTotalOrder(int orderID){
+        try {
+            this.totalOrderPrep.setString(1, String.valueOf(orderID));
+            ResultSet totalOrderResult = this.totalOrderPrep.executeQuery();
+            while(totalOrderResult.next()){
+                return totalOrderResult.getDouble("TOTAL");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0.0;
+    }
+        
 
     public Order getCurrentOrder() {
         return currentOrder;
