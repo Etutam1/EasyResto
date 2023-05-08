@@ -26,7 +26,7 @@ public class Proxy {
     private EasyRestoDB easyRestoDb;
     private EasyRestoInterface easyRestoInterface;
     private Worker workerLogged;
-    private Order currentOrder ;
+    private Order currentOrder;
     private final String clockOutQuery = "UPDATE HORARIOS_TRABAJADORES SET SALIDA=CURRENT_TIMESTAMP, TOTAL_JORNADA=TIMEDIFF(SALIDA, ENTRADA) WHERE ID_TRABAJADOR =? AND SALIDA IS NULL AND TIMEDIFF(CURRENT_TIMESTAMP, ENTRADA)< '10:00:00'";
     private final String clockOutRememberQuery = "SELECT ID_REGISTRO_HORARIO FROM HORARIOS_TRABAJADORES WHERE ID_TRABAJADOR=? AND TIMEDIFF(CURRENT_TIMESTAMP,(SELECT ENTRADA FROM HORARIOS_TRABAJADORES WHERE DATE(ENTRADA) = CURRENT_DATE AND ID_TRABAJADOR=?)) >= '07:55:00' AND SALIDA IS NULL";
     private final String permissionsQuery = "SELECT PERMISOS FROM TRABAJADORES WHERE EMAIL=?";
@@ -42,10 +42,10 @@ public class Proxy {
     private final String insertOrderQuery = "INSERT INTO PEDIDOS VALUES (DEFAULT,?,?,DEFAULT,CURRENT_TIMESTAMP(),DEFAULT,DEFAULT,DEFAULT,DEFAULT)";
     private final String currentOrderQuery = "SELECT ID_PEDIDO FROM PEDIDOS WHERE ID_MESA=? AND ESTADO_PEDIDO='ACTIVO'";
     private final String insertProductQuery = "INSERT INTO PEDIDOS_PRODUCTOS VALUES(?,?,?) ON DUPLICATE KEY UPDATE CANTIDAD=CANTIDAD+?";
-    private final String closeOrderQuery= "UPDATE PEDIDOS SET ESTADO_PEDIDO='CERRADO', FECHA_COBRO=CURRENT_TIMESTAMP() WHERE ID_PEDIDO=?";
-    private final String orderProductsQuery="SELECT P.NOMBRE, P.PRECIO, PP.CANTIDAD FROM PEDIDOS_PRODUCTOS AS PP INNER JOIN PRODUCTOS AS P ON PP.ID_PRODUCTO=P.ID_PRODUCTO WHERE ID_PEDIDO=?";
-    private final String totalOrderQuery="SELECT TOTAL_PEDIDO(?) AS TOTAL";
-    
+    private final String closeOrderQuery = "UPDATE PEDIDOS SET ESTADO_PEDIDO='CERRADO', FECHA_COBRO=CURRENT_TIMESTAMP() WHERE ID_PEDIDO=?";
+    private final String orderProductsQuery = "SELECT P.NOMBRE, P.PRECIO, PP.CANTIDAD FROM PEDIDOS_PRODUCTOS AS PP INNER JOIN PRODUCTOS AS P ON PP.ID_PRODUCTO=P.ID_PRODUCTO WHERE ID_PEDIDO=?";
+    private final String totalOrderQuery = "SELECT TOTAL_PEDIDO(?) AS TOTAL";
+
     private PreparedStatement clockOutRememberPrep;
     private PreparedStatement clockOutPrep;
     private PreparedStatement permissionsPrep;
@@ -64,7 +64,7 @@ public class Proxy {
     private PreparedStatement closeOrderPrep;
     private PreparedStatement orderProductsPrep;
     private PreparedStatement totalOrderPrep;
-    
+
     private ArrayList<Product> pendingProductsArray = new ArrayList<>();
 
     public Proxy(EasyRestoInterface easyRestoInterface) {
@@ -98,7 +98,40 @@ public class Proxy {
         }
     }
 
-    public boolean workerLogin(String workerID, char[] password) throws HeadlessException {
+    public boolean login(boolean admin, String emailOrID, char[] password) {
+        if (admin) {
+            if (this.adminSettingsLogin(emailOrID, password)) {
+                return true;
+            }
+        } else {
+            if (this.workerLogin(emailOrID, password)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void handleRequest(String request, String familyName, int ID) {
+        switch (request) {
+            case "getTotalOrder" -> this.getTotalOrder(ID);
+            case "getWorkerButton" -> this.getWorkerButton();
+            case "getTablesButton" -> this.getTablesButton();
+            case "getProductFamilyButton" -> this.getProductFamilyButton();
+            case "getProductButton" -> this.getProductButton(familyName);
+            case "checkClockIn" -> this.checkClockIn(ID);
+            case "clockIn" -> this.clockIn(ID);
+            case "rememberClockOut" -> this.rememberClockOut(ID);
+            case "clockOut" -> this.clockOut(ID);
+            case "checkActiveTableOrder" -> this.checkActiveTableOrder(ID);
+            case "sendPendingProducts" -> this.sendPendingProducts();
+            case "closeOrder" -> this.closeOrder(ID);
+            case "getOrderProducts" -> this.getOrderProducts(ID);
+            default -> {
+            }
+        }
+    }
+
+    private boolean workerLogin(String workerID, char[] password) throws HeadlessException {
         if (!this.easyRestoInterface.checkEmptyWorkerPassField(new String(password))) {
             if (this.checkCorrectPassword(workerID, new String(password))) {
                 this.workerLogged = this.getWorkerData(workerID);
@@ -113,9 +146,8 @@ public class Proxy {
         }
         return false;
     }
-    
-    
-    public boolean adminSettingsLogin(String email, char[] password) throws HeadlessException {
+
+    private boolean adminSettingsLogin(String email, char[] password) throws HeadlessException {
         if (!this.easyRestoInterface.checkEmptyAdminLoginFields(email, new String(password))) {
             if (this.checkRegisteredWorker(email)) {
                 if (this.checkAdminPermission(email)) {
@@ -139,7 +171,7 @@ public class Proxy {
         }
         return false;
     }
-    
+
     private boolean checkRegisteredWorker(String email) {
         try {
             ResultSet activeEmailResult = this.activeEmailPrep.executeQuery();
@@ -154,7 +186,7 @@ public class Proxy {
         return false;
     }
 
-    public void getWorkerNameIDButton() {
+    private void getWorkerButton() {
         try {
             ResultSet activeWorkerNameResult = this.activeWorkerNamePrep.executeQuery();
             while (activeWorkerNameResult.next()) {
@@ -165,7 +197,7 @@ public class Proxy {
         }
     }
 
-    public void getTablesButton() {
+    private void getTablesButton() {
         try {
             ResultSet tablesResult = this.tablesPrep.executeQuery();
             while (tablesResult.next()) {
@@ -180,7 +212,7 @@ public class Proxy {
         }
     }
 
-    public void getProductFamilyButton() {
+    private void getProductFamilyButton() {
         try {
             ResultSet productFamilyResult = this.familyProductPrep.executeQuery();
             while (productFamilyResult.next()) {
@@ -191,7 +223,7 @@ public class Proxy {
         }
     }
 
-    public void getProductButton(String familyName) {
+    private void getProductButton(String familyName) {
 
         try {
             this.productPrep.setString(1, familyName);
@@ -241,7 +273,7 @@ public class Proxy {
         return worker;
     }
 
-    public boolean checkClockIn(int workerId) {
+    private boolean checkClockIn(int workerId) {
         try {
             this.checkClockInPrep.setString(1, String.valueOf(workerId));
             ResultSet clockInDayResult = this.checkClockInPrep.executeQuery();
@@ -256,7 +288,7 @@ public class Proxy {
         return false;
     }
 
-    public void clockIn(int workerId) {
+    private void clockIn(int workerId) {
         try {
             clockInPrep.setString(1, String.valueOf(workerId));
             clockInPrep.executeUpdate();
@@ -265,7 +297,7 @@ public class Proxy {
         }
     }
 
-    public boolean rememberClockOut(int workerId) {
+    private boolean rememberClockOut(int workerId) {
         try {
             this.clockOutRememberPrep.setString(1, String.valueOf(workerId));
             this.clockOutRememberPrep.setString(2, String.valueOf(workerId));
@@ -278,7 +310,7 @@ public class Proxy {
         return false;
     }
 
-    public void clockOut(int workerId) {
+    private void clockOut(int workerId) {
         try {
             this.clockOutPrep.setString(1, String.valueOf(workerId));
             this.clockOutPrep.executeUpdate();
@@ -287,7 +319,7 @@ public class Proxy {
         }
     }
 
-    public boolean checkAdminPermission(String email) {
+    private boolean checkAdminPermission(String email) {
         try {
             this.permissionsPrep.setString(1, email);
             ResultSet permissionsResult = this.permissionsPrep.executeQuery();
@@ -302,7 +334,7 @@ public class Proxy {
         return false;
     }
 
-    public void insertOrder(int workerID, int tableID) {
+    public void generateOrder(int workerID, int tableID) {
         try {
             this.insertOrderPrep.setString(1, String.valueOf(workerID));
             this.insertOrderPrep.setString(2, String.valueOf(tableID));
@@ -312,7 +344,7 @@ public class Proxy {
         }
     }
 
-    public Order checkActiveOrderTable(int tableID) {
+    private Order checkActiveTableOrder(int tableID) {
         try {
             this.currentOrderPrep.setString(1, String.valueOf(tableID));
             ResultSet orderResult = this.currentOrderPrep.executeQuery();
@@ -325,7 +357,7 @@ public class Proxy {
         return null;
     }
 
-        public void addProductToArray(Product product) {
+    public void addProductToPendingArray(Product product) {
         Iterator<Product> iteratorProducts = this.pendingProductsArray.iterator();
         boolean found = false;
         while (iteratorProducts.hasNext()) {
@@ -339,12 +371,12 @@ public class Proxy {
             this.pendingProductsArray.add(product);
         }
     }
-        
-    public void sendPendingProducts() {
+
+    private void sendPendingProducts() {
         Iterator<Product> iteratorProducts = this.pendingProductsArray.iterator();
         while (iteratorProducts.hasNext()) {
             Product productToSend = iteratorProducts.next();
-            System.out.println("order:"+this.currentOrder.getOrderID()+ "productID:"+productToSend.getProductID()+ "quantity:"+productToSend.getProductQuantity());
+            System.out.println("order:" + this.currentOrder.getOrderID() + "productID:" + productToSend.getProductID() + "quantity:" + productToSend.getProductQuantity());
             this.insertProduct(this.currentOrder.getOrderID(), productToSend.getProductID(), productToSend.getProductQuantity());
         }
     }
@@ -360,8 +392,8 @@ public class Proxy {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    public void closeOrder(int orderID){
+
+    private void closeOrder(int orderID) {
         try {
             this.closeOrderPrep.setString(1, String.valueOf(orderID));
             this.closeOrderPrep.executeUpdate();
@@ -369,26 +401,26 @@ public class Proxy {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    public void getOrderProducts(int orderID){
-        
+
+    private void getOrderProducts(int orderID) {
+
         try {
             this.orderProductsPrep.setString(1, String.valueOf(orderID));
             ResultSet orderProductsResult = this.orderProductsPrep.executeQuery();
-            while(orderProductsResult.next()){
-                Object[] productRow ={orderProductsResult.getString("NOMBRE"),orderProductsResult.getDouble("PRECIO"),orderProductsResult.getInt("CANTIDAD")};
+            while (orderProductsResult.next()) {
+                Object[] productRow = {orderProductsResult.getString("NOMBRE"), orderProductsResult.getDouble("PRECIO"), orderProductsResult.getInt("CANTIDAD")};
                 this.easyRestoInterface.getTableModel().addRow(productRow);
             }
         } catch (SQLException ex) {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    public double getTotalOrder(int orderID){
+
+    private double getTotalOrder(int orderID) {
         try {
             this.totalOrderPrep.setString(1, String.valueOf(orderID));
             ResultSet totalOrderResult = this.totalOrderPrep.executeQuery();
-            while(totalOrderResult.next()){
+            while (totalOrderResult.next()) {
                 return totalOrderResult.getDouble("TOTAL");
             }
         } catch (SQLException ex) {
@@ -396,7 +428,6 @@ public class Proxy {
         }
         return 0.0;
     }
-        
 
     public Order getCurrentOrder() {
         return currentOrder;
