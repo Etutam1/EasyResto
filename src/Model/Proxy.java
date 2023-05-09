@@ -111,24 +111,40 @@ public class Proxy {
         return false;
     }
 
-    public void handleRequest(String request, String familyName, int ID) {
+    public boolean handleRequest(String request, String familyName, int Id) {
         switch (request) {
-            case "getTotalOrder" -> this.getTotalOrder(ID);
-            case "getWorkerButton" -> this.getWorkerButton();
-            case "getTablesButton" -> this.getTablesButton();
-            case "getProductFamilyButton" -> this.getProductFamilyButton();
-            case "getProductButton" -> this.getProductButton(familyName);
-            case "checkClockIn" -> this.checkClockIn(ID);
-            case "clockIn" -> this.clockIn(ID);
-            case "rememberClockOut" -> this.rememberClockOut(ID);
-            case "clockOut" -> this.clockOut(ID);
-            case "checkActiveTableOrder" -> this.checkActiveTableOrder(ID);
-            case "sendPendingProducts" -> this.sendPendingProducts();
-            case "closeOrder" -> this.closeOrder(ID);
-            case "getOrderProducts" -> this.getOrderProducts(ID);
+            case "getWorkerButton" ->
+                this.getWorkerButton();
+            case "getTablesButton" ->
+                this.getTablesButton();
+            case "getProductFamilyButton" ->
+                this.getProductFamilyButton();
+            case "getProductButton" ->
+                this.getProductButton(familyName);
+            case "checkClockIn" ->{
+                if (!this.checkClockIn(Id)) {
+                    return false;
+                }
+            }
+            case "clockIn" ->
+                this.clockIn(Id);
+            case "rememberClockOut" ->{
+                if (!this.rememberClockOut(Id)) {
+                return false;   
+                }
+            }        
+            case "clockOut" ->
+                this.clockOut(Id);
+            case "sendPendingProducts" ->
+                this.sendPendingProducts();
+            case "closeOrder" ->
+                this.closeOrder(Id);
+            case "getOrderProducts" ->
+                this.getOrderProducts(Id);
             default -> {
             }
         }
+        return true;
     }
 
     private boolean workerLogin(String workerID, char[] password) throws HeadlessException {
@@ -186,7 +202,7 @@ public class Proxy {
         return false;
     }
 
-    private void getWorkerButton() {
+    private boolean getWorkerButton() {
         try {
             ResultSet activeWorkerNameResult = this.activeWorkerNamePrep.executeQuery();
             while (activeWorkerNameResult.next()) {
@@ -195,9 +211,10 @@ public class Proxy {
         } catch (SQLException ex) {
             Logger.getLogger(EasyRestoDB.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return true;
     }
 
-    private void getTablesButton() {
+    private boolean getTablesButton() {
         try {
             ResultSet tablesResult = this.tablesPrep.executeQuery();
             while (tablesResult.next()) {
@@ -210,9 +227,10 @@ public class Proxy {
         } catch (SQLException ex) {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return true;
     }
 
-    private void getProductFamilyButton() {
+    private boolean getProductFamilyButton() {
         try {
             ResultSet productFamilyResult = this.familyProductPrep.executeQuery();
             while (productFamilyResult.next()) {
@@ -221,9 +239,10 @@ public class Proxy {
         } catch (SQLException ex) {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return true;
     }
 
-    private void getProductButton(String familyName) {
+    private boolean getProductButton(String familyName) {
 
         try {
             this.productPrep.setString(1, familyName);
@@ -234,6 +253,7 @@ public class Proxy {
         } catch (SQLException ex) {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return true;
     }
 
     private boolean checkCorrectPassword(String emailOrID, String password) {
@@ -310,13 +330,14 @@ public class Proxy {
         return false;
     }
 
-    private void clockOut(int workerId) {
+    private boolean clockOut(int workerId) {
         try {
             this.clockOutPrep.setString(1, String.valueOf(workerId));
             this.clockOutPrep.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return true;
     }
 
     private boolean checkAdminPermission(String email) {
@@ -344,7 +365,7 @@ public class Proxy {
         }
     }
 
-    private Order checkActiveTableOrder(int tableID) {
+    public Order checkActiveTableOrder(int tableID) {
         try {
             this.currentOrderPrep.setString(1, String.valueOf(tableID));
             ResultSet orderResult = this.currentOrderPrep.executeQuery();
@@ -372,13 +393,14 @@ public class Proxy {
         }
     }
 
-    private void sendPendingProducts() {
+    private boolean sendPendingProducts() {
         Iterator<Product> iteratorProducts = this.pendingProductsArray.iterator();
         while (iteratorProducts.hasNext()) {
             Product productToSend = iteratorProducts.next();
             System.out.println("order:" + this.currentOrder.getOrderID() + "productID:" + productToSend.getProductID() + "quantity:" + productToSend.getProductQuantity());
             this.insertProduct(this.currentOrder.getOrderID(), productToSend.getProductID(), productToSend.getProductQuantity());
         }
+        return true;
     }
 
     private void insertProduct(int orderID, int productID, int productQuantity) {
@@ -393,16 +415,17 @@ public class Proxy {
         }
     }
 
-    private void closeOrder(int orderID) {
+    private boolean closeOrder(int orderID) {
         try {
             this.closeOrderPrep.setString(1, String.valueOf(orderID));
             this.closeOrderPrep.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return true;
     }
 
-    private void getOrderProducts(int orderID) {
+    private boolean getOrderProducts(int orderID) {
 
         try {
             this.orderProductsPrep.setString(1, String.valueOf(orderID));
@@ -414,9 +437,10 @@ public class Proxy {
         } catch (SQLException ex) {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return true;
     }
 
-    private double getTotalOrder(int orderID) {
+    public double getTotalOrder(int orderID) {
         try {
             this.totalOrderPrep.setString(1, String.valueOf(orderID));
             ResultSet totalOrderResult = this.totalOrderPrep.executeQuery();

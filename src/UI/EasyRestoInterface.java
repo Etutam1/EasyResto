@@ -41,7 +41,8 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         this.changeComponentVisibility(this.mainPanel, false);
         this.changeComponentVisibility(this.adminBackgroundPanel, false);
         this.changeComponentVisibility(this.workerPasswordPanel, false);
-        this.proxy.getWorkerButton();
+        this.proxy.handleRequest("getWorkerButton", "", 0);
+//        this.proxy.getWorkerButton();
         this.changeComponentVisibility(this.familyScrollPanel, false);
         this.changeComponentVisibility(this.productScrollPanel, false);
         this.changeComponentVisibility(productScrollPanel, false);
@@ -472,13 +473,13 @@ public class EasyRestoInterface extends javax.swing.JFrame {
 
     private void workerLoginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_workerLoginButtonActionPerformed
         if (this.proxy.login(false, this.workerIDLabel.getText(), this.passwordButtonPanelTextField.getPassword())) {
-            if (!this.proxy.checkClockIn(this.proxy.getWorkerLogged().getId())) {
-                this.proxy.clockIn(this.proxy.getWorkerLogged().getId());
+            if (!this.proxy.handleRequest("checkClockIn", "", this.proxy.getWorkerLogged().getId())) {
+                this.proxy.handleRequest("cloclIn", "", this.proxy.getWorkerLogged().getId());
             }
             this.changeComponentVisibility(this.workerPasswordPanel, false);
             this.changeComponentVisibility(this.mainPanel, true);
             this.tableMapPanel.removeAll();
-            this.proxy.getTablesButton();
+            this.proxy.handleRequest("getTablesButton", "", 0);
         }
         this.emptyPassFieldText(this.passwordButtonPanelTextField);
     }//GEN-LAST:event_workerLoginButtonActionPerformed
@@ -519,7 +520,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     }//GEN-LAST:event_clockOutButtonActionPerformed
 
     private void confirmClockOutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmClockOutButtonActionPerformed
-        this.proxy.clockOut(this.proxy.getWorkerLogged().getId());
+        this.proxy.handleRequest("clockOut", "", this.proxy.getWorkerLogged().getId());
         JOptionPane.showMessageDialog(this, "HASTA PRONTO!");
         this.changeComponentVisibility(this.mainPanel, false);
         this.changeComponentVisibility(this.clockOutDialog, false);
@@ -532,7 +533,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     }//GEN-LAST:event_refuseClockOutButtonActionPerformed
 
     private void mainPanelBackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mainPanelBackButtonActionPerformed
-        if (this.proxy.rememberClockOut(this.proxy.getWorkerLogged().getId())) {
+        if (this.proxy.handleRequest("rememberClockOut", "", this.proxy.getWorkerLogged().getId())) {
             JOptionPane.showMessageDialog(this, "RECUERDA REGISTRAR TU SALIDA!");
         }
         if (this.tableMapPanel.isVisible()) {
@@ -550,7 +551,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
             this.proxy.getPendingProductsArray().clear();
             this.tableModel.setRowCount(0);
             this.tableMapPanel.removeAll();
-            this.proxy.getTablesButton();
+            this.proxy.handleRequest("getTablesButton", "", 0);
             this.totalOrderLabel.setText("");
         }
     }//GEN-LAST:event_mainPanelBackButtonActionPerformed
@@ -560,8 +561,8 @@ public class EasyRestoInterface extends javax.swing.JFrame {
             if (this.proxy.getCurrentOrder() == null) {
                 this.proxy.generateOrder(this.proxy.getWorkerLogged().getId(), Integer.parseInt(this.tableIDLabel.getText()));
                 this.proxy.setCurrentOrder(proxy.checkActiveTableOrder(Integer.parseInt(this.tableIDLabel.getText())));
-            }            
-            this.proxy.sendPendingProducts();
+            }
+            this.proxy.handleRequest("sendPendingProducts", "", 0);
             this.proxy.getPendingProductsArray().clear();
             this.totalOrderLabel.setText(String.valueOf(this.proxy.getTotalOrder(this.proxy.getCurrentOrder().getOrderID())));
         }
@@ -573,7 +574,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
 
     private void chargeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chargeButtonActionPerformed
         if (this.proxy.getCurrentOrder() != null) {
-            this.proxy.closeOrder(this.proxy.getCurrentOrder().getOrderID());
+            this.proxy.handleRequest("closeOrder", "", this.proxy.getCurrentOrder().getOrderID());
             this.tableModel.setRowCount(0);
             this.totalOrderLabel.setText("");
         }
@@ -599,15 +600,14 @@ public class EasyRestoInterface extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(EasyRestoInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(EasyRestoInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(EasyRestoInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(EasyRestoInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
@@ -631,17 +631,17 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private void addButtonToPanel(JPanel panel, JButton button) {
         panel.add(button);
     }
-    
+
     public void configProductButton(int productID, String productName, double productPrice) {
         JButton productButton = new JButton(productName);
         productButton.setPreferredSize(new Dimension(80, 80));
         this.addActionListenerToProductButton(productButton, new Product(productID, productName, productPrice));
         this.addButtonToPanel(this.productsPanel, productButton);
     }
-    
+
     private void addActionListenerToProductButton(JButton button, Product product) {
         button.addActionListener(new ActionListener() {
-            
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 productPriceLabel.setText(Double.toString(product.getProductPrice()));
@@ -650,16 +650,16 @@ public class EasyRestoInterface extends javax.swing.JFrame {
             }
         });
     }
-    
+
     private void addProductToTable(Product product) {
         Object[] productRow = {product.getProductName(), product.getProductPrice(), product.getProductQuantity()};
         int numberOfRows = tableModel.getRowCount();
-        
+
         if (numberOfRows == 0 || !checkExistingProductInTable(numberOfRows, product)) {
             tableModel.addRow(productRow);
         }
     }
-    
+
     private boolean checkExistingProductInTable(int tableRowCount, Product product) {
         for (int row = 0; row < tableRowCount; row++) {
             String productName = tableModel.getValueAt(row, 0).toString();
@@ -670,40 +670,39 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         }
         return false;
     }
-    
+
     private void updateProductQuantity(int row) {
         int QUANTITY_COLUMN_INDEX = 2;
         int quantityValue = (int) tableModel.getValueAt(row, QUANTITY_COLUMN_INDEX);
         tableModel.setValueAt(quantityValue + 1, row, QUANTITY_COLUMN_INDEX);
     }
-    
+
     public void configProductFamilyButton(String familyName) {
         JButton familyProductButton = new JButton(familyName);
         familyProductButton.setPreferredSize(new Dimension(80, 80));
         this.addActionListenerToFamilyProductButton(familyProductButton, familyName);
         this.addButtonToPanel(this.familyPanel, familyProductButton);
     }
-    
+
     private void addActionListenerToFamilyProductButton(JButton button, String familyName) {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 changeComponentVisibility(familyScrollPanel, false);
                 changeComponentVisibility(productScrollPanel, true);
-//                changeComponentVisibility(productsPanel,true);
                 productsPanel.removeAll();
-                proxy.getProductButton(familyName);
+                proxy.handleRequest("getProductButton", familyName, 0);
             }
         });
     }
-    
+
     public void configWorkerButton(String workerName, int workerID) {
         JButton workerButton = new JButton(workerName);
         workerButton.setPreferredSize(new Dimension(80, 80));
         this.addActionListenerToWorkerButton(workerButton, workerID, workerName);
         this.addButtonToPanel(this.workersPanel, workerButton);
     }
-    
+
     private void addActionListenerToWorkerButton(JButton button, int workerID, String workerName) {
         button.addActionListener(new ActionListener() {
             @Override
@@ -718,23 +717,23 @@ public class EasyRestoInterface extends javax.swing.JFrame {
             }
         });
     }
-    
+
     public void configTableButton(int tableID, Point tableLocation, int capacity, String url) {
         JButton tableButton = new JButton();
         Dimension buttonDimension = configButtonDimensionByCapacity(capacity);
-        
+
         JLabel tableNumberLabel = configTableIDLabel(tableID);
         Point tableButtonCenterPoint = new Point(tableLocation.x + buttonDimension.width / 2, tableLocation.y + buttonDimension.height / 2);
-        
+
         tableButton.setIcon(getResizedButtonIcon(url, buttonDimension));
         hideButtonBackground(tableButton);
-        
+
         addActionListenerToTableButton(tableButton, tableID);
-        
+
         this.tableMapPanel.add(tableNumberLabel, new AbsoluteConstraints(tableButtonCenterPoint.x - tableNumberLabel.getWidth() / 2, tableButtonCenterPoint.y - tableNumberLabel.getHeight() / 2));
         this.tableMapPanel.add(tableButton, new AbsoluteConstraints(tableLocation.x, tableLocation.y, buttonDimension.width, buttonDimension.height));
     }
-    
+
     private void addActionListenerToTableButton(JButton tableButton, int tableID) {
         tableButton.addActionListener(new ActionListener() {
             @Override
@@ -747,38 +746,39 @@ public class EasyRestoInterface extends javax.swing.JFrame {
                 changeComponentVisibility(productScrollPanel, false);
                 changeComponentVisibility(billButtonsPanel, true);
                 familyPanel.removeAll();
-                proxy.getProductFamilyButton();
+                proxy.handleRequest("getProductFamilyButton", "", 0);
+//                proxy.getProductFamilyButton();
                 proxy.setCurrentOrder(proxy.checkActiveTableOrder(tableID));
                 if (proxy.getCurrentOrder() == null) {
                     System.out.println("al entrar mesa:" + proxy.getCurrentOrder());
                 } else {
                     System.out.println("al entrar mesa:" + proxy.getCurrentOrder().getOrderID());
-                    proxy.getOrderProducts(proxy.getCurrentOrder().getOrderID());
+                    proxy.handleRequest("getOrderProducts", "", proxy.getCurrentOrder().getOrderID());
                     totalOrderLabel.setText(String.valueOf(proxy.getTotalOrder(proxy.getCurrentOrder().getOrderID())));
                 }
             }
         });
     }
-    
+
     private JLabel configTableIDLabel(int tableID) {
         JLabel tableNumberLabel = new JLabel(String.valueOf(tableID));
         tableNumberLabel.setSize(10, 15);
         return tableNumberLabel;
     }
-    
+
     private ImageIcon getResizedButtonIcon(String iconUrl, Dimension buttonDimension) {
         ImageIcon icon = new ImageIcon(iconUrl);
         Image img = icon.getImage().getScaledInstance(buttonDimension.width, buttonDimension.height, Image.SCALE_SMOOTH);
         return new ImageIcon(img);
     }
-    
+
     private void hideButtonBackground(JButton tableButton) {
         tableButton.setContentAreaFilled(false);
         tableButton.setBorderPainted(false);
     }
-    
+
     private Dimension configButtonDimensionByCapacity(int capacity) {
-        
+
         if (capacity == 2) {
             return new Dimension(60, 60);
         } else if (capacity == 4) {
@@ -789,480 +789,480 @@ public class EasyRestoInterface extends javax.swing.JFrame {
             return new Dimension(100, 100);
         }
     }
-    
+
     private void configWorkerIDLabel(int workerID) {
         workerIDLabel.setText(String.valueOf(workerID));
     }
-    
+
     private void configWorkerNameLabel(String workerName) {
         workerNameLabel.setText(workerName);
         workerNameLabel.setHorizontalAlignment(JLabel.CENTER);
     }
-    
+
     private void changeComponentVisibility(Component component, boolean visibility) {
         component.setVisible(visibility);
     }
-    
+
     public void emptyPassFieldText(JPasswordField passwordField) {
         passwordField.setText("");
     }
-    
+
     public boolean checkEmptyWorkerPassField(String password) throws HeadlessException {
         return password.isBlank();
     }
-    
+
     public boolean checkEmptyAdminLoginFields(String email, String password) throws HeadlessException {
         return password.isBlank() || email.isBlank();
     }
-    
+
     public Proxy getProxy() {
         return proxy;
     }
-    
+
     public void setProxy(Proxy proxy) {
         this.proxy = proxy;
     }
-    
+
     public JPanel getAdminBackgroundPanel() {
         return adminBackgroundPanel;
     }
-    
+
     public void setAdminBackgroundPanel(JPanel adminBackgroundPanel) {
         this.adminBackgroundPanel = adminBackgroundPanel;
     }
-    
+
     public JPanel getAdminPanel() {
         return adminPanel;
     }
-    
+
     public void setAdminPanel(JPanel adminPanel) {
         this.adminPanel = adminPanel;
     }
-    
+
     public JButton getAdminPanelBackButton() {
         return adminPanelBackButton;
     }
-    
+
     public void setAdminPanelBackButton(JButton adminPanelBackButton) {
         this.adminPanelBackButton = adminPanelBackButton;
     }
-    
+
     public JButton getAdminSettingsButton() {
         return adminSettingsButton;
     }
-    
+
     public void setAdminSettingsButton(JButton adminSettingsButton) {
         this.adminSettingsButton = adminSettingsButton;
     }
-    
+
     public JButton getAdmingLoginButton() {
         return admingLoginButton;
     }
-    
+
     public void setAdmingLoginButton(JButton admingLoginButton) {
         this.admingLoginButton = admingLoginButton;
     }
-    
+
     public JButton getClockOutButton() {
         return clockOutButton;
     }
-    
+
     public void setClockOutButton(JButton clockOutButton) {
         this.clockOutButton = clockOutButton;
     }
-    
+
     public JDialog getClockOutDialog() {
         return clockOutDialog;
     }
-    
+
     public void setClockOutDialog(JDialog clockOutDialog) {
         this.clockOutDialog = clockOutDialog;
     }
-    
+
     public JLabel getClockOutDialogLabel() {
         return clockOutDialogLabel;
     }
-    
+
     public void setClockOutDialogLabel(JLabel clockOutDialogLabel) {
         this.clockOutDialogLabel = clockOutDialogLabel;
     }
-    
+
     public JPanel getClockOutDialogPanel() {
         return clockOutDialogPanel;
     }
-    
+
     public void setClockOutDialogPanel(JPanel clockOutDialogPanel) {
         this.clockOutDialogPanel = clockOutDialogPanel;
     }
-    
+
     public JButton getConfirmClockOutButton() {
         return confirmClockOutButton;
     }
-    
+
     public void setConfirmClockOutButton(JButton confirmClockOutButton) {
         this.confirmClockOutButton = confirmClockOutButton;
     }
-    
+
     public JLabel getjLabel1() {
         return jLabel1;
     }
-    
+
     public void setjLabel1(JLabel jLabel1) {
         this.jLabel1 = jLabel1;
     }
-    
+
     public JLabel getjLabel2() {
         return jLabel2;
     }
-    
+
     public void setjLabel2(JLabel jLabel2) {
         this.jLabel2 = jLabel2;
     }
-    
+
     public JScrollPane getjScrollPane1() {
         return workerScrollPanel;
     }
-    
+
     public void setjScrollPane1(JScrollPane jScrollPane1) {
         this.workerScrollPanel = jScrollPane1;
     }
-    
+
     public JPanel getMainPanel() {
         return mainPanel;
     }
-    
+
     public void setMainPanel(JPanel mainPanel) {
         this.mainPanel = mainPanel;
     }
-    
+
     public JButton getMainPanelBackButton() {
         return ScrollBackButton;
     }
-    
+
     public void setMainPanelBackButton(JButton mainPanelBackButton) {
         this.ScrollBackButton = mainPanelBackButton;
     }
-    
+
     public JButton getRefuseClockOutButton() {
         return refuseClockOutButton;
     }
-    
+
     public void setRefuseClockOutButton(JButton refuseClockOutButton) {
         this.refuseClockOutButton = refuseClockOutButton;
     }
-    
+
     public JPanel getTableMapPanel() {
         return tableMapPanel;
     }
-    
+
     public void setTableMapPanel(JPanel tableMapPanel) {
         this.tableMapPanel = tableMapPanel;
     }
-    
+
     public JPanel getWorkerBackgroundPanel() {
         return workerBackgroundPanel;
     }
-    
+
     public void setWorkerBackgroundPanel(JPanel workerBackgroundPanel) {
         this.workerBackgroundPanel = workerBackgroundPanel;
     }
-    
+
     public JLabel getWorkerIDLabel() {
         return workerIDLabel;
     }
-    
+
     public void setWorkerIDLabel(JLabel workerIDLabel) {
         this.workerIDLabel = workerIDLabel;
     }
-    
+
     public JButton getWorkerLoginButton() {
         return workerLoginButton;
     }
-    
+
     public void setWorkerLoginButton(JButton workerLoginButton) {
         this.workerLoginButton = workerLoginButton;
     }
-    
+
     public JPanel getWorkerPasswordPanel() {
         return workerPasswordPanel;
     }
-    
+
     public void setWorkerPasswordPanel(JPanel workerPasswordPanel) {
         this.workerPasswordPanel = workerPasswordPanel;
     }
-    
+
     public JPanel getWorkersPanel() {
         return workersPanel;
     }
-    
+
     public void setWorkersPanel(JPanel workersPanel) {
         this.workersPanel = workersPanel;
     }
-    
+
     public JPanel getBackgroundPanel() {
         return adminBackgroundPanel;
     }
-    
+
     public void setBackgroundPanel(JPanel backgroundPanel) {
         this.adminBackgroundPanel = backgroundPanel;
     }
-    
+
     public JLabel getEmailLabel() {
         return emailLabel;
     }
-    
+
     public void setEmailLabel(JLabel emailLabel) {
         this.emailLabel = emailLabel;
     }
-    
+
     public JTextField getEmailTextField() {
         return emailTextField;
     }
-    
+
     public void setEmailTextField(JTextField emailTextField) {
         this.emailTextField = emailTextField;
     }
-    
+
     public JButton getLoginButton() {
         return admingLoginButton;
     }
-    
+
     public void setLoginButton(JButton loginButton) {
         this.admingLoginButton = loginButton;
     }
-    
+
     public JPanel getLoginButtonsPanel() {
         return workersPanel;
     }
-    
+
     public void setLoginButtonsPanel(JPanel loginButtonsPanel) {
         this.workersPanel = loginButtonsPanel;
     }
-    
+
     public JPanel getLoginPanel() {
         return adminPanel;
     }
-    
+
     public void setLoginPanel(JPanel loginPanel) {
         this.adminPanel = loginPanel;
     }
-    
+
     public JLabel getLoginTitleLabel() {
         return loginTitleLabel;
     }
-    
+
     public void setLoginTitleLabel(JLabel loginTitleLabel) {
         this.loginTitleLabel = loginTitleLabel;
     }
-    
+
     public JLabel getPassLabel() {
         return passLabel;
     }
-    
+
     public void setPassLabel(JLabel passLabel) {
         this.passLabel = passLabel;
     }
-    
+
     public JPasswordField getPassTextField() {
         return passTextField;
     }
-    
+
     public void setPassTextField(JPasswordField passTextField) {
         this.passTextField = passTextField;
     }
-    
+
     public JLabel getEnterPasswordLabel() {
         return enterPasswordLabel;
     }
-    
+
     public void setEnterPasswordLabel(JLabel enterPasswordLabel) {
         this.enterPasswordLabel = enterPasswordLabel;
     }
-    
+
     public JButton getLoginButton2() {
         return workerLoginButton;
     }
-    
+
     public void setLoginButton2(JButton loginButton2) {
         this.workerLoginButton = loginButton2;
     }
-    
+
     public JPanel getPasswordButtonPanel() {
         return workerPasswordPanel;
     }
-    
+
     public void setPasswordButtonPanel(JPanel passwordButtonPanel) {
         this.workerPasswordPanel = passwordButtonPanel;
     }
-    
+
     public JPasswordField getPasswordButtonPanelTextField() {
         return passwordButtonPanelTextField;
     }
-    
+
     public void setPasswordButtonPanelTextField(JPasswordField passwordButtonPanelTextField) {
         this.passwordButtonPanelTextField = passwordButtonPanelTextField;
     }
-    
+
     public JButton getPasswordPanelBackButton() {
         return passwordPanelBackButton;
     }
-    
+
     public void setPasswordPanelBackButton(JButton passwordPanelBackButton) {
         this.passwordPanelBackButton = passwordPanelBackButton;
     }
-    
+
     public JLabel getWorkerNameLabel() {
         return workerNameLabel;
     }
-    
+
     public void setWorkerNameLabel(JLabel workerNameLabel) {
         this.workerNameLabel = workerNameLabel;
     }
-    
+
     public DefaultTableModel getTableModel() {
         return tableModel;
     }
-    
+
     public void setTableModel(DefaultTableModel tableModel) {
         this.tableModel = tableModel;
     }
-    
+
     public JButton getScrollBackButton() {
         return ScrollBackButton;
     }
-    
+
     public void setScrollBackButton(JButton ScrollBackButton) {
         this.ScrollBackButton = ScrollBackButton;
     }
-    
+
     public JPanel getBillButtonsPanel() {
         return billButtonsPanel;
     }
-    
+
     public void setBillButtonsPanel(JPanel billButtonsPanel) {
         this.billButtonsPanel = billButtonsPanel;
     }
-    
+
     public JButton getChargeButton() {
         return chargeButton;
     }
-    
+
     public void setChargeButton(JButton chargeButton) {
         this.chargeButton = chargeButton;
     }
-    
+
     public JButton getDeleteProductButton() {
         return deleteProductButton;
     }
-    
+
     public void setDeleteProductButton(JButton deleteProductButton) {
         this.deleteProductButton = deleteProductButton;
     }
-    
+
     public JPanel getFamilyPanel() {
         return familyPanel;
     }
-    
+
     public void setFamilyPanel(JPanel familyPanel) {
         this.familyPanel = familyPanel;
     }
-    
+
     public JScrollPane getFamilyScrollPanel() {
         return familyScrollPanel;
     }
-    
+
     public void setFamilyScrollPanel(JScrollPane familyScrollPanel) {
         this.familyScrollPanel = familyScrollPanel;
     }
-    
+
     public JLabel getPriceLabel() {
         return priceLabel;
     }
-    
+
     public void setPriceLabel(JLabel priceLabel) {
         this.priceLabel = priceLabel;
     }
-    
+
     public JButton getPrintBillButton() {
         return printBillButton;
     }
-    
+
     public void setPrintBillButton(JButton printBillButton) {
         this.printBillButton = printBillButton;
     }
-    
+
     public JLabel getProductPriceLabel() {
         return productPriceLabel;
     }
-    
+
     public void setProductPriceLabel(JLabel productPriceLabel) {
         this.productPriceLabel = productPriceLabel;
     }
-    
+
     public JScrollPane getProductScrollPanel() {
         return productScrollPanel;
     }
-    
+
     public void setProductScrollPanel(JScrollPane productScrollPanel) {
         this.productScrollPanel = productScrollPanel;
     }
-    
+
     public JPanel getProductsPanel() {
         return productsPanel;
     }
-    
+
     public void setProductsPanel(JPanel productsPanel) {
         this.productsPanel = productsPanel;
     }
-    
+
     public JButton getSendProductsButton() {
         return sendProductsButton;
     }
-    
+
     public void setSendProductsButton(JButton sendProductsButton) {
         this.sendProductsButton = sendProductsButton;
     }
-    
+
     public JLabel getTableIDLabel() {
         return tableIDLabel;
     }
-    
+
     public void setTableIDLabel(JLabel tableIDLabel) {
         this.tableIDLabel = tableIDLabel;
     }
-    
+
     public JLabel getTableLabel() {
         return tableLabel;
     }
-    
+
     public void setTableLabel(JLabel tableLabel) {
         this.tableLabel = tableLabel;
     }
-    
+
     public JTable getTableProducts() {
         return tableProducts;
     }
-    
+
     public void setTableProducts(JTable tableProducts) {
         this.tableProducts = tableProducts;
     }
-    
+
     public JScrollPane getTableProductsScroll() {
         return tableProductsScroll;
     }
-    
+
     public void setTableProductsScroll(JScrollPane tableProductsScroll) {
         this.tableProductsScroll = tableProductsScroll;
     }
-    
+
     public JScrollPane getWorkerScrollPanel() {
         return workerScrollPanel;
     }
-    
+
     public void setWorkerScrollPanel(JScrollPane workerScrollPanel) {
         this.workerScrollPanel = workerScrollPanel;
     }
-    
+
     private DefaultTableModel tableModel;
     private Proxy proxy = new Proxy(this);
     // Variables declaration - do not modify//GEN-BEGIN:variables
