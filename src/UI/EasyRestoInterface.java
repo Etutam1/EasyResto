@@ -670,12 +670,13 @@ public class EasyRestoInterface extends javax.swing.JFrame {
             System.out.println("pendiente" + pendingQuantityToRemove);
             if (pendingQuantityToRemove > 0) {
                 this.proxy.removeProductFromOrder(selectedProduct, pendingQuantityToRemove);
+                this.totalOrderLabel.setText(String.valueOf(this.proxy.getTotalOrder(this.proxy.getCurrentOrder().getOrderID())));
             }
             this.deleteProductFromTable(selectedQuantity);
-
         } else {
             this.proxy.removeProductFromOrder(selectedProduct, selectedQuantity);
             this.deleteProductFromTable(selectedQuantity);
+            this.totalOrderLabel.setText(String.valueOf(this.proxy.getTotalOrder(this.proxy.getCurrentOrder().getOrderID())));
         }
         this.changeComponentVisibility(this.deleteProductDialog, false);
 
@@ -737,7 +738,6 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     public void configProductButton(int productID, String productName, double productPrice) {
         JButton productButton = new JButton(productName);
         productButton.setPreferredSize(new Dimension(80, 80));
-
         this.addActionListenerToProductButton(productButton, new Product(productID, productName, productPrice));
         this.addButtonToPanel(this.productsPanel, productButton);
     }
@@ -750,10 +750,11 @@ public class EasyRestoInterface extends javax.swing.JFrame {
                 try {
                     Constructor<? extends Product> constructor = Product.class.getDeclaredConstructor(int.class, String.class, double.class);
                     Product productToAdd = constructor.newInstance(product.getProductID(), product.getProductName(), product.getProductPrice());
-                    
+
                     productPriceLabel.setText(Double.toString(product.getProductPrice()));
                     addProductToTable(productToAdd);
                     proxy.addProductToPendingArray(productToAdd);
+
                 } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                     Logger.getLogger(EasyRestoInterface.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -782,21 +783,21 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     }
 
     private void deleteProductFromTable(int quantityToRemove) {
-        int selectedRow = this.tableProducts.getSelectedRow();
-        int QUANTITY_COLUMN_INDEX = 2;
-        int selectedRowQuantity = (int) this.tableModel.getValueAt(selectedRow, QUANTITY_COLUMN_INDEX);
+        final int SELECTED_ROW = this.tableProducts.getSelectedRow();
+        final int QUANTITY_COLUMN_INDEX = 2;
+        int selectedRowQuantity = (int) this.tableModel.getValueAt(SELECTED_ROW, QUANTITY_COLUMN_INDEX);
         if (selectedRowQuantity == quantityToRemove) {
-            this.tableModel.removeRow(selectedRow);
+            this.tableModel.removeRow(SELECTED_ROW);
         } else {
             int updatedQuantity = selectedRowQuantity - quantityToRemove;
-            this.tableModel.setValueAt(updatedQuantity, selectedRow, QUANTITY_COLUMN_INDEX);
+            this.tableModel.setValueAt(updatedQuantity, SELECTED_ROW, QUANTITY_COLUMN_INDEX);
         }
     }
 
     private void updateProductQuantity(int row) {
-        int QUANTITY_COLUMN_INDEX = 2;
-        int quantityValue = (int) tableModel.getValueAt(row, QUANTITY_COLUMN_INDEX);
-        tableModel.setValueAt(quantityValue + 1, row, QUANTITY_COLUMN_INDEX);
+        final int QUANTITY_COLUMN_INDEX = 2;
+        final int QUANTITY_VALUE = (int) tableModel.getValueAt(row, QUANTITY_COLUMN_INDEX);
+        tableModel.setValueAt(QUANTITY_VALUE + 1, row, QUANTITY_COLUMN_INDEX);
     }
 
     public void configProductFamilyButton(String familyName) {

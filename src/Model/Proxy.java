@@ -46,7 +46,7 @@ public class Proxy {
     private final String orderProductsQuery = "SELECT P.NOMBRE, P.PRECIO, PP.CANTIDAD FROM PEDIDOS_PRODUCTOS AS PP INNER JOIN PRODUCTOS AS P ON PP.ID_PRODUCTO=P.ID_PRODUCTO WHERE ID_PEDIDO=?";
     private final String totalOrderQuery = "SELECT TOTAL_PEDIDO(?) AS TOTAL";
     private final String removeProductQuery = "SELECT BORRAR_PRODUCTO(?,?,?)";
-
+    
     private PreparedStatement clockOutRememberPrep;
     private PreparedStatement clockOutPrep;
     private PreparedStatement permissionsPrep;
@@ -422,7 +422,6 @@ public class Proxy {
         }
         return 0;
     }
-    
 
     public void removeProductFromOrder(Product product, int quantity) {
         try {
