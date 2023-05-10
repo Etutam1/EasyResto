@@ -45,6 +45,7 @@ public class Proxy {
     private final String closeOrderQuery = "UPDATE PEDIDOS SET ESTADO_PEDIDO='CERRADO', FECHA_COBRO=CURRENT_TIMESTAMP() WHERE ID_PEDIDO=?";
     private final String orderProductsQuery = "SELECT P.NOMBRE, P.PRECIO, PP.CANTIDAD FROM PEDIDOS_PRODUCTOS AS PP INNER JOIN PRODUCTOS AS P ON PP.ID_PRODUCTO=P.ID_PRODUCTO WHERE ID_PEDIDO=?";
     private final String totalOrderQuery = "SELECT TOTAL_PEDIDO(?) AS TOTAL";
+    private final String removeProductQuery = "SELECT BORRAR_PRODUCTO(?,?,?)";
 
     private PreparedStatement clockOutRememberPrep;
     private PreparedStatement clockOutPrep;
@@ -64,6 +65,7 @@ public class Proxy {
     private PreparedStatement closeOrderPrep;
     private PreparedStatement orderProductsPrep;
     private PreparedStatement totalOrderPrep;
+    private PreparedStatement removeProductPrep;
 
     private ArrayList<Product> pendingProductsArray = new ArrayList<>();
 
@@ -93,6 +95,7 @@ public class Proxy {
             closeOrderPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(closeOrderQuery);
             orderProductsPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(orderProductsQuery);
             totalOrderPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(this.totalOrderQuery);
+            removeProductPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(this.removeProductQuery);
         } catch (SQLException ex) {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -109,6 +112,7 @@ public class Proxy {
             }
         }
         return false;
+
     }
 
     public boolean handleRequest(String request, String familyName, int Id) {
@@ -121,18 +125,18 @@ public class Proxy {
                 this.getProductFamilyButton();
             case "getProductButton" ->
                 this.getProductButton(familyName);
-            case "checkClockIn" ->{
+            case "checkClockIn" -> {
                 if (!this.checkClockIn(Id)) {
                     return false;
                 }
             }
             case "clockIn" ->
                 this.clockIn(Id);
-            case "rememberClockOut" ->{
+            case "rememberClockOut" -> {
                 if (!this.rememberClockOut(Id)) {
-                return false;   
+                    return false;
                 }
-            }        
+            }
             case "clockOut" ->
                 this.clockOut(Id);
             case "sendPendingProducts" ->
@@ -391,6 +395,47 @@ public class Proxy {
         if (!found) {
             this.pendingProductsArray.add(product);
         }
+    }
+
+    public int removeProductFromPendingArray(Product product, int quantityToRemove) {
+        Iterator<Product> iteratorProducts = this.pendingProductsArray.iterator();
+        boolean removeProduct = false;
+        Product productToRemove = null;
+        while (iteratorProducts.hasNext() && !removeProduct) {
+            Product iteratorProduct = iteratorProducts.next();
+            if (iteratorProduct.getProductName().equals(product.getProductName())) {
+                if (iteratorProduct.getProductQuantity() <= quantityToRemove) {
+                    removeProduct = true;
+                    productToRemove = iteratorProduct;
+                } else {
+                    iteratorProduct.setProductQuantity(iteratorProduct.getProductQuantity() - quantityToRemove);
+                }
+            }
+        }
+        if (removeProduct) {
+            this.pendingProductsArray.remove(productToRemove);
+
+            if (productToRemove.getProductQuantity() < quantityToRemove) {
+                int pendingToRemove = quantityToRemove - productToRemove.getProductQuantity();
+                return pendingToRemove;
+            }
+        }
+        return 0;
+    }
+
+    public void removeProductFromOrder(Product product, int quantity) {
+        try {
+            this.removeProductPrep.setString(1, String.valueOf(this.currentOrder.getOrderID()));
+            this.removeProductPrep.setString(2, product.getProductName());
+            this.removeProductPrep.setString(3, String.valueOf(quantity));
+            ResultSet deleteResult = this.removeProductPrep.executeQuery();
+            while (deleteResult.next()) {
+                System.out.println(deleteResult.getString(1));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     private boolean sendPendingProducts() {

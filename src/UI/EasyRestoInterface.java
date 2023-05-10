@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -65,6 +66,11 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         clockOutDialogLabel = new javax.swing.JLabel();
         confirmClockOutButton = new javax.swing.JButton();
         refuseClockOutButton = new javax.swing.JButton();
+        deleteProductDialog = new javax.swing.JDialog();
+        deleteProductDialogPanel = new javax.swing.JPanel();
+        QuantityLabel = new javax.swing.JLabel();
+        deleteDialogButton = new javax.swing.JButton();
+        quantityCombo = new javax.swing.JComboBox<>();
         mainPanel = new javax.swing.JPanel();
         tableMapPanel = new javax.swing.JPanel();
         tableProductsScroll = new javax.swing.JScrollPane();
@@ -141,6 +147,34 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         clockOutDialogPanel.add(refuseClockOutButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 160, 60, 20));
 
         clockOutDialog.getContentPane().add(clockOutDialogPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 410, 280));
+        clockOutDialog.setVisible(true);
+
+        clockOutDialog.setVisible(false);
+
+        deleteProductDialog.setBackground(new java.awt.Color(0, 112, 115));
+        deleteProductDialog.setSize(new java.awt.Dimension(400, 300));
+        deleteProductDialog.getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        deleteProductDialogPanel.setBackground(new java.awt.Color(0, 112, 115));
+        deleteProductDialogPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        QuantityLabel.setForeground(new java.awt.Color(255, 255, 255));
+        QuantityLabel.setText("¿CUÁNTOS PRODUCTOS QUIERES BORRAR?");
+        deleteProductDialogPanel.add(QuantityLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 60, -1, 40));
+
+        deleteDialogButton.setText("BORRAR");
+        deleteDialogButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteDialogButtonActionPerformed(evt);
+            }
+        });
+        deleteProductDialogPanel.add(deleteDialogButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 170, 90, -1));
+
+        deleteProductDialogPanel.add(quantityCombo, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 100, 50, -1));
+
+        deleteProductDialog.getContentPane().add(deleteProductDialogPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 390, 300));
+
+        deleteProductDialogPanel.setVisible(true);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(910, 840));
@@ -157,7 +191,6 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         mainPanel.add(tableMapPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 860, 700));
         tableMapPanel.getAccessibleContext().setAccessibleDescription("");
 
-        tableProducts.setAutoCreateRowSorter(true);
         tableProducts.setBackground(new java.awt.Color(255, 255, 255));
         tableProducts.setForeground(new java.awt.Color(0, 0, 0));
         tableProducts.setModel(new javax.swing.table.DefaultTableModel(
@@ -171,18 +204,33 @@ public class EasyRestoInterface extends javax.swing.JFrame {
             Class[] types = new Class [] {
                 java.lang.String.class, java.lang.String.class, java.lang.Integer.class
             };
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
         });
         tableProducts.setColumnSelectionAllowed(true);
         tableProducts.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        tableProducts.setRowSelectionAllowed(false);
         tableProducts.setSelectionBackground(new java.awt.Color(0, 153, 153));
         tableProducts.setSelectionForeground(new java.awt.Color(0, 0, 0));
+        tableProducts.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tableProductsScroll.setViewportView(tableProducts);
-        tableProducts.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tableProducts.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        if (tableProducts.getColumnModel().getColumnCount() > 0) {
+            tableProducts.getColumnModel().getColumn(0).setResizable(false);
+            tableProducts.getColumnModel().getColumn(0).setPreferredWidth(10);
+            tableProducts.getColumnModel().getColumn(1).setResizable(false);
+            tableProducts.getColumnModel().getColumn(1).setPreferredWidth(5);
+            tableProducts.getColumnModel().getColumn(2).setResizable(false);
+            tableProducts.getColumnModel().getColumn(2).setPreferredWidth(5);
+        }
 
         mainPanel.add(tableProductsScroll, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 40, 380, 410));
 
@@ -221,7 +269,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         });
         billButtonsPanel.add(printBillButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 20, 80, -1));
 
-        mainPanel.add(billButtonsPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 450, 380, 60));
+        mainPanel.add(billButtonsPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 520, 380, 60));
 
         familyScrollPanel.setBackground(new java.awt.Color(0, 112, 115));
         familyScrollPanel.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -557,7 +605,9 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     }//GEN-LAST:event_mainPanelBackButtonActionPerformed
 
     private void sendProductsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendProductsButtonActionPerformed
-        if (!this.proxy.getPendingProductsArray().isEmpty()) {
+        if (this.proxy.getPendingProductsArray().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "POR FAVOR, AGREGA PRODUCTOS");
+        } else {
             if (this.proxy.getCurrentOrder() == null) {
                 this.proxy.generateOrder(this.proxy.getWorkerLogged().getId(), Integer.parseInt(this.tableIDLabel.getText()));
                 this.proxy.setCurrentOrder(proxy.checkActiveTableOrder(Integer.parseInt(this.tableIDLabel.getText())));
@@ -569,8 +619,32 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     }//GEN-LAST:event_sendProductsButtonActionPerformed
 
     private void deleteProductButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteProductButtonActionPerformed
-
+        this.resetComboBox();
+        if (this.tableProducts.getSelectedRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "POR FAVOR, SELECCIONA UN PRODUCTO");
+        } else {
+            this.selectedProduct = this.getProductFromSelectedRow();
+            this.changeComponentVisibility(this.deleteProductDialog, true);
+            this.deleteProductDialog.setLocationRelativeTo(this);
+            this.addProductQuantitiesToComboBox(selectedProduct);
+        }
     }//GEN-LAST:event_deleteProductButtonActionPerformed
+
+    private void resetComboBox() {
+        this.quantityCombo.removeAllItems();
+    }
+
+    private void addProductQuantitiesToComboBox(Product selectedProduct) {
+        for (int quantity = 1; quantity <= selectedProduct.getProductQuantity(); quantity++) {
+            this.quantityCombo.addItem(String.valueOf(quantity));
+        }
+    }
+
+    private Product getProductFromSelectedRow() {
+        String selectedProductName = (String) this.tableModel.getValueAt(this.tableProducts.getSelectedRow(), 0);
+        int selectedProductQuantity = (int) this.tableModel.getValueAt(this.tableProducts.getSelectedRow(), 2);
+        return new Product(selectedProductName, selectedProductQuantity);
+    }
 
     private void chargeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chargeButtonActionPerformed
         if (this.proxy.getCurrentOrder() != null) {
@@ -583,6 +657,28 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private void printBillButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_printBillButtonActionPerformed
 
     }//GEN-LAST:event_printBillButtonActionPerformed
+
+    private void deleteDialogButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteDialogButtonActionPerformed
+        int selectedQuantity = Integer.parseInt((String) this.quantityCombo.getSelectedItem());
+
+        if (!this.proxy.getPendingProductsArray().isEmpty()) {
+            int pendingQuantityToRemove = this.proxy.removeProductFromPendingArray(selectedProduct, selectedQuantity);
+            System.out.println("pendiente"+pendingQuantityToRemove);
+            if (pendingQuantityToRemove > 0) {
+                this.proxy.removeProductFromOrder(selectedProduct, pendingQuantityToRemove);
+            }
+            this.deleteProductFromTable(selectedQuantity);
+
+        } else {
+            this.proxy.removeProductFromOrder(selectedProduct, selectedQuantity);
+            this.deleteProductFromTable(selectedQuantity);
+        }
+        this.changeComponentVisibility(this.deleteProductDialog, false);
+        
+        if (this.tableModel.getRowCount() ==0 && this.proxy.getCurrentOrder()!=null) {
+            this.proxy.handleRequest("closeOrder", "", this.proxy.getCurrentOrder().getOrderID());
+        }
+    }//GEN-LAST:event_deleteDialogButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -669,6 +765,18 @@ public class EasyRestoInterface extends javax.swing.JFrame {
             }
         }
         return false;
+    }
+
+    private void deleteProductFromTable(int quantityToRemove) {
+        int selectedRow = this.tableProducts.getSelectedRow();
+        int QUANTITY_COLUMN_INDEX = 2;
+        int selectedRowQuantity = (int) this.tableModel.getValueAt(selectedRow, QUANTITY_COLUMN_INDEX);
+        if (selectedRowQuantity == quantityToRemove) {
+            this.tableModel.removeRow(selectedRow);
+        } else {
+            int updatedQuantity = selectedRowQuantity - quantityToRemove;
+            this.tableModel.setValueAt(updatedQuantity, selectedRow, QUANTITY_COLUMN_INDEX);
+        }
     }
 
     private void updateProductQuantity(int row) {
@@ -815,6 +923,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         return password.isBlank() || email.isBlank();
     }
 
+    // <editor-fold defaultstate="collapsed" desc="GETTERS&SETTERS"> 
     public Proxy getProxy() {
         return proxy;
     }
@@ -1263,9 +1372,75 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         this.workerScrollPanel = workerScrollPanel;
     }
 
+    public Product getSelectedProduct() {
+        return selectedProduct;
+    }
+
+    public void setSelectedProduct(Product selectedProduct) {
+        this.selectedProduct = selectedProduct;
+    }
+
+    public JLabel getQuantityLabel() {
+        return QuantityLabel;
+    }
+
+    public void setQuantityLabel(JLabel QuantityLabel) {
+        this.QuantityLabel = QuantityLabel;
+    }
+
+    public JButton getDeleteDialogButton() {
+        return deleteDialogButton;
+    }
+
+    public void setDeleteDialogButton(JButton deleteDialogButton) {
+        this.deleteDialogButton = deleteDialogButton;
+    }
+
+    public JDialog getDeleteProductDialog() {
+        return deleteProductDialog;
+    }
+
+    public void setDeleteProductDialog(JDialog deleteProductDialog) {
+        this.deleteProductDialog = deleteProductDialog;
+    }
+
+    public JPanel getDeleteProductDialogPanel() {
+        return deleteProductDialogPanel;
+    }
+
+    public void setDeleteProductDialogPanel(JPanel deleteProductDialogPanel) {
+        this.deleteProductDialogPanel = deleteProductDialogPanel;
+    }
+
+    public JComboBox<String> getQuantityCombo() {
+        return quantityCombo;
+    }
+
+    public void setQuantityCombo(JComboBox<String> quantityCombo) {
+        this.quantityCombo = quantityCombo;
+    }
+
+    public JLabel getTotalLabel() {
+        return totalLabel;
+    }
+
+    public void setTotalLabel(JLabel totalLabel) {
+        this.totalLabel = totalLabel;
+    }
+
+    public JLabel getTotalOrderLabel() {
+        return totalOrderLabel;
+    }
+
+    public void setTotalOrderLabel(JLabel totalOrderLabel) {
+        this.totalOrderLabel = totalOrderLabel;
+    }
+    //</editor-fold>
+    private Product selectedProduct = null;
     private DefaultTableModel tableModel;
     private Proxy proxy = new Proxy(this);
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel QuantityLabel;
     private javax.swing.JButton ScrollBackButton;
     private javax.swing.JPanel adminBackgroundPanel;
     private javax.swing.JPanel adminPanel;
@@ -1280,7 +1455,10 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private javax.swing.JLabel clockOutDialogLabel;
     private javax.swing.JPanel clockOutDialogPanel;
     private javax.swing.JButton confirmClockOutButton;
+    private javax.swing.JButton deleteDialogButton;
     private javax.swing.JButton deleteProductButton;
+    private javax.swing.JDialog deleteProductDialog;
+    private javax.swing.JPanel deleteProductDialogPanel;
     private javax.swing.JLabel emailLabel;
     private javax.swing.JTextField emailTextField;
     private javax.swing.JLabel enterPasswordLabel;
@@ -1300,6 +1478,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private javax.swing.JLabel productPriceLabel;
     private javax.swing.JScrollPane productScrollPanel;
     private javax.swing.JPanel productsPanel;
+    private javax.swing.JComboBox<String> quantityCombo;
     private javax.swing.JButton refuseClockOutButton;
     private javax.swing.JButton sendProductsButton;
     private javax.swing.JLabel tableIDLabel;

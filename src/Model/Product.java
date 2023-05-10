@@ -26,6 +26,11 @@ public class Product {
 
     public Product() {
     }
+    
+    public Product(String name, int quantity){
+        this.productName = name;
+        this.productQuantity = quantity;
+    }
 
     public int getProductID() {
         return productID;
