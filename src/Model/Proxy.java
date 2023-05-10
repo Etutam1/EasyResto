@@ -216,6 +216,7 @@ public class Proxy {
             Logger.getLogger(EasyRestoDB.class.getName()).log(Level.SEVERE, null, ex);
         }
         return true;
+        
     }
 
     private boolean getTablesButton() {
@@ -414,7 +415,6 @@ public class Proxy {
         }
         if (removeProduct) {
             this.pendingProductsArray.remove(productToRemove);
-
             if (productToRemove.getProductQuantity() < quantityToRemove) {
                 int pendingToRemove = quantityToRemove - productToRemove.getProductQuantity();
                 return pendingToRemove;
@@ -422,6 +422,7 @@ public class Proxy {
         }
         return 0;
     }
+    
 
     public void removeProductFromOrder(Product product, int quantity) {
         try {
