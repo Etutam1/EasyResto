@@ -1,5 +1,6 @@
 package UI;
 
+import Model.Order;
 import Model.Product;
 import Model.Proxy;
 import java.awt.Component;
@@ -47,7 +48,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         this.changeComponentVisibility(this.adminBackgroundPanel, false);
         this.changeComponentVisibility(this.workerPasswordPanel, false);
         this.proxy.handleRequest("getWorkerButton", "", 0);
-//        this.proxy.getWorkerButton();
+//        this.proxy.getWorkerButton();     
         this.changeComponentVisibility(this.familyScrollPanel, false);
         this.changeComponentVisibility(this.productScrollPanel, false);
         this.changeComponentVisibility(productScrollPanel, false);
@@ -602,7 +603,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
             this.changeComponentVisibility(this.tableProducts, false);
             this.productPriceLabel.setText("");
             this.changeComponentVisibility(this.billButtonsPanel, false);
-            this.proxy.getPendingProductsArray().clear();
+//            this.proxy.getCurrentOrder().getPendingProductsArray().clear();
             this.tableModel.setRowCount(0);
             this.tableMapPanel.removeAll();
             this.proxy.handleRequest("getTablesButton", "", 0);
@@ -611,15 +612,15 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     }//GEN-LAST:event_mainPanelBackButtonActionPerformed
 
     private void sendProductsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendProductsButtonActionPerformed
-        if (this.proxy.getPendingProductsArray().isEmpty()) {
+        if (this.proxy.getCurrentOrder().getPendingProductsArray().isEmpty()) {
             JOptionPane.showMessageDialog(this, "POR FAVOR, AGREGA PRODUCTOS");
         } else {
-            if (this.proxy.getCurrentOrder() == null) {
+            if (this.proxy.getCurrentOrder().getOrderID() == 0) {
                 this.proxy.generateOrder(this.proxy.getWorkerLogged().getId(), Integer.parseInt(this.tableIDLabel.getText()));
-                this.proxy.setCurrentOrder(proxy.checkActiveTableOrder(Integer.parseInt(this.tableIDLabel.getText())));
+                this.proxy.getCurrentOrder().setOrderID(proxy.getOrderID(Integer.parseInt(this.tableIDLabel.getText())));
             }
             this.proxy.handleRequest("sendPendingProducts", "", 0);
-            this.proxy.getPendingProductsArray().clear();
+            this.proxy.getCurrentOrder().getPendingProductsArray().clear();
             this.totalOrderLabel.setText(String.valueOf(this.proxy.getTotalOrder(this.proxy.getCurrentOrder().getOrderID())));
         }
     }//GEN-LAST:event_sendProductsButtonActionPerformed
@@ -647,7 +648,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     }
 
     private Product getProductFromSelectedRow() {
-        int selectedProductID= (int) this.tableModel.getValueAt(this.tableProducts.getSelectedRow(), 3);
+        int selectedProductID = (int) this.tableModel.getValueAt(this.tableProducts.getSelectedRow(), 3);
         int selectedProductQuantity = (int) this.tableModel.getValueAt(this.tableProducts.getSelectedRow(), 2);
         return new Product(selectedProductID, selectedProductQuantity);
     }
@@ -667,8 +668,8 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private void deleteDialogButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteDialogButtonActionPerformed
         int selectedQuantity = Integer.parseInt((String) this.quantityCombo.getSelectedItem());
 
-        if (!this.proxy.getPendingProductsArray().isEmpty()) {
-            int pendingQuantityToRemove = this.proxy.removeProductFromPendingArray(selectedProduct, selectedQuantity);
+        if (!this.proxy.getCurrentOrder().getPendingProductsArray().isEmpty()) {
+            int pendingQuantityToRemove = this.proxy.getCurrentOrder().removeProductFromPendingArray(selectedProduct, selectedQuantity);
             System.out.println("pendiente" + pendingQuantityToRemove);
             if (pendingQuantityToRemove > 0) {
                 this.proxy.removeProductFromOrder(selectedProduct, pendingQuantityToRemove);
@@ -732,39 +733,8 @@ public class EasyRestoInterface extends javax.swing.JFrame {
      * @param panel
      * @param button
      */
-    private void addButtonToPanel(JPanel panel, JButton button) {
-        panel.add(button);
-    }
-
-    public void configProductButton(int productID, String productName, double productPrice) {
-        JButton productButton = new JButton(productName);
-        productButton.setPreferredSize(new Dimension(80, 80));
-        this.addActionListenerToProductButton(productButton, new Product(productID, productName, productPrice));
-        this.addButtonToPanel(this.productsPanel, productButton);
-    }
-
-    private void addActionListenerToProductButton(JButton button, Product product) {
-        button.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    Constructor<? extends Product> constructor = Product.class.getDeclaredConstructor(int.class, String.class, double.class);
-                    Product productToAdd = constructor.newInstance(product.getProductID(), product.getProductName(), product.getProductPrice());
-
-                    productPriceLabel.setText(Double.toString(product.getProductPrice()));
-                    addProductToTable(productToAdd);
-                    proxy.addProductToPendingArray(productToAdd);
-
-                } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                    Logger.getLogger(EasyRestoInterface.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-    }
-
     private void addProductToTable(Product product) {
-        Object[] productRow = {product.getProductName(), product.getProductPrice(), product.getProductQuantity(),product.getProductID()};
+        Object[] productRow = {product.getProductName(), product.getProductPrice(), product.getProductQuantity(), product.getProductID()};
         int numberOfRows = tableModel.getRowCount();
 
         if (numberOfRows == 0 || !checkExistingProductInTable(numberOfRows, product)) {
@@ -775,7 +745,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private boolean checkExistingProductInTable(int tableRowCount, Product product) {
         for (int row = 0; row < tableRowCount; row++) {
             int productID = (int) tableModel.getValueAt(row, 3);
-            if (productID==product.getProductID()) {
+            if (productID == product.getProductID()) {
                 updateProductQuantity(row);
                 return true;
             }
@@ -858,6 +828,37 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         this.tableMapPanel.add(tableButton, new AbsoluteConstraints(tableLocation.x, tableLocation.y, buttonDimension.width, buttonDimension.height));
     }
 
+    private void addButtonToPanel(JPanel panel, JButton button) {
+        panel.add(button);
+    }
+
+    public void configProductButton(int productID, String productName, double productPrice) {
+        JButton productButton = new JButton(productName);
+        productButton.setPreferredSize(new Dimension(80, 80));
+        this.addActionListenerToProductButton(productButton, new Product(productID, productName, productPrice));
+        this.addButtonToPanel(this.productsPanel, productButton);
+    }
+
+    private void addActionListenerToProductButton(JButton button, Product product) {
+        button.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    Constructor<? extends Product> constructor = Product.class.getDeclaredConstructor(int.class, String.class, double.class);
+                    Product productToAdd = constructor.newInstance(product.getProductID(), product.getProductName(), product.getProductPrice());
+
+                    productPriceLabel.setText(Double.toString(product.getProductPrice()));
+                    addProductToTable(productToAdd);
+                    proxy.getCurrentOrder().addProductToPendingArray(productToAdd);
+
+                } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                    Logger.getLogger(EasyRestoInterface.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+    }
+
     private void addActionListenerToTableButton(JButton tableButton, int tableID) {
         tableButton.addActionListener(new ActionListener() {
             @Override
@@ -871,11 +872,14 @@ public class EasyRestoInterface extends javax.swing.JFrame {
                 changeComponentVisibility(billButtonsPanel, true);
                 familyPanel.removeAll();
                 proxy.handleRequest("getProductFamilyButton", "", 0);
-//                proxy.getProductFamilyButton();
-                proxy.setCurrentOrder(proxy.checkActiveTableOrder(tableID));
-                if (proxy.getCurrentOrder() == null) {
-                    System.out.println("al entrar mesa:" + proxy.getCurrentOrder());
+
+                int currentOrderID = proxy.getOrderID(tableID);
+                
+                if (currentOrderID == 0) {
+                    proxy.setCurrentOrder(new Order());
+                    System.out.println("al entrar mesa:" + proxy.getCurrentOrder().getOrderID());
                 } else {
+                    proxy.setCurrentOrder(new Order(currentOrderID));
                     System.out.println("al entrar mesa:" + proxy.getCurrentOrder().getOrderID());
                     proxy.handleRequest("getOrderProducts", "", proxy.getCurrentOrder().getOrderID());
                     totalOrderLabel.setText(String.valueOf(proxy.getTotalOrder(proxy.getCurrentOrder().getOrderID())));
@@ -904,10 +908,14 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private Dimension configButtonDimensionByCapacity(int capacity) {
 
         return switch (capacity) {
-            case 2 -> new Dimension(60, 60);
-            case 4 -> new Dimension(60, 60);
-            case 6 -> new Dimension(120, 60);
-            default -> new Dimension(100, 100);
+            case 2 ->
+                new Dimension(60, 60);
+            case 4 ->
+                new Dimension(60, 60);
+            case 6 ->
+                new Dimension(120, 60);
+            default ->
+                new Dimension(100, 100);
         };
     }
 

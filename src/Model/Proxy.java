@@ -46,6 +46,7 @@ public class Proxy {
     private final String orderProductsQuery = "SELECT P.NOMBRE, P.PRECIO, PP.CANTIDAD , PP.ID_PRODUCTO FROM PEDIDOS_PRODUCTOS AS PP INNER JOIN PRODUCTOS AS P ON PP.ID_PRODUCTO=P.ID_PRODUCTO WHERE ID_PEDIDO=?";
     private final String totalOrderQuery = "SELECT TOTAL_PEDIDO(?) AS TOTAL";
     private final String removeProductQuery = "SELECT BORRAR_PRODUCTO(?,?,?)";
+    
 
     private PreparedStatement clockOutRememberPrep;
     private PreparedStatement clockOutPrep;
@@ -67,7 +68,7 @@ public class Proxy {
     private PreparedStatement totalOrderPrep;
     private PreparedStatement removeProductPrep;
 
-    private ArrayList<Product> pendingProductsArray = new ArrayList<>();
+    
 
     public Proxy(EasyRestoInterface easyRestoInterface) {
         this.easyRestoInterface = easyRestoInterface;
@@ -364,55 +365,15 @@ public class Proxy {
         }
     }
 
-    public Order checkActiveTableOrder(int tableID) {
+     public int getOrderID(int tableID) {
         try {
             this.currentOrderPrep.setInt(1, tableID);
             ResultSet orderResult = this.currentOrderPrep.executeQuery();
             while (orderResult.next()) {
-                return new Order(orderResult.getInt("ID_PEDIDO"));
+                return orderResult.getInt("ID_PEDIDO");
             }
         } catch (SQLException ex) {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-    }
-
-    public void addProductToPendingArray(Product product) {
-        Iterator<Product> iteratorProducts = this.pendingProductsArray.iterator();
-        boolean found = false;
-        while (iteratorProducts.hasNext()) {
-            Product pendingProduct = iteratorProducts.next();
-            if (pendingProduct.getProductID() == product.getProductID()) {
-                pendingProduct.setProductQuantity(pendingProduct.getProductQuantity() + 1);
-                found = true;
-            }
-        }
-        if (!found) {
-            this.pendingProductsArray.add(product);
-        }
-    }
-
-    public int removeProductFromPendingArray(Product product, int quantityToRemove) {
-        Iterator<Product> iteratorProducts = this.pendingProductsArray.iterator();
-        boolean removeProduct = false;
-        Product productToRemove = null;
-        while (iteratorProducts.hasNext() && !removeProduct) {
-            Product iteratorProduct = iteratorProducts.next();
-            if (iteratorProduct.getProductID() == product.getProductID()) {
-                if (iteratorProduct.getProductQuantity() <= quantityToRemove) {
-                    removeProduct = true;
-                    productToRemove = iteratorProduct;
-                } else {
-                    iteratorProduct.setProductQuantity(iteratorProduct.getProductQuantity() - quantityToRemove);
-                }
-            }
-        }
-        if (removeProduct) {
-            this.pendingProductsArray.remove(productToRemove);
-            if (productToRemove.getProductQuantity() < quantityToRemove) {
-                int pendingToRemove = quantityToRemove - productToRemove.getProductQuantity();
-                return pendingToRemove;
-            }
         }
         return 0;
     }
@@ -429,7 +390,7 @@ public class Proxy {
     }
 
     private boolean sendPendingProducts() {
-        Iterator<Product> iteratorProducts = this.pendingProductsArray.iterator();
+        Iterator<Product> iteratorProducts = this.currentOrder.getPendingProductsArray().iterator();
         while (iteratorProducts.hasNext()) {
             Product productToSend = iteratorProducts.next();
             System.out.println("order:" + this.currentOrder.getOrderID() + "productID:" + productToSend.getProductID() + "quantity:" + productToSend.getProductQuantity());
@@ -616,12 +577,6 @@ public class Proxy {
         this.insertOrderPrep = insertOrderPrep;
     }
 
-    public ArrayList<Product> getPendingProductsArray() {
-        return pendingProductsArray;
-    }
-
-    public void setPendingProductsArray(ArrayList<Product> pendingProductsArray) {
-        this.pendingProductsArray = pendingProductsArray;
-    }
+  
 
 }
