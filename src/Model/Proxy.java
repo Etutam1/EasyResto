@@ -378,6 +378,7 @@ public class Proxy {
         return 0;
     }
 
+   
     public void removeProductFromOrder(Product product, int quantity) {
         try {
             this.removeProductPrep.setInt(1,this.currentOrder.getOrderID());
