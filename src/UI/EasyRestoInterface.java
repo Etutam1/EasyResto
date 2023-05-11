@@ -654,7 +654,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     }
 
     private void chargeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chargeButtonActionPerformed
-        if (this.proxy.getCurrentOrder() != null) {
+        if (this.proxy.getCurrentOrder().getOrderID() != 0) {
             this.proxy.handleRequest("closeOrder", "", this.proxy.getCurrentOrder().getOrderID());
             this.tableModel.setRowCount(0);
             this.totalOrderLabel.setText("");
