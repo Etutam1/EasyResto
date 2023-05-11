@@ -202,14 +202,14 @@ public class EasyRestoInterface extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Producto", "Precio", "Cantidad"
+                "Producto", "Precio", "Cantidad", "ID"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.Integer.class
+                java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false
+                false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -233,7 +233,9 @@ public class EasyRestoInterface extends javax.swing.JFrame {
             tableProducts.getColumnModel().getColumn(1).setResizable(false);
             tableProducts.getColumnModel().getColumn(1).setPreferredWidth(5);
             tableProducts.getColumnModel().getColumn(2).setResizable(false);
-            tableProducts.getColumnModel().getColumn(2).setPreferredWidth(5);
+            tableProducts.getColumnModel().getColumn(3).setMinWidth(0);
+            tableProducts.getColumnModel().getColumn(3).setPreferredWidth(0);
+            tableProducts.getColumnModel().getColumn(3).setMaxWidth(0);
         }
 
         mainPanel.add(tableProductsScroll, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 40, 380, 410));
@@ -625,7 +627,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private void deleteProductButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteProductButtonActionPerformed
         this.resetComboBox();
         if (this.tableProducts.getSelectedRowCount() == 0) {
-            JOptionPane.showMessageDialog(this, "POR FAVOR, SELECCIONA UN PRODUCTO");
+            JOptionPane.showMessageDialog(this, "POR FAVOR, SELECCIONA EL PRODUCTO QUE QUIERES ELIMINAR");
         } else {
             this.selectedProduct = this.getProductFromSelectedRow();
             this.changeComponentVisibility(this.deleteProductDialog, true);
@@ -645,9 +647,9 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     }
 
     private Product getProductFromSelectedRow() {
-        String selectedProductName = (String) this.tableModel.getValueAt(this.tableProducts.getSelectedRow(), 0);
+        int selectedProductID= (int) this.tableModel.getValueAt(this.tableProducts.getSelectedRow(), 3);
         int selectedProductQuantity = (int) this.tableModel.getValueAt(this.tableProducts.getSelectedRow(), 2);
-        return new Product(selectedProductName, selectedProductQuantity);
+        return new Product(selectedProductID, selectedProductQuantity);
     }
 
     private void chargeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chargeButtonActionPerformed
@@ -762,7 +764,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     }
 
     private void addProductToTable(Product product) {
-        Object[] productRow = {product.getProductName(), product.getProductPrice(), product.getProductQuantity()};
+        Object[] productRow = {product.getProductName(), product.getProductPrice(), product.getProductQuantity(),product.getProductID()};
         int numberOfRows = tableModel.getRowCount();
 
         if (numberOfRows == 0 || !checkExistingProductInTable(numberOfRows, product)) {
@@ -772,8 +774,8 @@ public class EasyRestoInterface extends javax.swing.JFrame {
 
     private boolean checkExistingProductInTable(int tableRowCount, Product product) {
         for (int row = 0; row < tableRowCount; row++) {
-            String productName = tableModel.getValueAt(row, 0).toString();
-            if (productName.equals(product.getProductName())) {
+            int productID = (int) tableModel.getValueAt(row, 3);
+            if (productID==product.getProductID()) {
                 updateProductQuantity(row);
                 return true;
             }

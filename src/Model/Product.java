@@ -32,6 +32,12 @@ public class Product {
         this.productQuantity = quantity;
     }
 
+    public Product(int productID, int quantity) {
+        this.productID = productID;
+        this.productQuantity = quantity;
+    }
+    
+
     public int getProductID() {
         return productID;
     }

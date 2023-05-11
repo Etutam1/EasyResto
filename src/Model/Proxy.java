@@ -43,7 +43,7 @@ public class Proxy {
     private final String currentOrderQuery = "SELECT ID_PEDIDO FROM PEDIDOS WHERE ID_MESA=? AND ESTADO_PEDIDO='ACTIVO'";
     private final String insertProductQuery = "INSERT INTO PEDIDOS_PRODUCTOS VALUES(?,?,?) ON DUPLICATE KEY UPDATE CANTIDAD=CANTIDAD+?";
     private final String closeOrderQuery = "UPDATE PEDIDOS SET ESTADO_PEDIDO='CERRADO', FECHA_COBRO=CURRENT_TIMESTAMP() WHERE ID_PEDIDO=?";
-    private final String orderProductsQuery = "SELECT P.NOMBRE, P.PRECIO, PP.CANTIDAD FROM PEDIDOS_PRODUCTOS AS PP INNER JOIN PRODUCTOS AS P ON PP.ID_PRODUCTO=P.ID_PRODUCTO WHERE ID_PEDIDO=?";
+    private final String orderProductsQuery = "SELECT P.NOMBRE, P.PRECIO, PP.CANTIDAD , PP.ID_PRODUCTO FROM PEDIDOS_PRODUCTOS AS PP INNER JOIN PRODUCTOS AS P ON PP.ID_PRODUCTO=P.ID_PRODUCTO WHERE ID_PEDIDO=?";
     private final String totalOrderQuery = "SELECT TOTAL_PEDIDO(?) AS TOTAL";
     private final String removeProductQuery = "SELECT BORRAR_PRODUCTO(?,?,?)";
 
@@ -153,7 +153,7 @@ public class Proxy {
 
     private boolean workerLogin(String workerID, char[] password) throws HeadlessException {
         if (!this.easyRestoInterface.checkEmptyWorkerPassField(new String(password))) {
-            if (this.checkWorkerCorrectPassword(workerID, new String(password), false)) {
+            if (this.checkCorrectPassword(workerID, new String(password), false)) {
                 this.workerLogged = this.getWorkerData(workerID);
                 JOptionPane.showMessageDialog(this.easyRestoInterface, "BIENVENIDO A EASYRESTO!");
                 return true;
@@ -170,7 +170,7 @@ public class Proxy {
     private boolean adminSettingsLogin(String email, char[] password) throws HeadlessException {
         if (!this.easyRestoInterface.checkEmptyAdminLoginFields(email, new String(password))) {
             if (this.checkRegisteredWorker(email)) {
-                    if (this.checkWorkerCorrectPassword(email, new String(password), true)) {
+                    if (this.checkCorrectPassword(email, new String(password), true)) {
                         this.workerLogged = this.getWorkerData(email);
                         JOptionPane.showMessageDialog(this.easyRestoInterface, "BIENVENIDO A EASYRESTO!");
                         return true;
@@ -257,7 +257,7 @@ public class Proxy {
         return true;
     }
 
-    private boolean checkWorkerCorrectPassword(String emailOrID, String password, boolean admin) {
+    private boolean checkCorrectPassword(String emailOrID, String password, boolean admin) {
         try {
             if (!admin) {
                 this.passwordWorkerPrep.setInt(1, Integer.parseInt(emailOrID));
@@ -309,7 +309,7 @@ public class Proxy {
 
     private boolean checkClockIn(int workerId) {
         try {
-            this.checkClockInPrep.setString(1, String.valueOf(workerId));
+            this.checkClockInPrep.setInt(1, workerId);
             ResultSet clockInDayResult = this.checkClockInPrep.executeQuery();
             while (clockInDayResult.next()) {
                 if (clockInDayResult.getString("DATE(ENTRADA)").equals(LocalDate.now().toString())) {
@@ -324,7 +324,7 @@ public class Proxy {
 
     private void clockIn(int workerId) {
         try {
-            clockInPrep.setString(1, String.valueOf(workerId));
+            clockInPrep.setInt(1, workerId);
             clockInPrep.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
@@ -333,8 +333,8 @@ public class Proxy {
 
     private boolean rememberClockOut(int workerId) {
         try {
-            this.clockOutRememberPrep.setString(1, String.valueOf(workerId));
-            this.clockOutRememberPrep.setString(2, String.valueOf(workerId));
+            this.clockOutRememberPrep.setInt(1, workerId);
+            this.clockOutRememberPrep.setInt(2, workerId);
             while (this.clockOutRememberPrep.executeQuery().next()) {
                 return true;
             }
@@ -346,7 +346,7 @@ public class Proxy {
 
     private boolean clockOut(int workerId) {
         try {
-            this.clockOutPrep.setString(1, String.valueOf(workerId));
+            this.clockOutPrep.setInt(1, workerId);
             this.clockOutPrep.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
@@ -356,8 +356,8 @@ public class Proxy {
 
     public void generateOrder(int workerID, int tableID) {
         try {
-            this.insertOrderPrep.setString(1, String.valueOf(workerID));
-            this.insertOrderPrep.setString(2, String.valueOf(tableID));
+            this.insertOrderPrep.setInt(1, workerID);
+            this.insertOrderPrep.setInt(2, tableID);
             this.insertOrderPrep.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
@@ -366,7 +366,7 @@ public class Proxy {
 
     public Order checkActiveTableOrder(int tableID) {
         try {
-            this.currentOrderPrep.setString(1, String.valueOf(tableID));
+            this.currentOrderPrep.setInt(1, tableID);
             ResultSet orderResult = this.currentOrderPrep.executeQuery();
             while (orderResult.next()) {
                 return new Order(orderResult.getInt("ID_PEDIDO"));
@@ -398,7 +398,7 @@ public class Proxy {
         Product productToRemove = null;
         while (iteratorProducts.hasNext() && !removeProduct) {
             Product iteratorProduct = iteratorProducts.next();
-            if (iteratorProduct.getProductName().equals(product.getProductName())) {
+            if (iteratorProduct.getProductID() == product.getProductID()) {
                 if (iteratorProduct.getProductQuantity() <= quantityToRemove) {
                     removeProduct = true;
                     productToRemove = iteratorProduct;
@@ -419,9 +419,9 @@ public class Proxy {
 
     public void removeProductFromOrder(Product product, int quantity) {
         try {
-            this.removeProductPrep.setString(1, String.valueOf(this.currentOrder.getOrderID()));
-            this.removeProductPrep.setString(2, product.getProductName());
-            this.removeProductPrep.setString(3, String.valueOf(quantity));
+            this.removeProductPrep.setInt(1,this.currentOrder.getOrderID());
+            this.removeProductPrep.setInt(2, product.getProductID());
+            this.removeProductPrep.setInt(3, quantity);
             this.removeProductPrep.executeQuery();
         } catch (SQLException ex) {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
@@ -440,10 +440,10 @@ public class Proxy {
 
     private void insertProduct(int orderID, int productID, int productQuantity) {
         try {
-            this.insertProductPrep.setString(1, String.valueOf(orderID));
-            this.insertProductPrep.setString(2, String.valueOf(productID));
-            this.insertProductPrep.setString(3, String.valueOf(productQuantity));
-            this.insertProductPrep.setString(4, String.valueOf(productQuantity));
+            this.insertProductPrep.setInt(1, orderID);
+            this.insertProductPrep.setInt(2, productID);
+            this.insertProductPrep.setInt(3, productQuantity);
+            this.insertProductPrep.setInt(4,productQuantity);
             this.insertProductPrep.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
@@ -452,7 +452,7 @@ public class Proxy {
 
     private boolean closeOrder(int orderID) {
         try {
-            this.closeOrderPrep.setString(1, String.valueOf(orderID));
+            this.closeOrderPrep.setInt(1, orderID);
             this.closeOrderPrep.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
@@ -463,10 +463,10 @@ public class Proxy {
     private boolean getOrderProducts(int orderID) {
 
         try {
-            this.orderProductsPrep.setString(1, String.valueOf(orderID));
+            this.orderProductsPrep.setInt(1, orderID);
             ResultSet orderProductsResult = this.orderProductsPrep.executeQuery();
             while (orderProductsResult.next()) {
-                Object[] productRow = {orderProductsResult.getString("NOMBRE"), orderProductsResult.getDouble("PRECIO"), orderProductsResult.getInt("CANTIDAD")};
+                Object[] productRow = {orderProductsResult.getString("NOMBRE"), orderProductsResult.getDouble("PRECIO"), orderProductsResult.getInt("CANTIDAD"), orderProductsResult.getInt("ID_PRODUCTO")};
                 this.easyRestoInterface.getTableModel().addRow(productRow);
             }
         } catch (SQLException ex) {
@@ -477,7 +477,7 @@ public class Proxy {
 
     public double getTotalOrder(int orderID) {
         try {
-            this.totalOrderPrep.setString(1, String.valueOf(orderID));
+            this.totalOrderPrep.setInt(1, orderID);
             ResultSet totalOrderResult = this.totalOrderPrep.executeQuery();
             while (totalOrderResult.next()) {
                 return totalOrderResult.getDouble("TOTAL");
