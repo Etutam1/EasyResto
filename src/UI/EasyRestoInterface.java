@@ -682,7 +682,6 @@ public class EasyRestoInterface extends javax.swing.JFrame {
 
         if (this.tableModel.getRowCount() == 0 && this.proxy.getCurrentOrder() != null) {
             this.proxy.handleRequest("closeOrder", "", this.proxy.getCurrentOrder().getOrderID());
-            System.out.println("CERRADO");
             this.totalOrderLabel.setText("");
         }
     }//GEN-LAST:event_deleteDialogButtonActionPerformed
@@ -902,15 +901,12 @@ public class EasyRestoInterface extends javax.swing.JFrame {
 
     private Dimension configButtonDimensionByCapacity(int capacity) {
 
-        if (capacity == 2) {
-            return new Dimension(60, 60);
-        } else if (capacity == 4) {
-            return new Dimension(60, 60);
-        } else if (capacity == 6) {
-            return new Dimension(120, 60);
-        } else {
-            return new Dimension(100, 100);
-        }
+        return switch (capacity) {
+            case 2 -> new Dimension(60, 60);
+            case 4 -> new Dimension(60, 60);
+            case 6 -> new Dimension(120, 60);
+            default -> new Dimension(100, 100);
+        };
     }
 
     private void configWorkerIDLabel(int workerID) {

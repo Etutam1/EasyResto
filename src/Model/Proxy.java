@@ -29,15 +29,15 @@ public class Proxy {
     private Order currentOrder;
     private final String clockOutQuery = "UPDATE HORARIOS_TRABAJADORES SET SALIDA=CURRENT_TIMESTAMP, TOTAL_JORNADA=TIMEDIFF(SALIDA, ENTRADA) WHERE ID_TRABAJADOR =? AND SALIDA IS NULL AND TIMEDIFF(CURRENT_TIMESTAMP, ENTRADA)< '10:00:00'";
     private final String clockOutRememberQuery = "SELECT ID_REGISTRO_HORARIO FROM HORARIOS_TRABAJADORES WHERE ID_TRABAJADOR=? AND TIMEDIFF(CURRENT_TIMESTAMP,(SELECT ENTRADA FROM HORARIOS_TRABAJADORES WHERE DATE(ENTRADA) = CURRENT_DATE AND ID_TRABAJADOR=?)) >= '07:55:00' AND SALIDA IS NULL";
-    private final String permissionsQuery = "SELECT PERMISOS FROM TRABAJADORES WHERE EMAIL=?";
     private final String clockInQuery = "INSERT INTO HORARIOS_TRABAJADORES(ID_TRABAJADOR) VALUES (?)";
     private final String checkClockInQuery = "SELECT DATE(ENTRADA) FROM HORARIOS_TRABAJADORES WHERE ID_TRABAJADOR =?";
     private final String workerDataQuery = "SELECT ID_TRABAJADOR, NOMBRE, APELLIDOS, NSS, EMAIL, TELEFONO, PASS, PERMISOS FROM TRABAJADORES WHERE EMAIL=? OR ID_TRABAJADOR=?";
-    private final String passwordQuery = "SELECT PASS FROM TRABAJADORES WHERE ID_TRABAJADOR= ? OR EMAIL=?";
+    private final String passwordWorkerQuery = "SELECT COMPROBAR_CONTRASEÑA(?,?)";
+    private final String passwordAdminQuery = "SELECT COMPROBAR_CONTRASEÑA_PERMISOS_ADMIN(?,?)";
     private final String activeWorkerNameIDQuery = "SELECT NOMBRE, ID_TRABAJADOR FROM TRABAJADORES WHERE ACTIVO IS TRUE";
     private final String activeEmailQuery = "SELECT EMAIL FROM TRABAJADORES WHERE ACTIVO IS TRUE";
     private final String tablesQuery = "SELECT ID_MESA,COORD_X,COORD_Y,CAPACIDAD,ICONO FROM MESAS ";
-    private final String familyQuery = "SELECT NOMBRE FROM FAMILIAS ";
+    private final String familyQuery = "SELECT NOMBRE FROM FAMILIAS";
     private final String productQuery = "SELECT P.ID_PRODUCTO, P.NOMBRE, P.PRECIO FROM PRODUCTOS AS P INNER JOIN FAMILIAS AS F ON P.FAMILIA= F.ID_FAMILIA WHERE F.NOMBRE=? AND P.ACTIVO IS TRUE";
     private final String insertOrderQuery = "INSERT INTO PEDIDOS VALUES (DEFAULT,?,?,DEFAULT,CURRENT_TIMESTAMP(),DEFAULT,DEFAULT,DEFAULT,DEFAULT)";
     private final String currentOrderQuery = "SELECT ID_PEDIDO FROM PEDIDOS WHERE ID_MESA=? AND ESTADO_PEDIDO='ACTIVO'";
@@ -46,14 +46,14 @@ public class Proxy {
     private final String orderProductsQuery = "SELECT P.NOMBRE, P.PRECIO, PP.CANTIDAD FROM PEDIDOS_PRODUCTOS AS PP INNER JOIN PRODUCTOS AS P ON PP.ID_PRODUCTO=P.ID_PRODUCTO WHERE ID_PEDIDO=?";
     private final String totalOrderQuery = "SELECT TOTAL_PEDIDO(?) AS TOTAL";
     private final String removeProductQuery = "SELECT BORRAR_PRODUCTO(?,?,?)";
-    
+
     private PreparedStatement clockOutRememberPrep;
     private PreparedStatement clockOutPrep;
-    private PreparedStatement permissionsPrep;
     private PreparedStatement clockInPrep;
     private PreparedStatement checkClockInPrep;
     private PreparedStatement workerDataPrep;
-    private PreparedStatement passwordPrep;
+    private PreparedStatement passwordWorkerPrep;
+    private PreparedStatement passwordAdminPrep;
     private PreparedStatement activeWorkerNamePrep;
     private PreparedStatement activeEmailPrep;
     private PreparedStatement tablesPrep;
@@ -79,11 +79,11 @@ public class Proxy {
         try {
             clockOutRememberPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(clockOutRememberQuery);
             clockOutPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(clockOutQuery);
-            permissionsPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(permissionsQuery);
             clockInPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(clockInQuery);
             checkClockInPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(checkClockInQuery);
             workerDataPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(workerDataQuery);
-            passwordPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(passwordQuery);
+            passwordWorkerPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(passwordWorkerQuery);
+            passwordAdminPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(passwordAdminQuery);
             activeWorkerNamePrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(activeWorkerNameIDQuery);
             activeEmailPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(activeEmailQuery);
             tablesPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(tablesQuery);
@@ -153,7 +153,7 @@ public class Proxy {
 
     private boolean workerLogin(String workerID, char[] password) throws HeadlessException {
         if (!this.easyRestoInterface.checkEmptyWorkerPassField(new String(password))) {
-            if (this.checkCorrectPassword(workerID, new String(password))) {
+            if (this.checkWorkerCorrectPassword(workerID, new String(password), false)) {
                 this.workerLogged = this.getWorkerData(workerID);
                 JOptionPane.showMessageDialog(this.easyRestoInterface, "BIENVENIDO A EASYRESTO!");
                 return true;
@@ -170,18 +170,14 @@ public class Proxy {
     private boolean adminSettingsLogin(String email, char[] password) throws HeadlessException {
         if (!this.easyRestoInterface.checkEmptyAdminLoginFields(email, new String(password))) {
             if (this.checkRegisteredWorker(email)) {
-                if (this.checkAdminPermission(email)) {
-                    if (this.checkCorrectPassword(email, new String(password))) {
+                    if (this.checkWorkerCorrectPassword(email, new String(password), true)) {
                         this.workerLogged = this.getWorkerData(email);
                         JOptionPane.showMessageDialog(this.easyRestoInterface, "BIENVENIDO A EASYRESTO!");
                         return true;
                     } else {
-                        JOptionPane.showMessageDialog(this.easyRestoInterface, "USUARIO O CONTRASEÑA INCORRECTO, VUELVE A INTENTARLO");
+                        JOptionPane.showMessageDialog(this.easyRestoInterface, "O USUARIO O CONTRASEÑA INCORRECTOS");
                         this.easyRestoInterface.emptyPassFieldText(this.easyRestoInterface.getPassTextField());
                     }
-                } else {
-                    JOptionPane.showMessageDialog(this.easyRestoInterface, "NO DISPONES DE PERMISOS PARA ACCEDER");
-                }
             } else {
                 JOptionPane.showMessageDialog(this.easyRestoInterface, "EL CORREO INTRODUCIDO NO SE ENCUENTRA REGISTRADO");
                 this.easyRestoInterface.emptyPassFieldText(this.easyRestoInterface.getPassTextField());
@@ -216,7 +212,7 @@ public class Proxy {
             Logger.getLogger(EasyRestoDB.class.getName()).log(Level.SEVERE, null, ex);
         }
         return true;
-        
+
     }
 
     private boolean getTablesButton() {
@@ -261,19 +257,32 @@ public class Proxy {
         return true;
     }
 
-    private boolean checkCorrectPassword(String emailOrID, String password) {
-        boolean passwordMatchs = false;
+    private boolean checkWorkerCorrectPassword(String emailOrID, String password, boolean admin) {
         try {
-            this.passwordPrep.setString(1, emailOrID);
-            this.passwordPrep.setString(2, emailOrID);
-            ResultSet workerPassResult = this.passwordPrep.executeQuery();
-            while (workerPassResult.next()) {
-                passwordMatchs = workerPassResult.getString("PASS").equals(password);
+            if (!admin) {
+                this.passwordWorkerPrep.setInt(1, Integer.parseInt(emailOrID));
+                this.passwordWorkerPrep.setString(2, password);
+                ResultSet passwordWorkerResult = this.passwordWorkerPrep.executeQuery();
+                while (passwordWorkerResult.next()) {
+                    if (passwordWorkerResult.getBoolean(1)) {
+                        return true;
+                    }
+                }
+            } else {
+                this.passwordAdminPrep.setString(1, emailOrID);
+                this.passwordAdminPrep.setString(2, password);
+                ResultSet passwordAdminResult = this.passwordAdminPrep.executeQuery();
+                while (passwordAdminResult.next()) {
+                    if (passwordAdminResult.getBoolean(1)) {
+                        return true;
+                    }
+                }
             }
+
         } catch (SQLException ex) {
             Logger.getLogger(EasyRestoDB.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return passwordMatchs;
+        return false;
     }
 
     private Worker getWorkerData(String emailOrID) {
@@ -345,21 +354,6 @@ public class Proxy {
         return true;
     }
 
-    private boolean checkAdminPermission(String email) {
-        try {
-            this.permissionsPrep.setString(1, email);
-            ResultSet permissionsResult = this.permissionsPrep.executeQuery();
-            while (permissionsResult.next()) {
-                if (permissionsResult.getString("PERMISOS").equals("ADMIN")) {
-                    return true;
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
-    }
-
     public void generateOrder(int workerID, int tableID) {
         try {
             this.insertOrderPrep.setString(1, String.valueOf(workerID));
@@ -428,14 +422,10 @@ public class Proxy {
             this.removeProductPrep.setString(1, String.valueOf(this.currentOrder.getOrderID()));
             this.removeProductPrep.setString(2, product.getProductName());
             this.removeProductPrep.setString(3, String.valueOf(quantity));
-            ResultSet deleteResult = this.removeProductPrep.executeQuery();
-            while (deleteResult.next()) {
-                System.out.println(deleteResult.getString(1));
-            }
+            this.removeProductPrep.executeQuery();
         } catch (SQLException ex) {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
 
     private boolean sendPendingProducts() {
@@ -546,14 +536,6 @@ public class Proxy {
         this.clockOutPrep = clockOutPrep;
     }
 
-    public PreparedStatement getPermissionsPrep() {
-        return permissionsPrep;
-    }
-
-    public void setPermissionsPrep(PreparedStatement permissionsPrep) {
-        this.permissionsPrep = permissionsPrep;
-    }
-
     public PreparedStatement getClockInPrep() {
         return clockInPrep;
     }
@@ -579,11 +561,11 @@ public class Proxy {
     }
 
     public PreparedStatement getPasswordPrep() {
-        return passwordPrep;
+        return passwordWorkerPrep;
     }
 
     public void setPasswordPrep(PreparedStatement passwordPrep) {
-        this.passwordPrep = passwordPrep;
+        this.passwordWorkerPrep = passwordPrep;
     }
 
     public PreparedStatement getActiveWorkerNamePrep() {
