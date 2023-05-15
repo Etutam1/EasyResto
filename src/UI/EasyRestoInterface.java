@@ -641,6 +641,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
                 this.proxy.generateOrder(this.proxy.getWorkerLogged().getId(), Integer.parseInt(this.tableIDLabel.getText()));
                 this.proxy.getCurrentOrder().setOrderID(proxy.getOrderID(Integer.parseInt(this.tableIDLabel.getText())));
             }
+           
             this.proxy.handleRequest("sendPendingProducts", "", 0);
             this.proxy.getCurrentOrder().getPendingProductsArray().clear();
             this.totalOrderLabel.setText(String.valueOf(this.proxy.getTotalOrder(this.proxy.getCurrentOrder().getOrderID())));
