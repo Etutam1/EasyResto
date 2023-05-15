@@ -14,7 +14,6 @@ import java.sql.ResultSet;
 import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
@@ -39,14 +38,14 @@ public class Proxy {
     private final String tablesQuery = "SELECT ID_MESA,COORD_X,COORD_Y,CAPACIDAD,ICONO FROM MESAS ";
     private final String familyQuery = "SELECT NOMBRE FROM FAMILIAS";
     private final String productQuery = "SELECT P.ID_PRODUCTO, P.NOMBRE, P.PRECIO FROM PRODUCTOS AS P INNER JOIN FAMILIAS AS F ON P.FAMILIA= F.ID_FAMILIA WHERE F.NOMBRE=? AND P.ACTIVO IS TRUE";
-    private final String insertOrderQuery = "INSERT INTO PEDIDOS VALUES (DEFAULT,?,?,DEFAULT,CURRENT_TIMESTAMP(),DEFAULT,DEFAULT,DEFAULT,DEFAULT)";
-    private final String currentOrderQuery = "SELECT ID_PEDIDO FROM PEDIDOS WHERE ID_MESA=? AND ESTADO_PEDIDO='ACTIVO'";
+    private final String insertOrderQuery = "INSERT INTO PEDIDOS VALUES (DEFAULT,?,?,DEFAULT,CURRENT_TIMESTAMP(),DEFAULT,DEFAULT,DEFAULT)";
+    private final String currentOrderQuery = "SELECT ID_PEDIDO FROM PEDIDOS WHERE ID_MESA=?";
     private final String insertProductQuery = "INSERT INTO PEDIDOS_PRODUCTOS VALUES(?,?,?) ON DUPLICATE KEY UPDATE CANTIDAD=CANTIDAD+?";
-    private final String closeOrderQuery = "UPDATE PEDIDOS SET ESTADO_PEDIDO='CERRADO', FECHA_COBRO=CURRENT_TIMESTAMP() WHERE ID_PEDIDO=?";
+    private final String closeOrderQuery = "CALL CERRAR_MESA(?,?)";
+    private final String removeOrderQuery = "DELETE FROM PEDIDOS WHERE ID_PEDIDO=?";
     private final String orderProductsQuery = "SELECT P.NOMBRE, P.PRECIO, PP.CANTIDAD , PP.ID_PRODUCTO FROM PEDIDOS_PRODUCTOS AS PP INNER JOIN PRODUCTOS AS P ON PP.ID_PRODUCTO=P.ID_PRODUCTO WHERE ID_PEDIDO=?";
     private final String totalOrderQuery = "SELECT TOTAL_PEDIDO(?) AS TOTAL";
-    private final String removeProductQuery = "SELECT BORRAR_PRODUCTO(?,?,?)";
-    
+    private final String removeProductQuery = "CALL BORRAR_PRODUCTO(?,?,?)";
 
     private PreparedStatement clockOutRememberPrep;
     private PreparedStatement clockOutPrep;
@@ -67,8 +66,7 @@ public class Proxy {
     private PreparedStatement orderProductsPrep;
     private PreparedStatement totalOrderPrep;
     private PreparedStatement removeProductPrep;
-
-    
+    private PreparedStatement removeOrderPrep;
 
     public Proxy(EasyRestoInterface easyRestoInterface) {
         this.easyRestoInterface = easyRestoInterface;
@@ -97,6 +95,7 @@ public class Proxy {
             orderProductsPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(orderProductsQuery);
             totalOrderPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(this.totalOrderQuery);
             removeProductPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(this.removeProductQuery);
+            removeOrderPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(this.removeOrderQuery);
         } catch (SQLException ex) {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -142,12 +141,14 @@ public class Proxy {
                 this.clockOut(Id);
             case "sendPendingProducts" ->
                 this.sendPendingProducts();
-            case "closeOrder" ->
-                this.closeOrder(Id);
+            case "closeOrder" ->{
+                System.out.println("CLOSE");
+                  this.closeOrder(Id);
+            }
             case "getOrderProducts" ->
                 this.getOrderProducts(Id);
-            default -> {
-            }
+            case "removeOrder"    -> 
+                this.removeOrder(Id);     
         }
         return true;
     }
@@ -171,14 +172,14 @@ public class Proxy {
     private boolean adminSettingsLogin(String email, char[] password) throws HeadlessException {
         if (!this.easyRestoInterface.checkEmptyAdminLoginFields(email, new String(password))) {
             if (this.checkRegisteredWorker(email)) {
-                    if (this.checkCorrectPassword(email, new String(password), true)) {
-                        this.workerLogged = this.getWorkerData(email);
-                        JOptionPane.showMessageDialog(this.easyRestoInterface, "BIENVENIDO A EASYRESTO!");
-                        return true;
-                    } else {
-                        JOptionPane.showMessageDialog(this.easyRestoInterface, "O USUARIO O CONTRASEÑA INCORRECTOS");
-                        this.easyRestoInterface.emptyPassFieldText(this.easyRestoInterface.getPassTextField());
-                    }
+                if (this.checkCorrectPassword(email, new String(password), true)) {
+                    this.workerLogged = this.getWorkerData(email);
+                    JOptionPane.showMessageDialog(this.easyRestoInterface, "BIENVENIDO A EASYRESTO!");
+                    return true;
+                } else {
+                    JOptionPane.showMessageDialog(this.easyRestoInterface, "O USUARIO O CONTRASEÑA INCORRECTOS");
+                    this.easyRestoInterface.emptyPassFieldText(this.easyRestoInterface.getPassTextField());
+                }
             } else {
                 JOptionPane.showMessageDialog(this.easyRestoInterface, "EL CORREO INTRODUCIDO NO SE ENCUENTRA REGISTRADO");
                 this.easyRestoInterface.emptyPassFieldText(this.easyRestoInterface.getPassTextField());
@@ -365,7 +366,7 @@ public class Proxy {
         }
     }
 
-     public int getOrderID(int tableID) {
+    public int getOrderID(int tableID) {
         try {
             this.currentOrderPrep.setInt(1, tableID);
             ResultSet orderResult = this.currentOrderPrep.executeQuery();
@@ -378,10 +379,9 @@ public class Proxy {
         return 0;
     }
 
-   
     public void removeProductFromOrder(Product product, int quantity) {
         try {
-            this.removeProductPrep.setInt(1,this.currentOrder.getOrderID());
+            this.removeProductPrep.setInt(1, this.currentOrder.getOrderID());
             this.removeProductPrep.setInt(2, product.getProductID());
             this.removeProductPrep.setInt(3, quantity);
             this.removeProductPrep.executeQuery();
@@ -405,17 +405,35 @@ public class Proxy {
             this.insertProductPrep.setInt(1, orderID);
             this.insertProductPrep.setInt(2, productID);
             this.insertProductPrep.setInt(3, productQuantity);
-            this.insertProductPrep.setInt(4,productQuantity);
+            this.insertProductPrep.setInt(4, productQuantity);
             this.insertProductPrep.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private boolean closeOrder(int orderID) {
+    private void closeOrder(int orderID) {
         try {
-            this.closeOrderPrep.setInt(1, orderID);
+            if (this.easyRestoInterface.getChargeOrderCardPayment().hasFocus()) {
+                
+                System.out.println("TARJETA");
+                this.closeOrderPrep.setString(1, "TARJETA");
+            } else {
+                 System.out.println("EFECTIVO");
+                this.closeOrderPrep.setString(1, "EFECTIVO");
+            }
+            this.closeOrderPrep.setInt(2, orderID);
             this.closeOrderPrep.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+    
+    private boolean removeOrder(int orderID){
+        try {
+            this.removeOrderPrep.setInt(1, orderID);
+            this.removeOrderPrep.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -577,7 +595,5 @@ public class Proxy {
     public void setInsertOrderPrep(PreparedStatement insertOrderPrep) {
         this.insertOrderPrep = insertOrderPrep;
     }
-
-  
 
 }

@@ -16,6 +16,7 @@ public class Order {
     
     private int orderID;
     private ArrayList<Product> pendingProductsArray = new ArrayList<>();
+    
     public Order(int orderID) {
         this.orderID = orderID;
     }

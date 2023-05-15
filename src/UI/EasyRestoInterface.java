@@ -85,6 +85,8 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         deleteProductButton = new javax.swing.JButton();
         chargeButton = new javax.swing.JButton();
         printBillButton = new javax.swing.JButton();
+        chargeOrderCashPaymentButton = new javax.swing.JButton();
+        chargeOrderCardPaymentButton = new javax.swing.JButton();
         familyScrollPanel = new javax.swing.JScrollPane();
         familyPanel = new javax.swing.JPanel();
         productScrollPanel = new javax.swing.JScrollPane();
@@ -276,7 +278,23 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         });
         billButtonsPanel.add(printBillButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 20, 80, -1));
 
-        mainPanel.add(billButtonsPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 520, 380, 60));
+        chargeOrderCashPaymentButton.setText("E");
+        chargeOrderCashPaymentButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chargeOrderCashPaymentButtonActionPerformed(evt);
+            }
+        });
+        billButtonsPanel.add(chargeOrderCashPaymentButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 70, 40, 40));
+
+        chargeOrderCardPaymentButton.setText("T");
+        chargeOrderCardPaymentButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chargeOrderCardPaymentButtonActionPerformed(evt);
+            }
+        });
+        billButtonsPanel.add(chargeOrderCardPaymentButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, 40, 40));
+
+        mainPanel.add(billButtonsPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 520, 380, 200));
 
         familyScrollPanel.setBackground(new java.awt.Color(0, 112, 115));
         familyScrollPanel.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -596,20 +614,24 @@ public class EasyRestoInterface extends javax.swing.JFrame {
             this.changeComponentVisibility(this.workerBackgroundPanel, true);
             this.changeComponentVisibility(this.workersPanel, true);
         } else {
-            this.changeComponentVisibility(this.tableMapPanel, true);
-            this.changeComponentVisibility(this.familyScrollPanel, false);
-            this.changeComponentVisibility(this.productScrollPanel, false);
-            this.changeComponentVisibility(this.tableProductsScroll, false);
-            this.changeComponentVisibility(this.tableProducts, false);
-            this.productPriceLabel.setText("");
-            this.changeComponentVisibility(this.billButtonsPanel, false);
-//            this.proxy.getCurrentOrder().getPendingProductsArray().clear();
-            this.tableModel.setRowCount(0);
-            this.tableMapPanel.removeAll();
-            this.proxy.handleRequest("getTablesButton", "", 0);
-            this.totalOrderLabel.setText("");
+            this.backToTablePanel();
         }
     }//GEN-LAST:event_mainPanelBackButtonActionPerformed
+
+    private void backToTablePanel() {
+        this.changeComponentVisibility(this.tableMapPanel, true);
+        this.changeComponentVisibility(this.familyScrollPanel, false);
+        this.changeComponentVisibility(this.productScrollPanel, false);
+        this.changeComponentVisibility(this.tableProductsScroll, false);
+        this.changeComponentVisibility(this.tableProducts, false);
+        this.productPriceLabel.setText("");
+        this.changeComponentVisibility(this.billButtonsPanel, false);
+        this.proxy.getCurrentOrder().getPendingProductsArray().clear();
+        this.tableModel.setRowCount(0);
+        this.tableMapPanel.removeAll();
+        this.proxy.handleRequest("getTablesButton", "", 0);
+        this.totalOrderLabel.setText("");
+    }
 
     private void sendProductsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendProductsButtonActionPerformed
         if (this.proxy.getCurrentOrder().getPendingProductsArray().isEmpty()) {
@@ -673,21 +695,36 @@ public class EasyRestoInterface extends javax.swing.JFrame {
             System.out.println("pendiente" + pendingQuantityToRemove);
             if (pendingQuantityToRemove > 0) {
                 this.proxy.removeProductFromOrder(selectedProduct, pendingQuantityToRemove);
-                this.totalOrderLabel.setText(String.valueOf(this.proxy.getTotalOrder(this.proxy.getCurrentOrder().getOrderID())));
             }
-            this.deleteProductFromTable(selectedQuantity);
         } else {
             this.proxy.removeProductFromOrder(selectedProduct, selectedQuantity);
-            this.deleteProductFromTable(selectedQuantity);
-            this.totalOrderLabel.setText(String.valueOf(this.proxy.getTotalOrder(this.proxy.getCurrentOrder().getOrderID())));
         }
+        this.deleteProductFromTable(selectedQuantity);
+        this.totalOrderLabel.setText(String.valueOf(this.proxy.getTotalOrder(this.proxy.getCurrentOrder().getOrderID())));
         this.changeComponentVisibility(this.deleteProductDialog, false);
 
-        if (this.tableModel.getRowCount() == 0 && this.proxy.getCurrentOrder() != null) {
-            this.proxy.handleRequest("closeOrder", "", this.proxy.getCurrentOrder().getOrderID());
+        if (this.tableModel.getRowCount() == 0 && this.proxy.getCurrentOrder().getOrderID() != 0) {
+            this.proxy.handleRequest("removeOrder", "", this.proxy.getCurrentOrder().getOrderID());
             this.totalOrderLabel.setText("");
         }
     }//GEN-LAST:event_deleteDialogButtonActionPerformed
+
+    private void chargeOrderCardPaymentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chargeOrderCardPaymentButtonActionPerformed
+        if (this.proxy.getCurrentOrder().getOrderID() != 0) {
+            this.proxy.handleRequest("closeOrder", "", this.proxy.getCurrentOrder().getOrderID());
+            this.proxy.handleRequest("removeOrder", "", this.proxy.getCurrentOrder().getOrderID()); 
+            this.backToTablePanel();
+        }
+    }//GEN-LAST:event_chargeOrderCardPaymentButtonActionPerformed
+
+    private void chargeOrderCashPaymentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chargeOrderCashPaymentButtonActionPerformed
+       
+        if (this.proxy.getCurrentOrder().getOrderID() != 0) {
+            this.proxy.handleRequest("closeOrder", "", this.proxy.getCurrentOrder().getOrderID());
+            this.proxy.handleRequest("removeOrder", "", this.proxy.getCurrentOrder().getOrderID()); 
+            this.backToTablePanel();
+        }
+    }//GEN-LAST:event_chargeOrderCashPaymentButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -812,22 +849,6 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         });
     }
 
-    public void configTableButton(int tableID, Point tableLocation, int capacity, String url) {
-        JButton tableButton = new JButton();
-        Dimension buttonDimension = configButtonDimensionByCapacity(capacity);
-
-        JLabel tableNumberLabel = configTableIDLabel(tableID);
-        Point tableButtonCenterPoint = new Point(tableLocation.x + buttonDimension.width / 2, tableLocation.y + buttonDimension.height / 2);
-
-        tableButton.setIcon(getResizedButtonIcon(url, buttonDimension));
-        hideButtonBackground(tableButton);
-
-        addActionListenerToTableButton(tableButton, tableID);
-
-        this.tableMapPanel.add(tableNumberLabel, new AbsoluteConstraints(tableButtonCenterPoint.x - tableNumberLabel.getWidth() / 2, tableButtonCenterPoint.y - tableNumberLabel.getHeight() / 2));
-        this.tableMapPanel.add(tableButton, new AbsoluteConstraints(tableLocation.x, tableLocation.y, buttonDimension.width, buttonDimension.height));
-    }
-
     private void addButtonToPanel(JPanel panel, JButton button) {
         panel.add(button);
     }
@@ -859,6 +880,22 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         });
     }
 
+    public void configTableButton(int tableID, Point tableLocation, int capacity, String url) {
+        JButton tableButton = new JButton();
+        Dimension buttonDimension = configButtonDimensionByCapacity(capacity);
+
+        JLabel tableNumberLabel = configTableIDLabel(tableID);
+        Point tableButtonCenterPoint = new Point(tableLocation.x + buttonDimension.width / 2, tableLocation.y + buttonDimension.height / 2);
+
+        tableButton.setIcon(getResizedButtonIcon(url, buttonDimension));
+        hideButtonBackground(tableButton);
+
+        addActionListenerToTableButton(tableButton, tableID);
+
+        this.tableMapPanel.add(tableNumberLabel, new AbsoluteConstraints(tableButtonCenterPoint.x - tableNumberLabel.getWidth() / 2, tableButtonCenterPoint.y - tableNumberLabel.getHeight() / 2));
+        this.tableMapPanel.add(tableButton, new AbsoluteConstraints(tableLocation.x, tableLocation.y, buttonDimension.width, buttonDimension.height));
+    }
+
     private void addActionListenerToTableButton(JButton tableButton, int tableID) {
         tableButton.addActionListener(new ActionListener() {
             @Override
@@ -874,7 +911,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
                 proxy.handleRequest("getProductFamilyButton", "", 0);
 
                 int currentOrderID = proxy.getOrderID(tableID);
-                
+
                 if (currentOrderID == 0) {
                     proxy.setCurrentOrder(new Order());
                     System.out.println("al entrar mesa:" + proxy.getCurrentOrder().getOrderID());
@@ -945,6 +982,22 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     }
 
     // <editor-fold defaultstate="collapsed" desc="GETTERS&SETTERS"> 
+    public JButton getChargeOrderCardPayment() {
+        return chargeOrderCardPaymentButton;
+    }
+
+    public void setChargeOrderCardPayment(JButton chargeOrderCardPayment1) {
+        this.chargeOrderCardPaymentButton = chargeOrderCardPayment1;
+    }
+
+    public JButton getChargeOrderCashPayment() {
+        return chargeOrderCashPaymentButton;
+    }
+
+    public void setChargeOrderCashPayment(JButton chargeOrderCashPayment) {
+        this.chargeOrderCashPaymentButton = chargeOrderCashPayment;
+    }
+
     public Proxy getProxy() {
         return proxy;
     }
@@ -1471,6 +1524,8 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private javax.swing.JPanel backgroundPanel;
     private javax.swing.JPanel billButtonsPanel;
     private javax.swing.JButton chargeButton;
+    private javax.swing.JButton chargeOrderCardPaymentButton;
+    private javax.swing.JButton chargeOrderCashPaymentButton;
     private javax.swing.JButton clockOutButton;
     private javax.swing.JDialog clockOutDialog;
     private javax.swing.JLabel clockOutDialogLabel;
