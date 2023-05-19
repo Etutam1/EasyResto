@@ -24,9 +24,13 @@ public class Order {
 
     public Order() {
     }
+
+    public Order(int orderID, int pax) {
+        this.orderID = orderID;
+        this.pax = pax;
+    }
     
-    
-     public void addProductToPendingArray(Product product) {
+    public void addProductToPendingArray(Product product) {
         Iterator<Product> iteratorProducts = this.pendingProductsArray.iterator();
         boolean found = false;
         while (iteratorProducts.hasNext()) {

@@ -2,7 +2,8 @@ package UI;
 
 import Model.Order;
 import Model.Product;
-import Model.Proxy;
+import Controller.Proxy;
+import Model.ExceptionReport;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.HeadlessException;
@@ -10,10 +11,13 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Date;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -36,7 +40,7 @@ import org.netbeans.lib.awtextra.AbsoluteConstraints;
  *
  * @author matut
  */
-public class EasyRestoInterface extends javax.swing.JFrame {
+public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionReport{
 
     /**
      * Creates new form Interfaz
@@ -77,6 +81,19 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         deleteDialogButton = new javax.swing.JButton();
         quantityCombo = new javax.swing.JComboBox<>();
         mainPanel = new javax.swing.JPanel();
+        splitChargePanel = new javax.swing.JPanel();
+        tableProductsScroll1 = new javax.swing.JScrollPane();
+        tableProducts2 = new javax.swing.JTable();
+        tableProductsScroll2 = new javax.swing.JScrollPane();
+        tableProducts3 = new javax.swing.JTable();
+        rigthButton = new javax.swing.JButton();
+        leftButton = new javax.swing.JButton();
+        chargeOrderCashPaymentButton1 = new javax.swing.JButton();
+        chargeOrderCardPaymentButton1 = new javax.swing.JButton();
+        paxPanel = new javax.swing.JPanel();
+        paxTextField = new javax.swing.JTextField();
+        PaxLabelPanel = new javax.swing.JLabel();
+        paxOkButton = new javax.swing.JButton();
         tableMapPanel = new javax.swing.JPanel();
         tableProductsScroll = new javax.swing.JScrollPane();
         tableProducts = new javax.swing.JTable();
@@ -100,6 +117,8 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         productPriceLabel = new javax.swing.JLabel();
         totalLabel = new javax.swing.JLabel();
         totalOrderLabel = new javax.swing.JLabel();
+        paxLabel = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
         workerPasswordPanel = new javax.swing.JPanel();
         passwordButtonPanelTextField = new javax.swing.JPasswordField();
         enterPasswordLabel = new javax.swing.JLabel();
@@ -193,6 +212,149 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         mainPanel.setPreferredSize(new java.awt.Dimension(900, 800));
         mainPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        splitChargePanel.setBackground(new java.awt.Color(0, 112, 115));
+        splitChargePanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        tableProducts2.setBackground(new java.awt.Color(255, 255, 255));
+        tableProducts2.setForeground(new java.awt.Color(0, 0, 0));
+        tableProducts2.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Producto", "Precio", "Cantidad", "ID"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tableProducts2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        tableProducts2.setSelectionBackground(new java.awt.Color(0, 153, 153));
+        tableProducts2.setSelectionForeground(new java.awt.Color(0, 0, 0));
+        tableProducts2.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tableProductsScroll1.setViewportView(tableProducts2);
+        tableProducts2.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        if (tableProducts2.getColumnModel().getColumnCount() > 0) {
+            tableProducts2.getColumnModel().getColumn(0).setResizable(false);
+            tableProducts2.getColumnModel().getColumn(0).setPreferredWidth(10);
+            tableProducts2.getColumnModel().getColumn(1).setResizable(false);
+            tableProducts2.getColumnModel().getColumn(1).setPreferredWidth(5);
+            tableProducts2.getColumnModel().getColumn(2).setResizable(false);
+            tableProducts2.getColumnModel().getColumn(3).setMinWidth(0);
+            tableProducts2.getColumnModel().getColumn(3).setPreferredWidth(0);
+            tableProducts2.getColumnModel().getColumn(3).setMaxWidth(0);
+        }
+
+        splitChargePanel.add(tableProductsScroll1, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 110, 380, 410));
+        tableProductsScroll.setVisible(false);
+
+        tableProducts3.setBackground(new java.awt.Color(255, 255, 255));
+        tableProducts3.setForeground(new java.awt.Color(0, 0, 0));
+        tableProducts3.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Producto", "Precio", "Cantidad", "ID"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tableProducts3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        tableProducts3.setSelectionBackground(new java.awt.Color(0, 153, 153));
+        tableProducts3.setSelectionForeground(new java.awt.Color(0, 0, 0));
+        tableProducts3.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tableProductsScroll2.setViewportView(tableProducts3);
+        tableProducts3.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        if (tableProducts3.getColumnModel().getColumnCount() > 0) {
+            tableProducts3.getColumnModel().getColumn(0).setResizable(false);
+            tableProducts3.getColumnModel().getColumn(0).setPreferredWidth(10);
+            tableProducts3.getColumnModel().getColumn(1).setResizable(false);
+            tableProducts3.getColumnModel().getColumn(1).setPreferredWidth(5);
+            tableProducts3.getColumnModel().getColumn(2).setResizable(false);
+            tableProducts3.getColumnModel().getColumn(3).setMinWidth(0);
+            tableProducts3.getColumnModel().getColumn(3).setPreferredWidth(0);
+            tableProducts3.getColumnModel().getColumn(3).setMaxWidth(0);
+        }
+
+        splitChargePanel.add(tableProductsScroll2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 110, 380, 410));
+        tableProductsScroll.setVisible(false);
+
+        rigthButton.setText("->");
+        splitChargePanel.add(rigthButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 250, 60, 40));
+
+        leftButton.setText("<-");
+        splitChargePanel.add(leftButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 320, 60, 40));
+
+        chargeOrderCashPaymentButton1.setText("E");
+        chargeOrderCashPaymentButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chargeOrderCashPaymentButton1ActionPerformed(evt);
+            }
+        });
+        splitChargePanel.add(chargeOrderCashPaymentButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 550, 40, 40));
+
+        chargeOrderCardPaymentButton1.setText("T");
+        chargeOrderCardPaymentButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chargeOrderCardPaymentButton1ActionPerformed(evt);
+            }
+        });
+        splitChargePanel.add(chargeOrderCardPaymentButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 550, 40, 40));
+
+        mainPanel.add(splitChargePanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 900, 720));
+        this.splitChargePanel.setVisible(false);
+
+        paxPanel.setBackground(new java.awt.Color(0, 112, 115));
+        paxPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        paxTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                paxTextFieldActionPerformed(evt);
+            }
+        });
+        paxPanel.add(paxTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 300, 40, -1));
+
+        PaxLabelPanel.setForeground(new java.awt.Color(255, 255, 255));
+        PaxLabelPanel.setText("COMENSALES:");
+        paxPanel.add(PaxLabelPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 270, 90, -1));
+
+        paxOkButton.setText("OK");
+        paxOkButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                paxOkButtonActionPerformed(evt);
+            }
+        });
+        paxPanel.add(paxOkButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 350, 60, 20));
+
+        mainPanel.add(paxPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 880, 710));
+        this.changeComponentVisibility(paxPanel, false);
+
         tableMapPanel.setBackground(new java.awt.Color(255, 255, 255));
         tableMapPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
         mainPanel.add(tableMapPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 860, 700));
@@ -242,6 +404,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         }
 
         mainPanel.add(tableProductsScroll, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 40, 380, 410));
+        tableProductsScroll.setVisible(false);
 
         billButtonsPanel.setBackground(new java.awt.Color(0, 112, 115));
         billButtonsPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -295,6 +458,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         billButtonsPanel.add(chargeOrderCardPaymentButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, 40, 40));
 
         mainPanel.add(billButtonsPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 520, 380, 200));
+        billButtonsPanel.setVisible(false);
 
         familyScrollPanel.setBackground(new java.awt.Color(0, 112, 115));
         familyScrollPanel.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -307,6 +471,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         familyScrollPanel.setViewportView(familyPanel);
 
         mainPanel.add(familyScrollPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 40, 365, 410));
+        familyScrollPanel.setVisible(false);
 
         productScrollPanel.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         productScrollPanel.setPreferredSize(new java.awt.Dimension(1000, 1000));
@@ -317,6 +482,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         productScrollPanel.setViewportView(productsPanel);
 
         mainPanel.add(productScrollPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 40, 365, 410));
+        productScrollPanel.setVisible(false);
 
         ScrollBackButton.setForeground(new java.awt.Color(51, 51, 51));
         ScrollBackButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resources/img/1.png"))); // NOI18N
@@ -340,7 +506,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
 
         tableIDLabel.setBackground(new java.awt.Color(255, 255, 255));
         tableIDLabel.setForeground(new java.awt.Color(255, 255, 255));
-        mainPanel.add(tableIDLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 10, 60, 30));
+        mainPanel.add(tableIDLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 10, 50, 30));
 
         tableLabel.setBackground(new java.awt.Color(255, 255, 255));
         tableLabel.setForeground(new java.awt.Color(255, 255, 255));
@@ -372,6 +538,14 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         totalOrderLabel.setBackground(new java.awt.Color(255, 255, 255));
         totalOrderLabel.setForeground(new java.awt.Color(255, 255, 255));
         mainPanel.add(totalOrderLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 10, 70, 30));
+
+        paxLabel.setBackground(new java.awt.Color(255, 255, 255));
+        paxLabel.setForeground(new java.awt.Color(255, 255, 255));
+        mainPanel.add(paxLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 10, 50, 30));
+
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel3.setText("COMENSALES:");
+        mainPanel.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 10, 90, 30));
 
         getContentPane().add(mainPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 900, 810));
 
@@ -631,6 +805,8 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         this.tableMapPanel.removeAll();
         this.proxy.handleRequest("getTablesButton", "", 0);
         this.totalOrderLabel.setText("");
+        this.paxLabel.setText("");
+        this.changeComponentVisibility(this.paxPanel, false);
     }
 
     private void sendProductsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendProductsButtonActionPerformed
@@ -638,10 +814,10 @@ public class EasyRestoInterface extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "POR FAVOR, AGREGA PRODUCTOS");
         } else {
             if (this.proxy.getCurrentOrder().getOrderID() == 0) {
-                this.proxy.generateOrder(this.proxy.getWorkerLogged().getId(), Integer.parseInt(this.tableIDLabel.getText()));
+                this.proxy.generateOrder(this.proxy.getWorkerLogged().getId(), Integer.parseInt(this.tableIDLabel.getText()), Integer.parseInt(this.paxLabel.getText()));
                 this.proxy.getCurrentOrder().setOrderID(proxy.getOrderID(Integer.parseInt(this.tableIDLabel.getText())));
             }
-           
+
             this.proxy.handleRequest("sendPendingProducts", "", 0);
             this.proxy.getCurrentOrder().getPendingProductsArray().clear();
             this.totalOrderLabel.setText(String.valueOf(this.proxy.getTotalOrder(this.proxy.getCurrentOrder().getOrderID())));
@@ -713,19 +889,42 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private void chargeOrderCardPaymentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chargeOrderCardPaymentButtonActionPerformed
         if (this.proxy.getCurrentOrder().getOrderID() != 0) {
             this.proxy.handleRequest("closeOrder", "", this.proxy.getCurrentOrder().getOrderID());
-            this.proxy.handleRequest("removeOrder", "", this.proxy.getCurrentOrder().getOrderID()); 
             this.backToTablePanel();
         }
     }//GEN-LAST:event_chargeOrderCardPaymentButtonActionPerformed
 
     private void chargeOrderCashPaymentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chargeOrderCashPaymentButtonActionPerformed
-       
+
         if (this.proxy.getCurrentOrder().getOrderID() != 0) {
             this.proxy.handleRequest("closeOrder", "", this.proxy.getCurrentOrder().getOrderID());
-            this.proxy.handleRequest("removeOrder", "", this.proxy.getCurrentOrder().getOrderID()); 
             this.backToTablePanel();
         }
     }//GEN-LAST:event_chargeOrderCashPaymentButtonActionPerformed
+
+    private void paxOkButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paxOkButtonActionPerformed
+        this.paxLabel.setText(this.paxTextField.getText());
+        this.paxTextField.setText("");
+        this.changeComponentVisibility(this.paxPanel, false);
+        
+        changeComponentVisibility(tableProductsScroll, true);
+        changeComponentVisibility(familyScrollPanel, true);
+        changeComponentVisibility(tableProducts, true);
+        changeComponentVisibility(productScrollPanel, false);
+        changeComponentVisibility(billButtonsPanel, true);
+    }//GEN-LAST:event_paxOkButtonActionPerformed
+
+    private void paxTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paxTextFieldActionPerformed
+        // TODO add your handling code here:
+        this.paxOkButtonActionPerformed(evt);
+    }//GEN-LAST:event_paxTextFieldActionPerformed
+
+    private void chargeOrderCashPaymentButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chargeOrderCashPaymentButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_chargeOrderCashPaymentButton1ActionPerformed
+
+    private void chargeOrderCardPaymentButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chargeOrderCardPaymentButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_chargeOrderCardPaymentButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -875,7 +1074,7 @@ public class EasyRestoInterface extends javax.swing.JFrame {
                     proxy.getCurrentOrder().addProductToPendingArray(productToAdd);
 
                 } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                    Logger.getLogger(EasyRestoInterface.class.getName()).log(Level.SEVERE, null, ex);
+                    reportException(ex);
                 }
             }
         });
@@ -901,26 +1100,30 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         tableButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                tableIDLabel.setText(String.valueOf(tableID));
+                
                 changeComponentVisibility(tableMapPanel, false);
-                changeComponentVisibility(tableProductsScroll, true);
-                changeComponentVisibility(familyScrollPanel, true);
-                changeComponentVisibility(tableProducts, true);
-                changeComponentVisibility(productScrollPanel, false);
-                changeComponentVisibility(billButtonsPanel, true);
+                tableIDLabel.setText(String.valueOf(tableID));
+
                 familyPanel.removeAll();
                 proxy.handleRequest("getProductFamilyButton", "", 0);
 
-                int currentOrderID = proxy.getOrderID(tableID);
-
-                if (currentOrderID == 0) {
+                Order auxOrder = proxy.getOrderData(tableID);
+                
+                if (auxOrder == null) {
+                    changeComponentVisibility(paxPanel, true);
                     proxy.setCurrentOrder(new Order());
                     System.out.println("al entrar mesa:" + proxy.getCurrentOrder().getOrderID());
                 } else {
-                    proxy.setCurrentOrder(new Order(currentOrderID));
+                    changeComponentVisibility(tableProductsScroll, true);
+                    changeComponentVisibility(familyScrollPanel, true);
+                    changeComponentVisibility(tableProducts, true);
+                    changeComponentVisibility(productScrollPanel, false);
+                    changeComponentVisibility(billButtonsPanel, true);
+                    proxy.setCurrentOrder(auxOrder);
                     System.out.println("al entrar mesa:" + proxy.getCurrentOrder().getOrderID());
                     proxy.handleRequest("getOrderProducts", "", proxy.getCurrentOrder().getOrderID());
                     totalOrderLabel.setText(String.valueOf(proxy.getTotalOrder(proxy.getCurrentOrder().getOrderID())));
+                    paxLabel.setText(String.valueOf(proxy.getCurrentOrder().getPax()));
                 }
             }
         });
@@ -981,7 +1184,29 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     public boolean checkEmptyAdminLoginFields(String email, String password) throws HeadlessException {
         return password.isBlank() || email.isBlank();
     }
+    
+    @Override
+    public void reportException(Exception exception) {
+        PrintWriter salida = null;
 
+        try {
+            salida = new PrintWriter(new FileWriter("Exceptions.txt", true));
+            salida.write("Se ha producido la excepcion" + exception.toString() + "en la fecha " + new Date().toString() + "debido a " + exception.getCause().toString() + "\n");
+
+        } catch (FileNotFoundException ex2) {
+            JOptionPane.showMessageDialog(this, "NO SE HA PODIDO REPORTAR UN PROBLEMA");
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "NO SE HA PODIDO REPORTAR UN PROBLEMA");
+        } finally {
+
+            if (salida != null) {
+                salida.close();
+            }
+        }
+    }
+
+    
+    
     // <editor-fold defaultstate="collapsed" desc="GETTERS&SETTERS"> 
     public JButton getChargeOrderCardPayment() {
         return chargeOrderCardPaymentButton;
@@ -1511,10 +1736,14 @@ public class EasyRestoInterface extends javax.swing.JFrame {
         this.totalOrderLabel = totalOrderLabel;
     }
     //</editor-fold>
+    
+    
+    
     private Product selectedProduct = null;
     private DefaultTableModel tableModel;
     private Proxy proxy = new Proxy(this);
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel PaxLabelPanel;
     private javax.swing.JLabel QuantityLabel;
     private javax.swing.JButton ScrollBackButton;
     private javax.swing.JPanel adminBackgroundPanel;
@@ -1526,7 +1755,9 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private javax.swing.JPanel billButtonsPanel;
     private javax.swing.JButton chargeButton;
     private javax.swing.JButton chargeOrderCardPaymentButton;
+    private javax.swing.JButton chargeOrderCardPaymentButton1;
     private javax.swing.JButton chargeOrderCashPaymentButton;
+    private javax.swing.JButton chargeOrderCashPaymentButton1;
     private javax.swing.JButton clockOutButton;
     private javax.swing.JDialog clockOutDialog;
     private javax.swing.JLabel clockOutDialogLabel;
@@ -1543,6 +1774,8 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private javax.swing.JScrollPane familyScrollPanel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JButton leftButton;
     private javax.swing.JLabel loginTitleLabel;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JButton mainPanelBackButton;
@@ -1550,6 +1783,10 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private javax.swing.JPasswordField passTextField;
     private javax.swing.JPasswordField passwordButtonPanelTextField;
     private javax.swing.JButton passwordPanelBackButton;
+    private javax.swing.JLabel paxLabel;
+    private javax.swing.JButton paxOkButton;
+    private javax.swing.JPanel paxPanel;
+    private javax.swing.JTextField paxTextField;
     private javax.swing.JLabel priceLabel;
     private javax.swing.JButton printBillButton;
     private javax.swing.JLabel productPriceLabel;
@@ -1557,12 +1794,18 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private javax.swing.JPanel productsPanel;
     private javax.swing.JComboBox<String> quantityCombo;
     private javax.swing.JButton refuseClockOutButton;
+    private javax.swing.JButton rigthButton;
     private javax.swing.JButton sendProductsButton;
+    private javax.swing.JPanel splitChargePanel;
     private javax.swing.JLabel tableIDLabel;
     private javax.swing.JLabel tableLabel;
     private javax.swing.JPanel tableMapPanel;
     private javax.swing.JTable tableProducts;
+    private javax.swing.JTable tableProducts2;
+    private javax.swing.JTable tableProducts3;
     private javax.swing.JScrollPane tableProductsScroll;
+    private javax.swing.JScrollPane tableProductsScroll1;
+    private javax.swing.JScrollPane tableProductsScroll2;
     private javax.swing.JLabel totalLabel;
     private javax.swing.JLabel totalOrderLabel;
     private javax.swing.JPanel workerBackgroundPanel;
@@ -1573,4 +1816,6 @@ public class EasyRestoInterface extends javax.swing.JFrame {
     private javax.swing.JScrollPane workerScrollPanel;
     private javax.swing.JPanel workersPanel;
     // End of variables declaration//GEN-END:variables
+
+    
 }

@@ -2,11 +2,20 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package Model;
+package Controller;
 
+import Model.EasyRestoDB;
+import Model.ExceptionReport;
+import Model.Order;
+import Model.Product;
+import Model.Worker;
 import UI.EasyRestoInterface;
 import java.awt.HeadlessException;
 import java.awt.Point;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,13 +23,14 @@ import java.sql.ResultSet;
 import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Iterator;
 
 /**
  *
  * @author a22lucasmpg
  */
-public class Proxy {
+public class Proxy implements ExceptionReport {
 
     private EasyRestoDB easyRestoDb;
     private EasyRestoInterface easyRestoInterface;
@@ -30,7 +40,7 @@ public class Proxy {
     private final String clockOutRememberQuery = "SELECT ID_REGISTRO_HORARIO FROM HORARIOS_TRABAJADORES WHERE ID_TRABAJADOR=? AND TIMEDIFF(CURRENT_TIMESTAMP,(SELECT ENTRADA FROM HORARIOS_TRABAJADORES WHERE DATE(ENTRADA) = CURRENT_DATE AND ID_TRABAJADOR=?)) >= '07:55:00' AND SALIDA IS NULL";
     private final String clockInQuery = "INSERT INTO HORARIOS_TRABAJADORES(ID_TRABAJADOR) VALUES (?)";
     private final String checkClockInQuery = "SELECT DATE(ENTRADA) FROM HORARIOS_TRABAJADORES WHERE ID_TRABAJADOR =?";
-    private final String workerDataQuery = "SELECT ID_TRABAJADOR, NOMBRE, APELLIDOS, NSS, EMAIL, TELEFONO, PASS, PERMISOS FROM TRABAJADORES WHERE EMAIL=? OR ID_TRABAJADOR=?";
+    private final String workerDataQuery = "SELECT ID_TRABAJADOR, NOMBRE, APELLIDOS, EMAIL, TELEFONO, PERMISOS FROM TRABAJADORES WHERE EMAIL=? OR ID_TRABAJADOR=?";
     private final String passwordWorkerQuery = "SELECT COMPROBAR_CONTRASEÑA(?,?)";
     private final String passwordAdminQuery = "SELECT COMPROBAR_CONTRASEÑA_PERMISOS_ADMIN(?,?)";
     private final String activeWorkerNameIDQuery = "SELECT NOMBRE, ID_TRABAJADOR FROM TRABAJADORES WHERE ACTIVO IS TRUE";
@@ -38,8 +48,8 @@ public class Proxy {
     private final String tablesQuery = "SELECT ID_MESA,COORD_X,COORD_Y,CAPACIDAD,ICONO FROM MESAS ";
     private final String familyQuery = "SELECT NOMBRE FROM FAMILIAS";
     private final String productQuery = "SELECT P.ID_PRODUCTO, P.NOMBRE, P.PRECIO FROM PRODUCTOS AS P INNER JOIN FAMILIAS AS F ON P.FAMILIA= F.ID_FAMILIA WHERE F.NOMBRE=? AND P.ACTIVO IS TRUE";
-    private final String insertOrderQuery = "INSERT INTO PEDIDOS VALUES (DEFAULT,?,?,DEFAULT,CURRENT_TIMESTAMP(),DEFAULT,DEFAULT,DEFAULT)";
-    private final String currentOrderQuery = "SELECT ID_PEDIDO FROM PEDIDOS WHERE ID_MESA=?";
+    private final String insertOrderQuery = "INSERT INTO PEDIDOS VALUES (DEFAULT,?,?,?,CURRENT_TIMESTAMP(),DEFAULT,DEFAULT,DEFAULT)";
+    private final String currentOrderQuery = "SELECT ID_PEDIDO , COMENSALES_ACTUALES FROM PEDIDOS WHERE ID_MESA=?";
     private final String insertProductQuery = "INSERT INTO PEDIDOS_PRODUCTOS VALUES(?,?,?) ON DUPLICATE KEY UPDATE CANTIDAD=CANTIDAD+?";
     private final String closeOrderQuery = "CALL CERRAR_MESA(?,?)";
     private final String removeOrderQuery = "DELETE FROM PEDIDOS WHERE ID_PEDIDO=?";
@@ -97,7 +107,7 @@ public class Proxy {
             removeProductPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(this.removeProductQuery);
             removeOrderPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(this.removeOrderQuery);
         } catch (SQLException ex) {
-            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+            this.reportException(ex);
         }
     }
 
@@ -141,14 +151,14 @@ public class Proxy {
                 this.clockOut(Id);
             case "sendPendingProducts" ->
                 this.sendPendingProducts();
-            case "closeOrder" ->{
+            case "closeOrder" -> {
                 System.out.println("CLOSE");
-                  this.closeOrder(Id);
+                this.closeOrder(Id);
             }
             case "getOrderProducts" ->
                 this.getOrderProducts(Id);
-            case "removeOrder"    -> 
-                this.removeOrder(Id);     
+            case "removeOrder" ->
+                this.removeOrder(Id);
         }
         return true;
     }
@@ -199,7 +209,7 @@ public class Proxy {
                 }
             }
         } catch (SQLException ex) {
-            Logger.getLogger(EasyRestoDB.class.getName()).log(Level.SEVERE, null, ex);
+            this.reportException(ex);
         }
         return false;
     }
@@ -211,7 +221,7 @@ public class Proxy {
                 this.easyRestoInterface.configWorkerButton(activeWorkerNameResult.getString("NOMBRE"), activeWorkerNameResult.getInt("ID_TRABAJADOR"));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(EasyRestoDB.class.getName()).log(Level.SEVERE, null, ex);
+            this.reportException(ex);
         }
         return true;
 
@@ -228,7 +238,7 @@ public class Proxy {
                         tablesResult.getString("ICONO"));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+            this.reportException(ex);
         }
         return true;
     }
@@ -240,7 +250,7 @@ public class Proxy {
                 this.easyRestoInterface.configProductFamilyButton(productFamilyResult.getString("NOMBRE"));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+            this.reportException(ex);
         }
         return true;
     }
@@ -254,7 +264,7 @@ public class Proxy {
                 this.easyRestoInterface.configProductButton(productResult.getInt("ID_PRODUCTO"), productResult.getString("NOMBRE"), productResult.getDouble("PRECIO"));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+            this.reportException(ex);
         }
         return true;
     }
@@ -282,7 +292,7 @@ public class Proxy {
             }
 
         } catch (SQLException ex) {
-            Logger.getLogger(EasyRestoDB.class.getName()).log(Level.SEVERE, null, ex);
+            this.reportException(ex);
         }
         return false;
     }
@@ -297,14 +307,12 @@ public class Proxy {
                 worker = new Worker(workerDataResult.getInt("ID_TRABAJADOR"),
                         workerDataResult.getString("NOMBRE"),
                         workerDataResult.getString("APELLIDOS"),
-                        workerDataResult.getString("NSS"),
                         workerDataResult.getString("EMAIL"),
                         workerDataResult.getString("TELEFONO"),
-                        workerDataResult.getString("PASS"),
                         workerDataResult.getString("PERMISOS"));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(EasyRestoDB.class.getName()).log(Level.SEVERE, null, ex);
+            this.reportException(ex);
         }
         return worker;
     }
@@ -319,7 +327,7 @@ public class Proxy {
                 }
             }
         } catch (SQLException ex) {
-            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+            this.reportException(ex);
         }
         return false;
     }
@@ -329,9 +337,10 @@ public class Proxy {
             clockInPrep.setInt(1, workerId);
             clockInPrep.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+            this.reportException(ex);
         }
     }
+    
 
     private boolean rememberClockOut(int workerId) {
         try {
@@ -341,7 +350,7 @@ public class Proxy {
                 return true;
             }
         } catch (SQLException ex) {
-            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+            this.reportException(ex);
         }
         return false;
     }
@@ -351,18 +360,19 @@ public class Proxy {
             this.clockOutPrep.setInt(1, workerId);
             this.clockOutPrep.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+            this.reportException(ex);
         }
         return true;
     }
 
-    public void generateOrder(int workerID, int tableID) {
+    public void generateOrder(int workerID, int tableID, int pax) {
         try {
             this.insertOrderPrep.setInt(1, workerID);
             this.insertOrderPrep.setInt(2, tableID);
+            this.insertOrderPrep.setInt(3, pax);
             this.insertOrderPrep.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+            this.reportException(ex);
         }
     }
 
@@ -374,9 +384,22 @@ public class Proxy {
                 return orderResult.getInt("ID_PEDIDO");
             }
         } catch (SQLException ex) {
-            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+            this.reportException(ex);
         }
         return 0;
+    }
+
+    public Order getOrderData(int tableID) {
+        try {
+            this.currentOrderPrep.setInt(1, tableID);
+            ResultSet orderResult = this.currentOrderPrep.executeQuery();
+            while (orderResult.next()) {
+                return new Order(orderResult.getInt("ID_PEDIDO"), orderResult.getInt("COMENSALES_ACTUALES"));
+            }
+        } catch (SQLException ex) {
+            this.reportException(ex);
+        }
+        return null;
     }
 
     public void removeProductFromOrder(Product product, int quantity) {
@@ -386,7 +409,7 @@ public class Proxy {
             this.removeProductPrep.setInt(3, quantity);
             this.removeProductPrep.executeQuery();
         } catch (SQLException ex) {
-            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+            this.reportException(ex);
         }
     }
 
@@ -408,34 +431,33 @@ public class Proxy {
             this.insertProductPrep.setInt(4, productQuantity);
             this.insertProductPrep.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+            this.reportException(ex);
         }
     }
 
     private void closeOrder(int orderID) {
         try {
             if (this.easyRestoInterface.getChargeOrderCardPayment().hasFocus()) {
-                
+
                 System.out.println("TARJETA");
                 this.closeOrderPrep.setString(1, "TARJETA");
             } else {
-                 System.out.println("EFECTIVO");
+                System.out.println("EFECTIVO");
                 this.closeOrderPrep.setString(1, "EFECTIVO");
             }
             this.closeOrderPrep.setInt(2, orderID);
             this.closeOrderPrep.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+            this.reportException(ex);
         }
-        
     }
-    
-    private boolean removeOrder(int orderID){
+
+    private boolean removeOrder(int orderID) {
         try {
             this.removeOrderPrep.setInt(1, orderID);
             this.removeOrderPrep.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+            this.reportException(ex);
         }
         return true;
     }
@@ -450,7 +472,7 @@ public class Proxy {
                 this.easyRestoInterface.getTableModel().addRow(productRow);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+            this.reportException(ex);
         }
         return true;
     }
@@ -463,9 +485,29 @@ public class Proxy {
                 return totalOrderResult.getDouble("TOTAL");
             }
         } catch (SQLException ex) {
-            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+            this.reportException(ex);
         }
         return 0.0;
+    }
+    
+    @Override
+    public void reportException(Exception exception) {
+        PrintWriter salida = null;
+
+        try {
+            salida = new PrintWriter(new FileWriter("Exceptions.txt", true));
+            salida.write("Se ha producido la excepcion" + exception.toString() + "en la fecha " + new Date().toString() + "debido a " + exception.getCause().toString() + "\n");
+
+        } catch (FileNotFoundException ex2) {
+            JOptionPane.showMessageDialog(this.easyRestoInterface, "NO SE HA PODIDO REPORTAR UN PROBLEMA");
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this.easyRestoInterface, "NO SE HA PODIDO REPORTAR UN PROBLEMA");
+        } finally {
+
+            if (salida != null) {
+                salida.close();
+            }
+        }
     }
 
     public Order getCurrentOrder() {
@@ -595,5 +637,4 @@ public class Proxy {
     public void setInsertOrderPrep(PreparedStatement insertOrderPrep) {
         this.insertOrderPrep = insertOrderPrep;
     }
-
 }

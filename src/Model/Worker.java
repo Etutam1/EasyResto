@@ -19,19 +19,21 @@ public class Worker {
     private String password;
     private String permissions;
 
-    public Worker(int id, String name, String lastname, String nss, String email, String phoneNumber, String password, String permissions) {
-        this.id = id;
-        this.name = name;
-        this.lastname = lastname;
-        this.nss = nss;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.password = password;
-        this.permissions = permissions;
-    }
+    
     public Worker(){
         
     }
+
+    public Worker(int id, String name, String lastname, String email, String phoneNumber, String permissions) {
+        this.id = id;
+        this.name = name;
+        this.lastname = lastname;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.permissions = permissions;
+    }
+    
+    
 
     public int getId() {
         return id;
