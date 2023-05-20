@@ -6,8 +6,10 @@ import Controller.Proxy;
 import Model.ExceptionReport;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.HeadlessException;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -31,8 +33,10 @@ import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import org.netbeans.lib.awtextra.AbsoluteConstraints;
+import org.w3c.dom.Text;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -42,7 +46,7 @@ import org.netbeans.lib.awtextra.AbsoluteConstraints;
  *
  * @author matut
  */
-public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionReport{
+public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionReport {
 
     /**
      * Creates new form Interfaz
@@ -50,16 +54,7 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
     public EasyRestoInterface() {
         initComponents();
         this.setLocationRelativeTo(null);
-        this.changeComponentVisibility(this.mainPanel, false);
-        this.changeComponentVisibility(this.adminBackgroundPanel, false);
-        this.changeComponentVisibility(this.workerPasswordPanel, false);
         this.proxy.handleRequest("getWorkerButton", "", 0);
-//        this.proxy.getWorkerButton();     
-        this.changeComponentVisibility(this.familyScrollPanel, false);
-        this.changeComponentVisibility(this.productScrollPanel, false);
-        this.changeComponentVisibility(productScrollPanel, false);
-        this.changeComponentVisibility(this.tableProductsScroll, false);
-        this.changeComponentVisibility(this.billButtonsPanel, false);
         tableModel = (DefaultTableModel) this.tableProducts.getModel();
     }
 
@@ -407,6 +402,7 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
 
         mainPanel.add(tableProductsScroll, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 40, 380, 410));
         tableProductsScroll.setVisible(false);
+        this.changeComponentVisibility(this.tableProductsScroll, false);
 
         billButtonsPanel.setBackground(new java.awt.Color(0, 112, 115));
         billButtonsPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -443,24 +439,31 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
         });
         billButtonsPanel.add(printBillButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 20, 80, -1));
 
-        chargeOrderCashPaymentButton.setText("E");
         chargeOrderCashPaymentButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 chargeOrderCashPaymentButtonActionPerformed(evt);
             }
         });
-        billButtonsPanel.add(chargeOrderCashPaymentButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 70, 40, 40));
+        billButtonsPanel.add(chargeOrderCashPaymentButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 70, 60, 60));
+        this.chargeOrderCashPaymentButton.setSize(60,60);
+        this.chargeOrderCashPaymentButton.setIcon(this.getResizedButtonIcon("src/Resources/img/cash.png", this.chargeOrderCashPaymentButton.getSize()));
 
-        chargeOrderCardPaymentButton.setText("T");
+        chargeOrderCardPaymentButton.setMargin(new java.awt.Insets(5, 5, 5, 5));
+        chargeOrderCardPaymentButton.setMaximumSize(new java.awt.Dimension(60, 60));
+        chargeOrderCardPaymentButton.setMinimumSize(new java.awt.Dimension(60, 60));
+        chargeOrderCardPaymentButton.setPreferredSize(new java.awt.Dimension(60, 60));
         chargeOrderCardPaymentButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 chargeOrderCardPaymentButtonActionPerformed(evt);
             }
         });
-        billButtonsPanel.add(chargeOrderCardPaymentButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, 40, 40));
+        billButtonsPanel.add(chargeOrderCardPaymentButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, 60, 60));
+        this.chargeOrderCardPaymentButton.setSize(60,60);
+        chargeOrderCardPaymentButton.setIcon(this.getResizedButtonIcon("src/Resources/img/card.png",chargeOrderCardPaymentButton.getSize() ));
 
         mainPanel.add(billButtonsPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 520, 380, 200));
         billButtonsPanel.setVisible(false);
+        this.changeComponentVisibility(this.billButtonsPanel, false);
 
         familyScrollPanel.setBackground(new java.awt.Color(0, 112, 115));
         familyScrollPanel.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -474,6 +477,7 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
 
         mainPanel.add(familyScrollPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 40, 365, 410));
         familyScrollPanel.setVisible(false);
+        this.changeComponentVisibility(this.familyScrollPanel, false);
 
         productScrollPanel.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         productScrollPanel.setPreferredSize(new java.awt.Dimension(1000, 1000));
@@ -485,6 +489,7 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
 
         mainPanel.add(productScrollPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 40, 365, 410));
         productScrollPanel.setVisible(false);
+        this.changeComponentVisibility(this.productScrollPanel, false);
 
         ScrollBackButton.setForeground(new java.awt.Color(51, 51, 51));
         ScrollBackButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resources/img/1.png"))); // NOI18N
@@ -550,6 +555,7 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
         mainPanel.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 10, 90, 30));
 
         getContentPane().add(mainPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 900, 810));
+        this.changeComponentVisibility(this.mainPanel, false);
 
         workerPasswordPanel.setBackground(new java.awt.Color(0, 112, 115));
         workerPasswordPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -601,6 +607,7 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
         workerPasswordPanel.add(workerIDLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 260, 100, -1));
 
         getContentPane().add(workerPasswordPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 900, 810));
+        this.changeComponentVisibility(this.workerPasswordPanel, false);
 
         workerBackgroundPanel.setBackground(new java.awt.Color(0, 112, 115));
         workerBackgroundPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -693,6 +700,7 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
         adminBackgroundPanel.add(adminPanelBackButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 730, 65, 65));
 
         getContentPane().add(adminBackgroundPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 900, 810));
+        this.changeComponentVisibility(this.adminBackgroundPanel, false);
 
         backgroundPanel.setBackground(new java.awt.Color(0, 112, 115));
         backgroundPanel.setMinimumSize(new java.awt.Dimension(900, 800));
@@ -905,24 +913,29 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
 
     private void paxOkButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paxOkButtonActionPerformed
         if (checkNumberInPaxField()) {
-        this.paxLabel.setText(this.paxTextField.getText());
-        this.paxTextField.setText("");
-        this.changeComponentVisibility(this.paxPanel, false);
-        
-        changeComponentVisibility(tableProductsScroll, true);
-        changeComponentVisibility(familyScrollPanel, true);
-        changeComponentVisibility(tableProducts, true);
-        changeComponentVisibility(productScrollPanel, false);
-        changeComponentVisibility(billButtonsPanel, true);
-        }else{
+            this.paxLabel.setText(this.paxTextField.getText());
+            this.paxTextField.setText("");
+            this.changeComponentVisibility(this.paxPanel, false);
+
+            showMainPanel();
+
+        } else {
             JOptionPane.showMessageDialog(this, "POR FAVOR INTRODUCE UN NÚMERO");
             this.paxTextField.setText("");
         }
     }//GEN-LAST:event_paxOkButtonActionPerformed
 
+    public void showMainPanel() {
+        changeComponentVisibility(tableProductsScroll, true);
+        changeComponentVisibility(familyScrollPanel, true);
+        changeComponentVisibility(tableProducts, true);
+        changeComponentVisibility(productScrollPanel, false);
+        changeComponentVisibility(billButtonsPanel, true);
+    }
+
     private boolean checkNumberInPaxField() {
-         Pattern pattern = Pattern.compile("^[0-9]+$");
-         Matcher matcher = pattern.matcher(this.paxTextField.getText());
+        Pattern pattern = Pattern.compile("^[0-9]+$");
+        Matcher matcher = pattern.matcher(this.paxTextField.getText());
         return matcher.matches();
     }
 
@@ -1023,6 +1036,8 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
 
     public void configProductFamilyButton(String familyName) {
         JButton familyProductButton = new JButton(familyName);
+        Font font = new Font(familyProductButton.getFont().getName(), familyProductButton.getFont().getStyle(), 9);
+        familyProductButton.setFont(font);
         familyProductButton.setPreferredSize(new Dimension(80, 80));
         this.addActionListenerToFamilyProductButton(familyProductButton, familyName);
         this.addButtonToPanel(this.familyPanel, familyProductButton);
@@ -1066,10 +1081,12 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
         panel.add(button);
     }
 
-    public void configProductButton(int productID, String productName, double productPrice) {
-        JButton productButton = new JButton(productName);
+    public void configProductButton(int productID, String productName, double productPrice, String url) {
+        JButton productButton = new JButton("");
         productButton.setPreferredSize(new Dimension(80, 80));
+        productButton.setSize(new Dimension(80, 80));
         this.addActionListenerToProductButton(productButton, new Product(productID, productName, productPrice));
+        productButton.setIcon(this.getResizedButtonIcon(url, productButton.getSize()));
         this.addButtonToPanel(this.productsPanel, productButton);
     }
 
@@ -1113,7 +1130,7 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
         tableButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+
                 changeComponentVisibility(tableMapPanel, false);
                 tableIDLabel.setText(String.valueOf(tableID));
 
@@ -1121,17 +1138,13 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
                 proxy.handleRequest("getProductFamilyButton", "", 0);
 
                 Order auxOrder = proxy.getOrderData(tableID);
-                
+
                 if (auxOrder == null) {
                     changeComponentVisibility(paxPanel, true);
                     proxy.setCurrentOrder(new Order());
                     System.out.println("al entrar mesa:" + proxy.getCurrentOrder().getOrderID());
                 } else {
-                    changeComponentVisibility(tableProductsScroll, true);
-                    changeComponentVisibility(familyScrollPanel, true);
-                    changeComponentVisibility(tableProducts, true);
-                    changeComponentVisibility(productScrollPanel, false);
-                    changeComponentVisibility(billButtonsPanel, true);
+                    showMainPanel();
                     proxy.setCurrentOrder(auxOrder);
                     System.out.println("al entrar mesa:" + proxy.getCurrentOrder().getOrderID());
                     proxy.handleRequest("getOrderProducts", "", proxy.getCurrentOrder().getOrderID());
@@ -1150,7 +1163,7 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
 
     private ImageIcon getResizedButtonIcon(String iconUrl, Dimension buttonDimension) {
         ImageIcon icon = new ImageIcon(iconUrl);
-        Image img = icon.getImage().getScaledInstance(buttonDimension.width, buttonDimension.height, Image.SCALE_SMOOTH);
+        Image img = icon.getImage().getScaledInstance(buttonDimension.width - 10, buttonDimension.height -10, Image.SCALE_SMOOTH);
         return new ImageIcon(img);
     }
 
@@ -1197,15 +1210,14 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
     public boolean checkEmptyAdminLoginFields(String email, String password) throws HeadlessException {
         return password.isBlank() || email.isBlank();
     }
-    
+
     @Override
     public void reportException(Exception exception) {
         PrintWriter salida = null;
 
         try {
             salida = new PrintWriter(new FileWriter("Exceptions.txt", true));
-            salida.write("Se ha producido la excepcion" + exception.toString() + "en la fecha " + new Date().toString() + "debido a " + exception.getCause().toString() + "\n");
-
+            salida.write("Se ha producido la excepcion:" + exception.toString() + "\n Fecha: " + new Date().toString() + "\n");
         } catch (FileNotFoundException ex2) {
             JOptionPane.showMessageDialog(this, "NO SE HA PODIDO REPORTAR UN PROBLEMA");
         } catch (IOException ex) {
@@ -1218,8 +1230,6 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
         }
     }
 
-    
-    
     // <editor-fold defaultstate="collapsed" desc="GETTERS&SETTERS"> 
     public JButton getChargeOrderCardPayment() {
         return chargeOrderCardPaymentButton;
@@ -1749,9 +1759,7 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
         this.totalOrderLabel = totalOrderLabel;
     }
     //</editor-fold>
-    
-    
-    
+
     private Product selectedProduct = null;
     private DefaultTableModel tableModel;
     private Proxy proxy = new Proxy(this);
@@ -1830,5 +1838,4 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
     private javax.swing.JPanel workersPanel;
     // End of variables declaration//GEN-END:variables
 
-    
 }

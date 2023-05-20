@@ -45,7 +45,7 @@ public class Proxy implements ExceptionReport {
     private final String activeEmailQuery = "SELECT EMAIL FROM TRABAJADORES WHERE ACTIVO IS TRUE";
     private final String tablesQuery = "SELECT ID_MESA,COORD_X,COORD_Y,CAPACIDAD,ICONO FROM MESAS ";
     private final String familyQuery = "SELECT NOMBRE FROM FAMILIAS";
-    private final String productQuery = "SELECT P.ID_PRODUCTO, P.NOMBRE, P.PRECIO FROM PRODUCTOS AS P INNER JOIN FAMILIAS AS F ON P.FAMILIA= F.ID_FAMILIA WHERE F.NOMBRE=? AND P.ACTIVO IS TRUE";
+    private final String productQuery = "SELECT P.ID_PRODUCTO, P.NOMBRE, P.PRECIO, P.URL_IMAGEN FROM PRODUCTOS AS P INNER JOIN FAMILIAS AS F ON P.FAMILIA= F.ID_FAMILIA WHERE F.NOMBRE=? AND P.ACTIVO IS TRUE";
     private final String insertOrderQuery = "INSERT INTO PEDIDOS VALUES (DEFAULT,?,?,?,CURRENT_TIMESTAMP(),DEFAULT,DEFAULT,DEFAULT)";
     private final String currentOrderQuery = "SELECT ID_PEDIDO , COMENSALES_ACTUALES FROM PEDIDOS WHERE ID_MESA=?";
     private final String insertProductQuery = "INSERT INTO PEDIDOS_PRODUCTOS VALUES(?,?,?) ON DUPLICATE KEY UPDATE CANTIDAD=CANTIDAD+?";
@@ -259,7 +259,7 @@ public class Proxy implements ExceptionReport {
             this.productPrep.setString(1, familyName);
             ResultSet productResult = this.productPrep.executeQuery();
             while (productResult.next()) {
-                this.easyRestoInterface.configProductButton(productResult.getInt("ID_PRODUCTO"), productResult.getString("NOMBRE"), productResult.getDouble("PRECIO"));
+                this.easyRestoInterface.configProductButton(productResult.getInt("ID_PRODUCTO"), productResult.getString("NOMBRE"), productResult.getDouble("PRECIO"), productResult.getString("URL_IMAGEN") );
             }
         } catch (SQLException ex) {
             this.reportException(ex);
@@ -494,7 +494,7 @@ public class Proxy implements ExceptionReport {
 
         try {
             salida = new PrintWriter(new FileWriter("Exceptions.txt", true));
-            salida.write("Se ha producido la excepcion" + exception.toString() + "en la fecha " + new Date().toString() + "debido a " + exception.getCause().toString() + "\n");
+            salida.write("Se ha producido la excepcion:" + exception.toString() + "\n Fecha: " + new Date().toString() + "\n");
 
         } catch (FileNotFoundException ex2) {
             JOptionPane.showMessageDialog(this.easyRestoInterface, "NO SE HA PODIDO REPORTAR UN PROBLEMA");
