@@ -18,6 +18,8 @@ import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -902,6 +904,7 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
     }//GEN-LAST:event_chargeOrderCashPaymentButtonActionPerformed
 
     private void paxOkButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paxOkButtonActionPerformed
+        if (checkNumberInPaxField()) {
         this.paxLabel.setText(this.paxTextField.getText());
         this.paxTextField.setText("");
         this.changeComponentVisibility(this.paxPanel, false);
@@ -911,7 +914,17 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
         changeComponentVisibility(tableProducts, true);
         changeComponentVisibility(productScrollPanel, false);
         changeComponentVisibility(billButtonsPanel, true);
+        }else{
+            JOptionPane.showMessageDialog(this, "POR FAVOR INTRODUCE UN NÚMERO");
+            this.paxTextField.setText("");
+        }
     }//GEN-LAST:event_paxOkButtonActionPerformed
+
+    private boolean checkNumberInPaxField() {
+         Pattern pattern = Pattern.compile("^[0-9]+$");
+         Matcher matcher = pattern.matcher(this.paxTextField.getText());
+        return matcher.matches();
+    }
 
     private void paxTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paxTextFieldActionPerformed
         // TODO add your handling code here:
