@@ -12,12 +12,13 @@ import java.util.Iterator;
  * @author matut
  */
 public class Order {
-    
-    
+
     private int orderID;
+    private ArrayList<Product> subOrderpendingProductsArray = new ArrayList<>();
     private ArrayList<Product> pendingProductsArray = new ArrayList<>();
+    private ArrayList<Product> totalProductsArray = new ArrayList<>();
     private int pax;
-    
+
     public Order(int orderID) {
         this.orderID = orderID;
     }
@@ -29,9 +30,9 @@ public class Order {
         this.orderID = orderID;
         this.pax = pax;
     }
-    
-    public void addProductToPendingArray(Product product) {
-        Iterator<Product> iteratorProducts = this.pendingProductsArray.iterator();
+
+    public void addProductToPendingArray(Product product, ArrayList<Product> array) {
+        Iterator<Product> iteratorProducts = array.iterator();
         boolean found = false;
         while (iteratorProducts.hasNext()) {
             Product pendingProduct = iteratorProducts.next();
@@ -41,12 +42,12 @@ public class Order {
             }
         }
         if (!found) {
-            this.pendingProductsArray.add(product);
+            array.add(product);
         }
     }
 
-    public int removeProductFromPendingArray(Product product, int quantityToRemove) {
-        Iterator<Product> iteratorProducts = this.pendingProductsArray.iterator();
+    public int removeProductFromPendingArray(Product product, int quantityToRemove, ArrayList<Product> array) {
+        Iterator<Product> iteratorProducts = array.iterator();
         boolean removeProduct = false;
         Product productToRemove = null;
         while (iteratorProducts.hasNext() && !removeProduct) {
@@ -61,13 +62,17 @@ public class Order {
             }
         }
         if (removeProduct) {
-            this.pendingProductsArray.remove(productToRemove);
+            array.remove(productToRemove);
             if (productToRemove.getProductQuantity() < quantityToRemove) {
                 int pendingToRemove = quantityToRemove - productToRemove.getProductQuantity();
                 return pendingToRemove;
             }
         }
         return 0;
+    }
+
+    public void addProductToTotalArray(Product product) {
+        this.totalProductsArray.add(product);
     }
 
     public ArrayList<Product> getPendingProductsArray() {
@@ -77,7 +82,7 @@ public class Order {
     public void setPendingProductsArray(ArrayList<Product> pendingProductsArray) {
         this.pendingProductsArray = pendingProductsArray;
     }
-    
+
     public int getOrderID() {
         return orderID;
     }
@@ -92,6 +97,22 @@ public class Order {
 
     public void setPax(int pax) {
         this.pax = pax;
+    }
+
+    public ArrayList<Product> getSubOrderpendingProductsArray() {
+        return subOrderpendingProductsArray;
+    }
+
+    public void setSubOrderpendingProductsArray(ArrayList<Product> subOrderpendingProductsArray) {
+        this.subOrderpendingProductsArray = subOrderpendingProductsArray;
+    }
+
+    public ArrayList<Product> getTotalProductsArray() {
+        return totalProductsArray;
+    }
+
+    public void setTotalProductsArray(ArrayList<Product> totalProductsArray) {
+        this.totalProductsArray = totalProductsArray;
     }
 
 }

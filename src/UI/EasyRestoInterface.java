@@ -9,7 +9,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.HeadlessException;
 import java.awt.Image;
-import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,6 +19,7 @@ import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.ImageIcon;
@@ -28,15 +28,15 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import org.netbeans.lib.awtextra.AbsoluteConstraints;
-import org.w3c.dom.Text;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -55,7 +55,9 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
         initComponents();
         this.setLocationRelativeTo(null);
         this.proxy.handleRequest("getWorkerButton", "", 0);
-        tableModel = (DefaultTableModel) this.tableProducts.getModel();
+        tableModel1 = (DefaultTableModel) this.tableProducts.getModel();
+        tableModel2 = (DefaultTableModel) this.tableProducts2.getModel();
+        tableModel3 = (DefaultTableModel) this.tableProducts3.getModel();
     }
 
     /**
@@ -78,6 +80,25 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
         QuantityLabel = new javax.swing.JLabel();
         deleteDialogButton = new javax.swing.JButton();
         quantityCombo = new javax.swing.JComboBox<>();
+        adminTabPanel = new javax.swing.JTabbedPane();
+        newWorkerPanel = new javax.swing.JPanel();
+        newWorkerNameField = new javax.swing.JTextField();
+        newWorkerNssField = new javax.swing.JTextField();
+        newWorkerDniField = new javax.swing.JTextField();
+        newWorkerLastNameField = new javax.swing.JTextField();
+        newWorkerPhoneField = new javax.swing.JTextField();
+        newWorkerEmailField = new javax.swing.JTextField();
+        newWorkerPassField = new javax.swing.JTextField();
+        newWorkerPermissionsLabel = new javax.swing.JLabel();
+        newWorkerNameLabel = new javax.swing.JLabel();
+        newWorkerLastNameLabel = new javax.swing.JLabel();
+        newWorkerDniLabel = new javax.swing.JLabel();
+        newWorkerNssLabel = new javax.swing.JLabel();
+        newWorkerEmailLabel = new javax.swing.JLabel();
+        newWorkerPhoneLabel = new javax.swing.JLabel();
+        newWorkerPassLabel = new javax.swing.JLabel();
+        newWorkerPermissionsComboBox = new javax.swing.JComboBox<>();
+        newWorkerOkButton = new javax.swing.JButton();
         mainPanel = new javax.swing.JPanel();
         splitBillPanel = new javax.swing.JPanel();
         tableProductsScroll1 = new javax.swing.JScrollPane();
@@ -131,7 +152,7 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
         workersPanel = new javax.swing.JPanel();
         adminSettingsButton = new javax.swing.JButton();
         adminBackgroundPanel = new javax.swing.JPanel();
-        adminPanel = new javax.swing.JPanel();
+        adminLoginPanel = new javax.swing.JPanel();
         loginTitleLabel = new javax.swing.JLabel();
         emailTextField = new javax.swing.JTextField();
         emailLabel = new javax.swing.JLabel();
@@ -206,6 +227,82 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
         setSize(new java.awt.Dimension(950, 850));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        adminTabPanel.setBackground(new java.awt.Color(0, 112, 115));
+        adminTabPanel.setForeground(new java.awt.Color(255, 255, 255));
+
+        newWorkerPanel.setBackground(new java.awt.Color(0, 112, 115));
+        newWorkerPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        newWorkerPanel.add(newWorkerNameField, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 210, 150, -1));
+        newWorkerPanel.add(newWorkerNssField, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 330, 150, -1));
+
+        newWorkerDniField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newWorkerDniFieldActionPerformed(evt);
+            }
+        });
+        newWorkerPanel.add(newWorkerDniField, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 290, 150, -1));
+        newWorkerPanel.add(newWorkerLastNameField, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 250, 150, -1));
+        newWorkerPanel.add(newWorkerPhoneField, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 410, 150, -1));
+        newWorkerPanel.add(newWorkerEmailField, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 370, 150, -1));
+        newWorkerPanel.add(newWorkerPassField, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 450, 150, -1));
+
+        newWorkerPermissionsLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        newWorkerPermissionsLabel.setForeground(new java.awt.Color(255, 255, 255));
+        newWorkerPermissionsLabel.setText("PERMISOS");
+        newWorkerPanel.add(newWorkerPermissionsLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 490, 90, 20));
+
+        newWorkerNameLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        newWorkerNameLabel.setForeground(new java.awt.Color(255, 255, 255));
+        newWorkerNameLabel.setText("NOMBRE");
+        newWorkerPanel.add(newWorkerNameLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 210, 90, 20));
+
+        newWorkerLastNameLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        newWorkerLastNameLabel.setForeground(new java.awt.Color(255, 255, 255));
+        newWorkerLastNameLabel.setText("APELLIDOS");
+        newWorkerPanel.add(newWorkerLastNameLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 250, 100, 20));
+
+        newWorkerDniLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        newWorkerDniLabel.setForeground(new java.awt.Color(255, 255, 255));
+        newWorkerDniLabel.setText("DNI");
+        newWorkerPanel.add(newWorkerDniLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 290, 90, 20));
+
+        newWorkerNssLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        newWorkerNssLabel.setForeground(new java.awt.Color(255, 255, 255));
+        newWorkerNssLabel.setText("NSS");
+        newWorkerPanel.add(newWorkerNssLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 330, 90, 20));
+
+        newWorkerEmailLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        newWorkerEmailLabel.setForeground(new java.awt.Color(255, 255, 255));
+        newWorkerEmailLabel.setText("EMAIL");
+        newWorkerPanel.add(newWorkerEmailLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 370, 90, 20));
+
+        newWorkerPhoneLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        newWorkerPhoneLabel.setForeground(new java.awt.Color(255, 255, 255));
+        newWorkerPhoneLabel.setText("TLF");
+        newWorkerPanel.add(newWorkerPhoneLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 410, 90, 20));
+
+        newWorkerPassLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        newWorkerPassLabel.setForeground(new java.awt.Color(255, 255, 255));
+        newWorkerPassLabel.setText("PASSWORD");
+        newWorkerPanel.add(newWorkerPassLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 450, 100, 20));
+
+        newWorkerPermissionsComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "CAMARERO", "ADMIN" }));
+        newWorkerPanel.add(newWorkerPermissionsComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 490, 150, -1));
+
+        newWorkerOkButton.setText("OK");
+        newWorkerOkButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newWorkerOkButtonActionPerformed(evt);
+            }
+        });
+        newWorkerPanel.add(newWorkerOkButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 570, 120, -1));
+
+        adminTabPanel.addTab("TRABAJADORES", newWorkerPanel);
+        this.changeComponentVisibility(this.newWorkerPanel, false);
+
+        getContentPane().add(adminTabPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 900, 810));
+        this.changeComponentVisibility(this.adminTabPanel,false);
+
         mainPanel.setBackground(new java.awt.Color(0, 112, 115));
         mainPanel.setMinimumSize(new java.awt.Dimension(900, 800));
         mainPanel.setPreferredSize(new java.awt.Dimension(900, 800));
@@ -239,6 +336,7 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
                 return canEdit [columnIndex];
             }
         });
+        tableProducts2.setColumnSelectionAllowed(true);
         tableProducts2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         tableProducts2.setSelectionBackground(new java.awt.Color(0, 153, 153));
         tableProducts2.setSelectionForeground(new java.awt.Color(0, 0, 0));
@@ -256,7 +354,7 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
             tableProducts2.getColumnModel().getColumn(3).setMaxWidth(0);
         }
 
-        splitBillPanel.add(tableProductsScroll1, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 40, 380, 410));
+        splitBillPanel.add(tableProductsScroll1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 40, 380, 410));
         tableProductsScroll1.setVisible(false);
 
         tableProducts3.setBackground(new java.awt.Color(255, 255, 255));
@@ -301,13 +399,23 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
             tableProducts3.getColumnModel().getColumn(3).setMaxWidth(0);
         }
 
-        splitBillPanel.add(tableProductsScroll2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 40, 380, 410));
+        splitBillPanel.add(tableProductsScroll2, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 40, 380, 410));
         tableProductsScroll2.setVisible(false);
 
         rigthButton.setText("->");
+        rigthButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rigthButtonActionPerformed(evt);
+            }
+        });
         splitBillPanel.add(rigthButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 180, 60, 40));
 
         leftButton.setText("<-");
+        leftButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                leftButtonActionPerformed(evt);
+            }
+        });
         splitBillPanel.add(leftButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 250, 60, 40));
 
         chargeOrderCashPaymentButton1.setText("E");
@@ -651,13 +759,13 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
         adminBackgroundPanel.setAutoscrolls(true);
         adminBackgroundPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        adminPanel.setBackground(new java.awt.Color(0, 112, 115));
-        adminPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        adminLoginPanel.setBackground(new java.awt.Color(0, 112, 115));
+        adminLoginPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         loginTitleLabel.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
         loginTitleLabel.setForeground(new java.awt.Color(255, 255, 255));
         loginTitleLabel.setText("EASYRESTO");
-        adminPanel.add(loginTitleLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 20, -1, 35));
+        adminLoginPanel.add(loginTitleLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 20, -1, 35));
 
         emailTextField.setBackground(new java.awt.Color(255, 255, 255));
         emailTextField.setForeground(new java.awt.Color(0, 0, 0));
@@ -666,11 +774,11 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
                 emailTextFieldActionPerformed(evt);
             }
         });
-        adminPanel.add(emailTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 170, 210, -1));
+        adminLoginPanel.add(emailTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 170, 210, -1));
 
         emailLabel.setForeground(new java.awt.Color(255, 255, 255));
         emailLabel.setText("EMAIL");
-        adminPanel.add(emailLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 150, -1, -1));
+        adminLoginPanel.add(emailLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 150, -1, -1));
 
         passTextField.setBackground(new java.awt.Color(255, 255, 255));
         passTextField.setForeground(new java.awt.Color(0, 0, 0));
@@ -679,11 +787,11 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
                 passTextFieldActionPerformed(evt);
             }
         });
-        adminPanel.add(passTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 240, 210, -1));
+        adminLoginPanel.add(passTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 240, 210, -1));
 
         passLabel.setForeground(new java.awt.Color(255, 255, 255));
         passLabel.setText("PASS");
-        adminPanel.add(passLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 220, 40, -1));
+        adminLoginPanel.add(passLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 220, 40, -1));
 
         admingLoginButton.setForeground(new java.awt.Color(51, 51, 51));
         admingLoginButton.setText("LOGIN");
@@ -693,13 +801,13 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
                 admingLoginButtonActionPerformed(evt);
             }
         });
-        adminPanel.add(admingLoginButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 300, 80, 20));
+        adminLoginPanel.add(admingLoginButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 300, 80, 20));
 
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText(" ADMIN ZONE");
-        adminPanel.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 50, 80, 30));
+        adminLoginPanel.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 50, 80, 30));
 
-        adminBackgroundPanel.add(adminPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 180, 370, 450));
+        adminBackgroundPanel.add(adminLoginPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 180, 370, 450));
 
         adminPanelBackButton.setForeground(new java.awt.Color(255, 255, 255));
         adminPanelBackButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Resources/img/1.png"))); // NOI18N
@@ -724,8 +832,13 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
     }// </editor-fold>//GEN-END:initComponents
 
     private void admingLoginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_admingLoginButtonActionPerformed
-        this.proxy.login(true, this.emailTextField.getText(), this.passTextField.getPassword());
+        if (this.proxy.login(true, this.emailTextField.getText(), this.passTextField.getPassword())) {
+            this.changeComponentVisibility(this.adminBackgroundPanel, false);
+            this.changeComponentVisibility(this.adminTabPanel, true);
+            this.changeComponentVisibility(this.newWorkerPanel, true);
+        }
         this.emptyPassFieldText(this.passTextField);
+
     }//GEN-LAST:event_admingLoginButtonActionPerformed
 
     private void passTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passTextFieldActionPerformed
@@ -813,6 +926,9 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
             this.backToTablePanel();
         } else if (this.splitBillPanel.isVisible()) {
             this.changeComponentVisibility(this.splitBillPanel, false);
+            this.tableModel1.setRowCount(0);
+            this.proxy.getOrderProducts(proxy.getCurrentOrder().getOrderID(), tableProducts);
+            this.totalOrderLabel.setText(String.valueOf(this.proxy.getTotalOrder(proxy.getCurrentOrder().getOrderID())));
             this.showMainPanel();
         } else if (this.paxPanel.isVisible()) {
             this.changeComponentVisibility(this.paxPanel, false);
@@ -825,7 +941,7 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
         this.changeComponentVisibility(this.tableMapPanel, true);
         this.productPriceLabel.setText("");
         this.proxy.getCurrentOrder().getPendingProductsArray().clear();
-        this.tableModel.setRowCount(0);
+        this.tableModel1.setRowCount(0);
         this.tableMapPanel.removeAll();
         this.proxy.handleRequest("getTablesButton", "", 0);
         this.totalOrderLabel.setText("");
@@ -842,6 +958,7 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
             }
 
             this.proxy.handleRequest("sendPendingProducts", "", 0);
+            this.proxy.sendPendingProducts(this.proxy.getCurrentOrder().getPendingProductsArray(), this.proxy.getCurrentOrder().getOrderID());
             this.proxy.getCurrentOrder().getPendingProductsArray().clear();
             this.totalOrderLabel.setText(String.valueOf(this.proxy.getTotalOrder(this.proxy.getCurrentOrder().getOrderID())));
         }
@@ -870,14 +987,17 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
     }
 
     private Product getProductFromSelectedRow() {
-        int selectedProductID = (int) this.tableModel.getValueAt(this.tableProducts.getSelectedRow(), 3);
-        int selectedProductQuantity = (int) this.tableModel.getValueAt(this.tableProducts.getSelectedRow(), 2);
+        int selectedProductID = (int) this.tableModel1.getValueAt(this.tableProducts.getSelectedRow(), 3);
+        int selectedProductQuantity = (int) this.tableModel1.getValueAt(this.tableProducts.getSelectedRow(), 2);
         return new Product(selectedProductID, selectedProductQuantity);
     }
 
     private void splitBillButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_splitBillButtonActionPerformed
         if (this.proxy.getCurrentOrder().getOrderID() != 0) {
             this.changeComponentVisibility(this.orderPanel, false);
+            this.tableModel2.setRowCount(0);
+            this.tableModel3.setRowCount(0);
+            this.proxy.getOrderProducts(this.proxy.getCurrentOrder().getOrderID(), tableProducts2);
             this.showSplitPanel();
         } else {
             JOptionPane.showMessageDialog(this, "LA CUENTA ESTÁ VACÍA");
@@ -908,7 +1028,7 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
         int selectedQuantity = Integer.parseInt((String) this.quantityCombo.getSelectedItem());
 
         if (!this.proxy.getCurrentOrder().getPendingProductsArray().isEmpty()) {
-            int pendingQuantityToRemove = this.proxy.getCurrentOrder().removeProductFromPendingArray(selectedProduct, selectedQuantity);
+            int pendingQuantityToRemove = this.proxy.getCurrentOrder().removeProductFromPendingArray(selectedProduct, selectedQuantity, this.proxy.getCurrentOrder().getPendingProductsArray());
             System.out.println("pendiente" + pendingQuantityToRemove);
             if (pendingQuantityToRemove > 0) {
                 this.proxy.removeProductFromOrder(selectedProduct, pendingQuantityToRemove);
@@ -916,11 +1036,11 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
         } else {
             this.proxy.removeProductFromOrder(selectedProduct, selectedQuantity);
         }
-        this.deleteProductFromTable(selectedQuantity);
+        this.deleteProductFromTable(selectedQuantity, this.tableProducts);
         this.totalOrderLabel.setText(String.valueOf(this.proxy.getTotalOrder(this.proxy.getCurrentOrder().getOrderID())));
         this.changeComponentVisibility(this.deleteProductDialog, false);
 
-        if (this.tableModel.getRowCount() == 0 && this.proxy.getCurrentOrder().getOrderID() != 0) {
+        if (this.tableModel1.getRowCount() == 0 && this.proxy.getCurrentOrder().getOrderID() != 0) {
             this.proxy.handleRequest("removeOrder", "", this.proxy.getCurrentOrder().getOrderID());
             this.totalOrderLabel.setText("");
         }
@@ -981,12 +1101,168 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
     }//GEN-LAST:event_paxTextFieldActionPerformed
 
     private void chargeOrderCashPaymentButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chargeOrderCashPaymentButton1ActionPerformed
-        // TODO add your handling code here:
+//        if (this.tabl) {
+//            
+//        }
+        int subOrderID = this.proxy.generateSubOrder(Integer.parseInt(this.workerIDLabel.getText()), Integer.parseInt(this.tableIDLabel.getText()), Integer.parseInt(this.paxLabel.getText()));
+        this.proxy.sendPendingProducts(this.proxy.getCurrentOrder().getSubOrderpendingProductsArray(), subOrderID);
+        this.removeSubOrderProductsFromCurrentOrder();
+        this.proxy.handleRequest("closeOrder", "", subOrderID);
+        this.proxy.getCurrentOrder().getSubOrderpendingProductsArray().clear();
+        this.tableModel3.setRowCount(0);
+
+        if (this.tableModel2.getRowCount() == 0 && this.proxy.getCurrentOrder().getOrderID() != 0) {
+            this.proxy.handleRequest("removeOrder", "", this.proxy.getCurrentOrder().getOrderID());
+            this.totalOrderLabel.setText("");
+        }
     }//GEN-LAST:event_chargeOrderCashPaymentButton1ActionPerformed
 
     private void chargeOrderCardPaymentButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chargeOrderCardPaymentButton1ActionPerformed
-        // TODO add your handling code here:
+        int subOrderID = this.proxy.generateSubOrder(Integer.parseInt(this.workerIDLabel.getText()), Integer.parseInt(this.tableIDLabel.getText()), Integer.parseInt(this.paxLabel.getText()));
+        this.proxy.sendPendingProducts(this.proxy.getCurrentOrder().getSubOrderpendingProductsArray(), subOrderID);
+        this.removeSubOrderProductsFromCurrentOrder();
+        this.proxy.handleRequest("closeOrder", "", subOrderID);
+        this.proxy.getCurrentOrder().getSubOrderpendingProductsArray().clear();
+        this.tableModel3.setRowCount(0);
+        if (this.tableModel2.getRowCount() == 0 && this.proxy.getCurrentOrder().getOrderID() != 0) {
+            this.proxy.handleRequest("removeOrder", "", this.proxy.getCurrentOrder().getOrderID());
+            this.totalOrderLabel.setText("");
+        }
+
     }//GEN-LAST:event_chargeOrderCardPaymentButton1ActionPerformed
+
+    private void rigthButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rigthButtonActionPerformed
+        if (this.tableProducts2.getSelectedRowCount() == 1) {
+            int selectedRow = this.tableProducts2.getSelectedRow();
+            double selectedPrice = (double) this.tableProducts2.getValueAt(selectedRow, 1);
+            int selectedProductID = (int) this.tableProducts2.getValueAt(selectedRow, 3);
+            String selectedName = (String) this.tableProducts2.getValueAt(selectedRow, 0);
+
+            selectedProduct = new Product(selectedProductID, selectedName, selectedPrice);
+
+            this.addProductToTable(selectedProduct, tableProducts3);
+            this.proxy.getCurrentOrder().addProductToPendingArray(selectedProduct, proxy.getCurrentOrder().getSubOrderpendingProductsArray());
+            this.deleteProductFromTable(1, this.tableProducts2);
+        } else {
+            JOptionPane.showMessageDialog(this, "SELECCIONA UN PRODUCTO");
+        }
+    }//GEN-LAST:event_rigthButtonActionPerformed
+
+    private void leftButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_leftButtonActionPerformed
+        if (this.tableProducts3.getSelectedRowCount() == 1) {
+            int selectedRow = this.tableProducts3.getSelectedRow();
+
+            double selectedPrice = (double) this.tableProducts3.getValueAt(selectedRow, 1);
+            int selectedProductID = (int) this.tableProducts3.getValueAt(selectedRow, 3);
+            String selectedName = (String) this.tableProducts3.getValueAt(selectedRow, 0);
+
+            selectedProduct = new Product(selectedProductID, selectedName, selectedPrice);
+
+            this.addProductToTable(selectedProduct, tableProducts2);
+            this.proxy.getCurrentOrder().removeProductFromPendingArray(selectedProduct, 1, this.proxy.getCurrentOrder().getSubOrderpendingProductsArray());
+            this.deleteProductFromTable(1, this.tableProducts3);
+        } else {
+            JOptionPane.showMessageDialog(this, "SELECCIONA UN PRODUCTO");
+        }
+    }//GEN-LAST:event_leftButtonActionPerformed
+
+    private void newWorkerOkButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newWorkerOkButtonActionPerformed
+
+        if (this.checkFields()) {
+            if (!this.proxy.checkExistentWorkerData()) {
+                this.proxy.insertNewWorker();
+            }else{
+                JOptionPane.showMessageDialog(this, "YA EXISTE UN TRABAJADOR CON UNO DE LOS DATOS PROPORCIONADOS", "ERROR", WARNING_MESSAGE);
+            }
+        }
+        resetNewWorkerFields();
+    }//GEN-LAST:event_newWorkerOkButtonActionPerformed
+
+    
+     private boolean checkFields() {
+        if (!checkEmptyFields() && this.checkValidPatterns()) {
+            return true;
+    }
+        return false;
+    }
+     
+    private boolean checkEmptyFields() throws HeadlessException {
+        if (this.newWorkerNameField.getText().isBlank()
+                || this.newWorkerLastNameField.getText().isBlank()
+                || this.newWorkerDniField.getText().isBlank()
+                || this.newWorkerNssField.getText().isBlank()
+                || this.newWorkerPhoneField.getText().isBlank()
+                || this.newWorkerPassField.getText().isBlank()
+                || this.newWorkerEmailField.getText().isBlank()) {
+
+            JOptionPane.showMessageDialog(this, "RELLENA TODOS LOS CAMPOS", "ERROR", WARNING_MESSAGE);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean checkValidPatterns() {
+        if (this.checkDniField() && this.checkEmailField() && this.checkNssField() && this.checkPhoneField()) {
+            return true;
+        }
+        return false;
+    }
+    
+    private boolean checkPhoneField(){
+        Pattern pattern = Pattern.compile("^[0-9]{9}$");
+        Matcher matcher = pattern.matcher(this.newWorkerPhoneField.getText());
+        if (!matcher.matches()) {
+            JOptionPane.showMessageDialog(this, "FORMATO DE TELEFONO INVÁLIDO", "ERROR", WARNING_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkEmailField() {
+        Pattern pattern = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
+        Matcher matcher = pattern.matcher(this.newWorkerEmailField.getText());
+       if (!matcher.matches()) {
+            JOptionPane.showMessageDialog(this, "FORMATO DE EMAIL INVÁLIDO", "ERROR", WARNING_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkDniField() {
+        Pattern pattern = Pattern.compile("^[0-9]{8}[A-Z]$");
+        Matcher matcher = pattern.matcher(this.newWorkerDniField.getText());
+        if (!matcher.matches()) {
+            JOptionPane.showMessageDialog(this, "FORMATO DE DNI INVÁLIDO", "ERROR", WARNING_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkNssField() {
+        Pattern pattern = Pattern.compile("^[0-9]{11}$");
+        Matcher matcher = pattern.matcher(this.newWorkerNssField.getText());
+       if (!matcher.matches()) {
+            JOptionPane.showMessageDialog(this, "FORMATO DE NSS INVÁLIDO", "ERROR", WARNING_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+    
+    private void newWorkerDniFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newWorkerDniFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_newWorkerDniFieldActionPerformed
+
+    private void resetNewWorkerFields() {
+        this.emptyTextField(this.newWorkerNameField);
+        this.emptyTextField(this.newWorkerLastNameField);
+        this.emptyTextField(this.newWorkerDniField);
+        this.emptyTextField(this.newWorkerNssField);
+        this.emptyTextField(this.newWorkerEmailField);
+        this.emptyTextField(this.newWorkerPhoneField);
+        this.emptyTextField(this.newWorkerPassField);
+        this.newWorkerPermissionsComboBox.setSelectedIndex(0);
+    }
 
     /**
      * @param args the command line arguments
@@ -1002,10 +1278,12 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(EasyRestoInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EasyRestoInterface.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
         //</editor-fold>
@@ -1032,39 +1310,51 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
      * @param panel
      * @param button
      */
-    private void addProductToTable(Product product) {
+    private void addProductToTable(Product product, JTable table) {
+        DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
         Object[] productRow = {product.getProductName(), product.getProductPrice(), product.getProductQuantity(), product.getProductID()};
         int numberOfRows = tableModel.getRowCount();
 
-        if (numberOfRows == 0 || !checkExistingProductInTable(numberOfRows, product)) {
+        if (numberOfRows == 0 || !checkExistingProductInTable(numberOfRows, product, tableModel)) {
             tableModel.addRow(productRow);
         }
     }
 
-    private boolean checkExistingProductInTable(int tableRowCount, Product product) {
+    private void removeSubOrderProductsFromCurrentOrder() {
+        Iterator<Product> iteratorProducts = this.proxy.getCurrentOrder().getSubOrderpendingProductsArray().iterator();
+        while (iteratorProducts.hasNext()) {
+            Product productToRemove = iteratorProducts.next();
+            this.proxy.removeProductFromOrder(productToRemove, productToRemove.getProductQuantity());
+        }
+    }
+
+    private boolean checkExistingProductInTable(int tableRowCount, Product product, DefaultTableModel tableModel) {
         for (int row = 0; row < tableRowCount; row++) {
             int productID = (int) tableModel.getValueAt(row, 3);
             if (productID == product.getProductID()) {
-                updateProductQuantity(row);
+                updateProductQuantity(row, tableModel);
                 return true;
             }
         }
         return false;
     }
 
-    private void deleteProductFromTable(int quantityToRemove) {
-        final int SELECTED_ROW = this.tableProducts.getSelectedRow();
+    private void deleteProductFromTable(int quantityToRemove, JTable table) {
+        final int SELECTED_ROW = table.getSelectedRow();
         final int QUANTITY_COLUMN_INDEX = 2;
-        int selectedRowQuantity = (int) this.tableModel.getValueAt(SELECTED_ROW, QUANTITY_COLUMN_INDEX);
+        DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
+        int selectedRowQuantity = (int) tableModel.getValueAt(SELECTED_ROW, QUANTITY_COLUMN_INDEX);
+
         if (selectedRowQuantity == quantityToRemove) {
-            this.tableModel.removeRow(SELECTED_ROW);
+            tableModel.removeRow(SELECTED_ROW);
+
         } else {
             int updatedQuantity = selectedRowQuantity - quantityToRemove;
-            this.tableModel.setValueAt(updatedQuantity, SELECTED_ROW, QUANTITY_COLUMN_INDEX);
+            tableModel.setValueAt(updatedQuantity, SELECTED_ROW, QUANTITY_COLUMN_INDEX);
         }
     }
 
-    private void updateProductQuantity(int row) {
+    private void updateProductQuantity(int row, DefaultTableModel tableModel) {
         final int QUANTITY_COLUMN_INDEX = 2;
         final int QUANTITY_VALUE = (int) tableModel.getValueAt(row, QUANTITY_COLUMN_INDEX);
         tableModel.setValueAt(QUANTITY_VALUE + 1, row, QUANTITY_COLUMN_INDEX);
@@ -1132,12 +1422,17 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    Constructor<? extends Product> constructor = Product.class.getDeclaredConstructor(int.class, String.class, double.class);
+                    Constructor<? extends Product> constructor = Product.class
+                            .getDeclaredConstructor(
+                                    int.class,
+                                    String.class,
+                                    double.class
+                            );
                     Product productToAdd = constructor.newInstance(product.getProductID(), product.getProductName(), product.getProductPrice());
 
                     productPriceLabel.setText(Double.toString(product.getProductPrice()));
-                    addProductToTable(productToAdd);
-                    proxy.getCurrentOrder().addProductToPendingArray(productToAdd);
+                    addProductToTable(productToAdd, tableProducts);
+                    proxy.getCurrentOrder().addProductToPendingArray(productToAdd, proxy.getCurrentOrder().getPendingProductsArray());
 
                 } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                     reportException(ex);
@@ -1183,7 +1478,8 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
                     showMainPanel();
                     proxy.setCurrentOrder(auxOrder);
                     System.out.println("al entrar mesa:" + proxy.getCurrentOrder().getOrderID());
-                    proxy.handleRequest("getOrderProducts", "", proxy.getCurrentOrder().getOrderID());
+
+                    proxy.getOrderProducts(proxy.getCurrentOrder().getOrderID(), tableProducts);
                     totalOrderLabel.setText(String.valueOf(proxy.getTotalOrder(proxy.getCurrentOrder().getOrderID())));
                     paxLabel.setText(String.valueOf(proxy.getCurrentOrder().getPax()));
                 }
@@ -1239,6 +1535,10 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
         passwordField.setText("");
     }
 
+    public void emptyTextField(JTextField textField) {
+        textField.setText("");
+    }
+
     public boolean checkEmptyWorkerPassField(String password) throws HeadlessException {
         return password.isBlank();
     }
@@ -1253,7 +1553,7 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
 
         try {
             salida = new PrintWriter(new FileWriter("Exceptions.txt", true));
-            salida.write("Se ha producido la excepcion:" + exception.toString() + "\n Fecha: " + new Date().toString() + "\n");
+            salida.write("Se ha producido la excepcion:" + exception.toString() + "\n Fecha: " + new Date().toString() + "\n\n");
         } catch (FileNotFoundException ex2) {
             JOptionPane.showMessageDialog(this, "NO SE HA PODIDO REPORTAR UN PROBLEMA");
         } catch (IOException ex) {
@@ -1267,6 +1567,342 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
     }
 
     // <editor-fold defaultstate="collapsed" desc="GETTERS&SETTERS"> 
+    public JPanel getAdminLoginPanel() {
+        return adminLoginPanel;
+    }
+
+    public void setAdminLoginPanel(JPanel adminLoginPanel) {
+        this.adminLoginPanel = adminLoginPanel;
+    }
+
+    public JTabbedPane getAdminTabPanel() {
+        return adminTabPanel;
+    }
+
+    public void setAdminTabPanel(JTabbedPane adminTabPanel) {
+        this.adminTabPanel = adminTabPanel;
+    }
+
+    public JTextField getNewWorkerDniField() {
+        return newWorkerDniField;
+    }
+
+    public void setNewWorkerDniField(JTextField newWorkerDniField) {
+        this.newWorkerDniField = newWorkerDniField;
+    }
+
+    public JLabel getNewWorkerDniLabel() {
+        return newWorkerDniLabel;
+    }
+
+    public void setNewWorkerDniLabel(JLabel newWorkerDniLabel) {
+        this.newWorkerDniLabel = newWorkerDniLabel;
+    }
+
+    public JTextField getNewWorkerEmailField() {
+        return newWorkerEmailField;
+    }
+
+    public void setNewWorkerEmailField(JTextField newWorkerEmailField) {
+        this.newWorkerEmailField = newWorkerEmailField;
+    }
+
+    public JLabel getNewWorkerEmailLabel() {
+        return newWorkerEmailLabel;
+    }
+
+    public void setNewWorkerEmailLabel(JLabel newWorkerEmailLabel) {
+        this.newWorkerEmailLabel = newWorkerEmailLabel;
+    }
+
+    public JTextField getNewWorkerLastNameField() {
+        return newWorkerLastNameField;
+    }
+
+    public void setNewWorkerLastNameField(JTextField newWorkerLastNameField) {
+        this.newWorkerLastNameField = newWorkerLastNameField;
+    }
+
+    public JLabel getNewWorkerLastNameLabel() {
+        return newWorkerLastNameLabel;
+    }
+
+    public void setNewWorkerLastNameLabel(JLabel newWorkerLastNameLabel) {
+        this.newWorkerLastNameLabel = newWorkerLastNameLabel;
+    }
+
+    public JTextField getNewWorkerNameField() {
+        return newWorkerNameField;
+    }
+
+    public void setNewWorkerNameField(JTextField newWorkerNameField) {
+        this.newWorkerNameField = newWorkerNameField;
+    }
+
+    public JLabel getNewWorkerNameLabel() {
+        return newWorkerNameLabel;
+    }
+
+    public void setNewWorkerNameLabel(JLabel newWorkerNameLabel) {
+        this.newWorkerNameLabel = newWorkerNameLabel;
+    }
+
+    public JTextField getNewWorkerNssField() {
+        return newWorkerNssField;
+    }
+
+    public void setNewWorkerNssField(JTextField newWorkerNssField) {
+        this.newWorkerNssField = newWorkerNssField;
+    }
+
+    public JLabel getNewWorkerNssLabel() {
+        return newWorkerNssLabel;
+    }
+
+    public void setNewWorkerNssLabel(JLabel newWorkerNssLabel) {
+        this.newWorkerNssLabel = newWorkerNssLabel;
+    }
+
+    public JButton getNewWorkerOkButton() {
+        return newWorkerOkButton;
+    }
+
+    public void setNewWorkerOkButton(JButton newWorkerOkButton) {
+        this.newWorkerOkButton = newWorkerOkButton;
+    }
+
+    public JPanel getNewWorkerPanel() {
+        return newWorkerPanel;
+    }
+
+    public void setNewWorkerPanel(JPanel newWorkerPanel) {
+        this.newWorkerPanel = newWorkerPanel;
+    }
+
+    public JTextField getNewWorkerPassField() {
+        return newWorkerPassField;
+    }
+
+    public void setNewWorkerPassField(JTextField newWorkerPassField) {
+        this.newWorkerPassField = newWorkerPassField;
+    }
+
+    public JLabel getNewWorkerPassLabel() {
+        return newWorkerPassLabel;
+    }
+
+    public void setNewWorkerPassLabel(JLabel newWorkerPassLabel) {
+        this.newWorkerPassLabel = newWorkerPassLabel;
+    }
+
+    public JComboBox<String> getNewWorkerPermissionsComboBox() {
+        return newWorkerPermissionsComboBox;
+    }
+
+    public void setNewWorkerPermissionsComboBox(JComboBox<String> newWorkerPermissionsComboBox) {
+        this.newWorkerPermissionsComboBox = newWorkerPermissionsComboBox;
+    }
+
+    public JLabel getNewWorkerPermissionsLabel() {
+        return newWorkerPermissionsLabel;
+    }
+
+    public void setNewWorkerPermissionsLabel(JLabel newWorkerPermissionsLabel) {
+        this.newWorkerPermissionsLabel = newWorkerPermissionsLabel;
+    }
+
+    public JTextField getNewWorkerPhoneField() {
+        return newWorkerPhoneField;
+    }
+
+    public void setNewWorkerPhoneField(JTextField newWorkerPhoneField) {
+        this.newWorkerPhoneField = newWorkerPhoneField;
+    }
+
+    public JLabel getNewWorkerPhoneLabel() {
+        return newWorkerPhoneLabel;
+    }
+
+    public void setNewWorkerPhoneLabel(JLabel newWorkerPhoneLabel) {
+        this.newWorkerPhoneLabel = newWorkerPhoneLabel;
+    }
+
+    public DefaultTableModel getTableModel1() {
+        return tableModel1;
+    }
+
+    public void setTableModel1(DefaultTableModel tableModel1) {
+        this.tableModel1 = tableModel1;
+    }
+
+    public DefaultTableModel getTableModel2() {
+        return tableModel2;
+    }
+
+    public void setTableModel2(DefaultTableModel tableModel2) {
+        this.tableModel2 = tableModel2;
+    }
+
+    public DefaultTableModel getTableModel3() {
+        return tableModel3;
+    }
+
+    public void setTableModel3(DefaultTableModel tableModel3) {
+        this.tableModel3 = tableModel3;
+    }
+
+    public JLabel getPaxLabelPanel() {
+        return PaxLabelPanel;
+    }
+
+    public void setPaxLabelPanel(JLabel PaxLabelPanel) {
+        this.PaxLabelPanel = PaxLabelPanel;
+    }
+
+    public JButton getChargeOrderCardPaymentButton() {
+        return chargeOrderCardPaymentButton;
+    }
+
+    public void setChargeOrderCardPaymentButton(JButton chargeOrderCardPaymentButton) {
+        this.chargeOrderCardPaymentButton = chargeOrderCardPaymentButton;
+    }
+
+    public JButton getChargeOrderCardPaymentButton1() {
+        return chargeOrderCardPaymentButton1;
+    }
+
+    public void setChargeOrderCardPaymentButton1(JButton chargeOrderCardPaymentButton1) {
+        this.chargeOrderCardPaymentButton1 = chargeOrderCardPaymentButton1;
+    }
+
+    public JButton getChargeOrderCashPaymentButton() {
+        return chargeOrderCashPaymentButton;
+    }
+
+    public void setChargeOrderCashPaymentButton(JButton chargeOrderCashPaymentButton) {
+        this.chargeOrderCashPaymentButton = chargeOrderCashPaymentButton;
+    }
+
+    public JButton getChargeOrderCashPaymentButton1() {
+        return chargeOrderCashPaymentButton1;
+    }
+
+    public void setChargeOrderCashPaymentButton1(JButton chargeOrderCashPaymentButton1) {
+        this.chargeOrderCashPaymentButton1 = chargeOrderCashPaymentButton1;
+    }
+
+    public JLabel getjLabel3() {
+        return jLabel3;
+    }
+
+    public void setjLabel3(JLabel jLabel3) {
+        this.jLabel3 = jLabel3;
+    }
+
+    public JButton getLeftButton() {
+        return leftButton;
+    }
+
+    public void setLeftButton(JButton leftButton) {
+        this.leftButton = leftButton;
+    }
+
+    public JPanel getOrderPanel() {
+        return orderPanel;
+    }
+
+    public void setOrderPanel(JPanel orderPanel) {
+        this.orderPanel = orderPanel;
+    }
+
+    public JLabel getPaxLabel() {
+        return paxLabel;
+    }
+
+    public void setPaxLabel(JLabel paxLabel) {
+        this.paxLabel = paxLabel;
+    }
+
+    public JButton getPaxOkButton() {
+        return paxOkButton;
+    }
+
+    public void setPaxOkButton(JButton paxOkButton) {
+        this.paxOkButton = paxOkButton;
+    }
+
+    public JPanel getPaxPanel() {
+        return paxPanel;
+    }
+
+    public void setPaxPanel(JPanel paxPanel) {
+        this.paxPanel = paxPanel;
+    }
+
+    public JTextField getPaxTextField() {
+        return paxTextField;
+    }
+
+    public void setPaxTextField(JTextField paxTextField) {
+        this.paxTextField = paxTextField;
+    }
+
+    public JButton getRigthButton() {
+        return rigthButton;
+    }
+
+    public void setRigthButton(JButton rigthButton) {
+        this.rigthButton = rigthButton;
+    }
+
+    public JButton getSplitBillButton() {
+        return splitBillButton;
+    }
+
+    public void setSplitBillButton(JButton splitBillButton) {
+        this.splitBillButton = splitBillButton;
+    }
+
+    public JPanel getSplitBillPanel() {
+        return splitBillPanel;
+    }
+
+    public void setSplitBillPanel(JPanel splitBillPanel) {
+        this.splitBillPanel = splitBillPanel;
+    }
+
+    public JTable getTableProducts2() {
+        return tableProducts2;
+    }
+
+    public void setTableProducts2(JTable tableProducts2) {
+        this.tableProducts2 = tableProducts2;
+    }
+
+    public JTable getTableProducts3() {
+        return tableProducts3;
+    }
+
+    public void setTableProducts3(JTable tableProducts3) {
+        this.tableProducts3 = tableProducts3;
+    }
+
+    public JScrollPane getTableProductsScroll1() {
+        return tableProductsScroll1;
+    }
+
+    public void setTableProductsScroll1(JScrollPane tableProductsScroll1) {
+        this.tableProductsScroll1 = tableProductsScroll1;
+    }
+
+    public JScrollPane getTableProductsScroll2() {
+        return tableProductsScroll2;
+    }
+
+    public void setTableProductsScroll2(JScrollPane tableProductsScroll2) {
+        this.tableProductsScroll2 = tableProductsScroll2;
+    }
+
     public JButton getChargeOrderCardPayment() {
         return chargeOrderCardPaymentButton;
     }
@@ -1300,11 +1936,11 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
     }
 
     public JPanel getAdminPanel() {
-        return adminPanel;
+        return adminLoginPanel;
     }
 
     public void setAdminPanel(JPanel adminPanel) {
-        this.adminPanel = adminPanel;
+        this.adminLoginPanel = adminPanel;
     }
 
     public JButton getAdminPanelBackButton() {
@@ -1508,11 +2144,11 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
     }
 
     public JPanel getLoginPanel() {
-        return adminPanel;
+        return adminLoginPanel;
     }
 
     public void setLoginPanel(JPanel loginPanel) {
-        this.adminPanel = loginPanel;
+        this.adminLoginPanel = loginPanel;
     }
 
     public JLabel getLoginTitleLabel() {
@@ -1588,11 +2224,11 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
     }
 
     public DefaultTableModel getTableModel() {
-        return tableModel;
+        return tableModel1;
     }
 
     public void setTableModel(DefaultTableModel tableModel) {
-        this.tableModel = tableModel;
+        this.tableModel1 = tableModel;
     }
 
     public JButton getScrollBackButton() {
@@ -1797,15 +2433,18 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
     //</editor-fold>
 
     private Product selectedProduct = null;
-    private DefaultTableModel tableModel;
+    private DefaultTableModel tableModel1;
+    private DefaultTableModel tableModel2;
+    private DefaultTableModel tableModel3;
     private Proxy proxy = new Proxy(this);
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel PaxLabelPanel;
     private javax.swing.JLabel QuantityLabel;
     private javax.swing.JPanel adminBackgroundPanel;
-    private javax.swing.JPanel adminPanel;
+    private javax.swing.JPanel adminLoginPanel;
     private javax.swing.JButton adminPanelBackButton;
     private javax.swing.JButton adminSettingsButton;
+    private javax.swing.JTabbedPane adminTabPanel;
     private javax.swing.JButton admingLoginButton;
     private javax.swing.JPanel backgroundPanel;
     private javax.swing.JPanel billButtonsPanel;
@@ -1834,6 +2473,24 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
     private javax.swing.JLabel loginTitleLabel;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JButton mainPanelBackButton;
+    private javax.swing.JTextField newWorkerDniField;
+    private javax.swing.JLabel newWorkerDniLabel;
+    private javax.swing.JTextField newWorkerEmailField;
+    private javax.swing.JLabel newWorkerEmailLabel;
+    private javax.swing.JTextField newWorkerLastNameField;
+    private javax.swing.JLabel newWorkerLastNameLabel;
+    private javax.swing.JTextField newWorkerNameField;
+    private javax.swing.JLabel newWorkerNameLabel;
+    private javax.swing.JTextField newWorkerNssField;
+    private javax.swing.JLabel newWorkerNssLabel;
+    private javax.swing.JButton newWorkerOkButton;
+    private javax.swing.JPanel newWorkerPanel;
+    private javax.swing.JTextField newWorkerPassField;
+    private javax.swing.JLabel newWorkerPassLabel;
+    private javax.swing.JComboBox<String> newWorkerPermissionsComboBox;
+    private javax.swing.JLabel newWorkerPermissionsLabel;
+    private javax.swing.JTextField newWorkerPhoneField;
+    private javax.swing.JLabel newWorkerPhoneLabel;
     private javax.swing.JPanel orderPanel;
     private javax.swing.JLabel passLabel;
     private javax.swing.JPasswordField passTextField;

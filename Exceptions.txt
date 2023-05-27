@@ -9,3 +9,9 @@ Se ha producido la excepcion:java.sql.SQLException: Column 'URL_IMAGEN' not foun
  Fecha: Sat May 20 16:37:40 CEST 2023
 Se ha producido la excepcion:java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.URL_IMAGEN FROM PRODUCTOS AS P INNER JOIN FAMILIAS AS F ON P.FAMILIA= F.ID_FAMI' at line 1
  Fecha: Sat May 20 16:38:31 CEST 2023
+Se ha producido la excepcion:java.sql.SQLIntegrityConstraintViolationException: Duplicate entry 'matias@gmail.com' for key 'trabajadores.AK_EMAIL'
+ Fecha: Sun May 28 00:14:14 CEST 2023
+
+Se ha producido la excepcion:java.sql.SQLIntegrityConstraintViolationException: Duplicate entry 'matias@gmail.com' for key 'trabajadores.AK_EMAIL'
+ Fecha: Sun May 28 00:15:56 CEST 2023
+

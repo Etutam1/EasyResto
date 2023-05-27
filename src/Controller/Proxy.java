@@ -23,6 +23,12 @@ import javax.swing.JOptionPane;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.Iterator;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -54,6 +60,8 @@ public class Proxy implements ExceptionReport {
     private final String orderProductsQuery = "SELECT P.NOMBRE, P.PRECIO, PP.CANTIDAD , PP.ID_PRODUCTO FROM PEDIDOS_PRODUCTOS AS PP INNER JOIN PRODUCTOS AS P ON PP.ID_PRODUCTO=P.ID_PRODUCTO WHERE ID_PEDIDO=?";
     private final String totalOrderQuery = "SELECT TOTAL_PEDIDO(?) AS TOTAL";
     private final String removeProductQuery = "CALL BORRAR_PRODUCTO(?,?,?)";
+    private final String insertNewWorkerQuery = "INSERT INTO TRABAJADORES VALUES (DEFAULT,?,?,?,?,?,?,SHA(?),?,DEFAULT)";
+    private final String checkNewWorkerDataQuery = "SELECT COMPROBAR_NUEVO_TRABAJADOR(?,?,?,?,?,?)";
 
     private PreparedStatement clockOutRememberPrep;
     private PreparedStatement clockOutPrep;
@@ -75,6 +83,8 @@ public class Proxy implements ExceptionReport {
     private PreparedStatement totalOrderPrep;
     private PreparedStatement removeProductPrep;
     private PreparedStatement removeOrderPrep;
+    private PreparedStatement insertNewWorkerPrep;
+    private PreparedStatement checkNewWorkerPrep;
 
     public Proxy(EasyRestoInterface easyRestoInterface) {
         this.easyRestoInterface = easyRestoInterface;
@@ -96,7 +106,7 @@ public class Proxy implements ExceptionReport {
             tablesPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(tablesQuery);
             familyProductPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(familyQuery);
             productPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(productQuery);
-            insertOrderPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(insertOrderQuery);
+            insertOrderPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(insertOrderQuery, Statement.RETURN_GENERATED_KEYS);
             currentOrderPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(currentOrderQuery);
             insertProductPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(insertProductQuery);
             closeOrderPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(closeOrderQuery);
@@ -104,6 +114,8 @@ public class Proxy implements ExceptionReport {
             totalOrderPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(this.totalOrderQuery);
             removeProductPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(this.removeProductQuery);
             removeOrderPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(this.removeOrderQuery);
+            insertNewWorkerPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(this.insertNewWorkerQuery);
+            checkNewWorkerPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(this.checkNewWorkerDataQuery);
         } catch (SQLException ex) {
             this.reportException(ex);
         }
@@ -120,7 +132,6 @@ public class Proxy implements ExceptionReport {
             }
         }
         return false;
-
     }
 
     public boolean handleRequest(String request, String familyName, int Id) {
@@ -147,18 +158,51 @@ public class Proxy implements ExceptionReport {
             }
             case "clockOut" ->
                 this.clockOut(Id);
-            case "sendPendingProducts" ->
-                this.sendPendingProducts();
+
             case "closeOrder" -> {
                 System.out.println("CLOSE");
                 this.closeOrder(Id);
             }
-            case "getOrderProducts" ->
-                this.getOrderProducts(Id);
             case "removeOrder" ->
                 this.removeOrder(Id);
         }
         return true;
+    }
+
+    public boolean checkExistentWorkerData() {
+        try {
+            this.checkNewWorkerPrep.setString(1, this.easyRestoInterface.getNewWorkerNameField().getText());
+            this.checkNewWorkerPrep.setString(2, this.easyRestoInterface.getNewWorkerLastNameField().getText());
+            this.checkNewWorkerPrep.setString(3, this.easyRestoInterface.getNewWorkerDniField().getText());
+            this.checkNewWorkerPrep.setString(4, this.easyRestoInterface.getNewWorkerNssField().getText());
+            this.checkNewWorkerPrep.setString(5, this.easyRestoInterface.getNewWorkerEmailField().getText());
+            this.checkNewWorkerPrep.setString(6, this.easyRestoInterface.getNewWorkerPhoneField().getText());
+            ResultSet workerDataResult = this.checkNewWorkerPrep.executeQuery();
+            while (workerDataResult.next()){
+               return workerDataResult.getBoolean(1);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
+//            this.reportException(ex);
+        }
+        return false;
+    }
+    
+
+    public void insertNewWorker() {
+        try {
+            this.insertNewWorkerPrep.setString(1, this.easyRestoInterface.getNewWorkerNameField().getText());
+            this.insertNewWorkerPrep.setString(2, this.easyRestoInterface.getNewWorkerLastNameField().getText());
+            this.insertNewWorkerPrep.setString(3, this.easyRestoInterface.getNewWorkerDniField().getText());
+            this.insertNewWorkerPrep.setString(4, this.easyRestoInterface.getNewWorkerNssField().getText());
+            this.insertNewWorkerPrep.setString(5, this.easyRestoInterface.getNewWorkerEmailField().getText());
+            this.insertNewWorkerPrep.setString(6, this.easyRestoInterface.getNewWorkerPhoneField().getText());
+            this.insertNewWorkerPrep.setString(7, this.easyRestoInterface.getNewWorkerPassField().getText());
+            this.insertNewWorkerPrep.setString(8, this.easyRestoInterface.getNewWorkerPermissionsComboBox().getSelectedItem().toString());
+            this.insertNewWorkerPrep.executeUpdate();
+        } catch (SQLException ex) {
+            this.reportException(ex);
+        }
     }
 
     private boolean workerLogin(String workerID, char[] password) throws HeadlessException {
@@ -259,7 +303,7 @@ public class Proxy implements ExceptionReport {
             this.productPrep.setString(1, familyName);
             ResultSet productResult = this.productPrep.executeQuery();
             while (productResult.next()) {
-                this.easyRestoInterface.configProductButton(productResult.getInt("ID_PRODUCTO"), productResult.getString("NOMBRE"), productResult.getDouble("PRECIO"), productResult.getString("URL_IMAGEN") );
+                this.easyRestoInterface.configProductButton(productResult.getInt("ID_PRODUCTO"), productResult.getString("NOMBRE"), productResult.getDouble("PRECIO"), productResult.getString("URL_IMAGEN"));
             }
         } catch (SQLException ex) {
             this.reportException(ex);
@@ -338,7 +382,6 @@ public class Proxy implements ExceptionReport {
             this.reportException(ex);
         }
     }
-    
 
     private boolean rememberClockOut(int workerId) {
         try {
@@ -372,6 +415,24 @@ public class Proxy implements ExceptionReport {
         } catch (SQLException ex) {
             this.reportException(ex);
         }
+    }
+
+    public int generateSubOrder(int workerID, int tableID, int pax) {
+
+        try {
+            this.insertOrderPrep.setInt(1, workerID);
+            this.insertOrderPrep.setInt(2, tableID);
+            this.insertOrderPrep.setInt(3, pax);
+            this.insertOrderPrep.executeUpdate();
+
+            ResultSet subOrderIDResult = this.insertOrderPrep.getGeneratedKeys();
+            while (subOrderIDResult.next()) {
+                return subOrderIDResult.getInt(1);
+            }
+        } catch (SQLException ex) {
+            this.reportException(ex);
+        }
+        return 0;
     }
 
     public int getOrderID(int tableID) {
@@ -411,12 +472,12 @@ public class Proxy implements ExceptionReport {
         }
     }
 
-    private boolean sendPendingProducts() {
-        Iterator<Product> iteratorProducts = this.currentOrder.getPendingProductsArray().iterator();
+    public boolean sendPendingProducts(ArrayList<Product> array, int orderID) {
+        Iterator<Product> iteratorProducts = array.iterator();
         while (iteratorProducts.hasNext()) {
             Product productToSend = iteratorProducts.next();
-            System.out.println("order:" + this.currentOrder.getOrderID() + "productID:" + productToSend.getProductID() + "quantity:" + productToSend.getProductQuantity());
-            this.insertProduct(this.currentOrder.getOrderID(), productToSend.getProductID(), productToSend.getProductQuantity());
+            System.out.println("order:" + orderID + "productID:" + productToSend.getProductID() + "quantity:" + productToSend.getProductQuantity());
+            this.insertProduct(orderID, productToSend.getProductID(), productToSend.getProductQuantity());
         }
         return true;
     }
@@ -435,7 +496,7 @@ public class Proxy implements ExceptionReport {
 
     private void closeOrder(int orderID) {
         try {
-            if (this.easyRestoInterface.getChargeOrderCardPayment().hasFocus()) {
+            if (this.easyRestoInterface.getChargeOrderCardPayment().hasFocus() || this.easyRestoInterface.getChargeOrderCardPaymentButton1().hasFocus()) {
 
                 System.out.println("TARJETA");
                 this.closeOrderPrep.setString(1, "TARJETA");
@@ -460,14 +521,14 @@ public class Proxy implements ExceptionReport {
         return true;
     }
 
-    private boolean getOrderProducts(int orderID) {
-
+    public boolean getOrderProducts(int orderID, JTable table) {
+        DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
         try {
             this.orderProductsPrep.setInt(1, orderID);
             ResultSet orderProductsResult = this.orderProductsPrep.executeQuery();
             while (orderProductsResult.next()) {
                 Object[] productRow = {orderProductsResult.getString("NOMBRE"), orderProductsResult.getDouble("PRECIO"), orderProductsResult.getInt("CANTIDAD"), orderProductsResult.getInt("ID_PRODUCTO")};
-                this.easyRestoInterface.getTableModel().addRow(productRow);
+                tableModel.addRow(productRow);
             }
         } catch (SQLException ex) {
             this.reportException(ex);
@@ -487,14 +548,14 @@ public class Proxy implements ExceptionReport {
         }
         return 0.0;
     }
-    
+
     @Override
     public void reportException(Exception exception) {
         PrintWriter salida = null;
 
         try {
             salida = new PrintWriter(new FileWriter("Exceptions.txt", true));
-            salida.write("Se ha producido la excepcion:" + exception.toString() + "\n Fecha: " + new Date().toString() + "\n");
+            salida.write("Se ha producido la excepcion:" + exception.toString() + "\n Fecha: " + new Date().toString() + "\n\n");
 
         } catch (FileNotFoundException ex2) {
             JOptionPane.showMessageDialog(this.easyRestoInterface, "NO SE HA PODIDO REPORTAR UN PROBLEMA");
