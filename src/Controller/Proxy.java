@@ -31,7 +31,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * A class that acts as a proxy and implements the ExceptionReport interface.
  * @author a22lucasmpg
  */
 public class Proxy implements ExceptionReport {
@@ -62,6 +62,9 @@ public class Proxy implements ExceptionReport {
     private final String removeProductQuery = "CALL BORRAR_PRODUCTO(?,?,?)";
     private final String insertNewWorkerQuery = "INSERT INTO TRABAJADORES VALUES (DEFAULT,?,?,?,?,?,?,SHA(?),?,DEFAULT)";
     private final String checkNewWorkerDataQuery = "SELECT COMPROBAR_NUEVO_TRABAJADOR(?,?,?,?,?,?)";
+    private final String workersDataQuery = "SELECT * FROM TRABAJADORES";
+    private final String udpateWorkerDataQuery = "UPDATE TRABAJADORES SET NOMBRE=?, APELLIDOS=?, DNI=?, NSS=?, EMAIL=?, TELEFONO=?,PERMISOS=?, ACTIVO=? WHERE ID_TRABAJADOR=?";
+    private final String insertNewProductQuery = "INSERT INTO PRODUCTOS VALUES (DEFAULT,?,?,?,DEFAULT,(SELECT ID_FAMILIA FROM FAMILIAS WHERE NOMBRE=?),DEFAULT,DEFAULT)";
 
     private PreparedStatement clockOutRememberPrep;
     private PreparedStatement clockOutPrep;
@@ -85,7 +88,15 @@ public class Proxy implements ExceptionReport {
     private PreparedStatement removeOrderPrep;
     private PreparedStatement insertNewWorkerPrep;
     private PreparedStatement checkNewWorkerPrep;
+    private PreparedStatement workersDataPrep;
+    private PreparedStatement updateWorkerDataPrep;
+    private PreparedStatement insertNewProductPrep;
 
+    /**
+     * Constructs a new instance of Proxy.
+     *
+     * @param easyRestoInterface the instance of EasyRestoInterface.
+     */
     public Proxy(EasyRestoInterface easyRestoInterface) {
         this.easyRestoInterface = easyRestoInterface;
         this.easyRestoDb = new EasyRestoDB();
@@ -116,11 +127,22 @@ public class Proxy implements ExceptionReport {
             removeOrderPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(this.removeOrderQuery);
             insertNewWorkerPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(this.insertNewWorkerQuery);
             checkNewWorkerPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(this.checkNewWorkerDataQuery);
+            workersDataPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(this.workersDataQuery);
+            updateWorkerDataPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(this.udpateWorkerDataQuery);
+            insertNewProductPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(this.insertNewProductQuery);
         } catch (SQLException ex) {
             this.reportException(ex);
         }
     }
 
+    /**
+     * Performs a login operation based on the provided parameters.
+     *
+     * @param admin true if the login is for an admin, false otherwise.
+     * @param emailOrID the email or ID used for the login.
+     * @param password the password used for the login.
+     * @return true if the login is successful, false otherwise.
+     */
     public boolean login(boolean admin, String emailOrID, char[] password) {
         if (admin) {
             if (this.adminSettingsLogin(emailOrID, password)) {
@@ -134,6 +156,14 @@ public class Proxy implements ExceptionReport {
         return false;
     }
 
+    /**
+     * Handles a specific request based on the provided parameters.
+     *
+     * @param request the type of request to handle.
+     * @param familyName the name of the product family (if applicable).
+     * @param Id the ID of the worker or table (if applicable).
+     * @return true if the request is handled successfully, false otherwise.
+     */
     public boolean handleRequest(String request, String familyName, int Id) {
         switch (request) {
             case "getWorkerButton" ->
@@ -160,16 +190,77 @@ public class Proxy implements ExceptionReport {
                 this.clockOut(Id);
 
             case "closeOrder" -> {
-                System.out.println("CLOSE");
                 this.closeOrder(Id);
             }
             case "removeOrder" ->
                 this.removeOrder(Id);
+            case "getWorkersData" ->
+                this.getWorkersData();
+
+            case "insertNewWorker" ->
+                this.insertNewWorker();
+
+            case "checkExistentWorkerData" -> {
+                if (!this.checkExistentWorkerData()) {
+                    return false;
+                }
+            }
+            case "getProductFamilies" ->
+                this.getProductFamilies();
+
+            case "insertNewProduct" ->
+                this.insertNewProduct();
         }
         return true;
     }
 
-    public boolean checkExistentWorkerData() {
+    /**
+     * Updates the data of a worker in the database.
+     *
+     * @param worker the Worker object containing the updated data.
+     */
+    public void updateWorkerData(Worker worker) {
+
+        try {
+            this.updateWorkerDataPrep.setString(1, worker.getName());
+            this.updateWorkerDataPrep.setString(2, worker.getLastname());
+            this.updateWorkerDataPrep.setString(3, worker.getDni());
+            this.updateWorkerDataPrep.setString(4, worker.getNss());
+            this.updateWorkerDataPrep.setString(5, worker.getEmail());
+            this.updateWorkerDataPrep.setString(6, worker.getPhoneNumber());
+            this.updateWorkerDataPrep.setString(7, worker.getPermissions());
+            this.updateWorkerDataPrep.setInt(8, worker.getActive());
+            this.updateWorkerDataPrep.setInt(9, worker.getId());
+            this.updateWorkerDataPrep.executeUpdate();
+        } catch (SQLException ex) {
+            this.reportException(ex);
+        }
+    }
+
+    private void getWorkersData() {
+        try {
+            ResultSet workerDataResult = this.workersDataPrep.executeQuery();
+
+            while (workerDataResult.next()) {
+                Worker worker = new Worker(workerDataResult.getInt("ID_TRABAJADOR"),
+                        workerDataResult.getString("NOMBRE"),
+                        workerDataResult.getString("APELLIDOS"),
+                        workerDataResult.getString("DNI"),
+                        workerDataResult.getString("NSS"),
+                        workerDataResult.getString("EMAIL"),
+                        workerDataResult.getString("TELEFONO"),
+                        workerDataResult.getString("PASS"),
+                        workerDataResult.getString("PERMISOS"),
+                        workerDataResult.getInt("ACTIVO")
+                );
+                this.easyRestoInterface.addWorkersToTable(worker);
+            }
+        } catch (SQLException ex) {
+            this.reportException(ex);
+        }
+    }
+
+    private boolean checkExistentWorkerData() {
         try {
             this.checkNewWorkerPrep.setString(1, this.easyRestoInterface.getNewWorkerNameField().getText());
             this.checkNewWorkerPrep.setString(2, this.easyRestoInterface.getNewWorkerLastNameField().getText());
@@ -178,18 +269,16 @@ public class Proxy implements ExceptionReport {
             this.checkNewWorkerPrep.setString(5, this.easyRestoInterface.getNewWorkerEmailField().getText());
             this.checkNewWorkerPrep.setString(6, this.easyRestoInterface.getNewWorkerPhoneField().getText());
             ResultSet workerDataResult = this.checkNewWorkerPrep.executeQuery();
-            while (workerDataResult.next()){
-               return workerDataResult.getBoolean(1);
+            while (workerDataResult.next()) {
+                return workerDataResult.getBoolean(1);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(Proxy.class.getName()).log(Level.SEVERE, null, ex);
-//            this.reportException(ex);
+            this.reportException(ex);
         }
         return false;
     }
-    
 
-    public void insertNewWorker() {
+    private void insertNewWorker() {
         try {
             this.insertNewWorkerPrep.setString(1, this.easyRestoInterface.getNewWorkerNameField().getText());
             this.insertNewWorkerPrep.setString(2, this.easyRestoInterface.getNewWorkerLastNameField().getText());
@@ -295,6 +384,29 @@ public class Proxy implements ExceptionReport {
             this.reportException(ex);
         }
         return true;
+    }
+
+    private void getProductFamilies() {
+        try {
+            ResultSet productFamilyResult = this.familyProductPrep.executeQuery();
+            while (productFamilyResult.next()) {
+                this.easyRestoInterface.getNewProductFamilyCombo().addItem(productFamilyResult.getString("NOMBRE"));
+            }
+        } catch (SQLException ex) {
+            this.reportException(ex);
+        }
+    }
+
+    private void insertNewProduct() {
+        try {
+            this.insertNewProductPrep.setString(1, this.easyRestoInterface.getNewProductNameField().getText());
+            this.insertNewProductPrep.setDouble(2, Double.parseDouble(this.easyRestoInterface.getNewProductPriceField().getText()));
+            this.insertNewProductPrep.setString(3, this.easyRestoInterface.getNewProductIMGField().getText());
+            this.insertNewProductPrep.setString(4, (String) this.easyRestoInterface.getNewProductFamilyCombo().getSelectedItem());
+            this.insertNewProductPrep.executeUpdate();
+        } catch (SQLException ex) {
+            this.reportException(ex);
+        }
     }
 
     private boolean getProductButton(String familyName) {
@@ -406,6 +518,13 @@ public class Proxy implements ExceptionReport {
         return true;
     }
 
+    /**
+     * Generates a new order in the database.
+     *
+     * @param workerID the ID of the worker associated with the order.
+     * @param tableID the ID of the table associated with the order.
+     * @param pax the number of people for the order.
+     */
     public void generateOrder(int workerID, int tableID, int pax) {
         try {
             this.insertOrderPrep.setInt(1, workerID);
@@ -417,6 +536,14 @@ public class Proxy implements ExceptionReport {
         }
     }
 
+    /**
+     * Generates a new sub-order in the database and returns its ID.
+     *
+     * @param workerID the ID of the worker associated with the sub-order.
+     * @param tableID the ID of the table associated with the sub-order.
+     * @param pax the number of people for the sub-order.
+     * @return the ID of the generated sub-order, or 0 if an error occurred.
+     */
     public int generateSubOrder(int workerID, int tableID, int pax) {
 
         try {
@@ -435,6 +562,13 @@ public class Proxy implements ExceptionReport {
         return 0;
     }
 
+    /**
+     * Returns the ID of the current order associated with a specific table.
+     *
+     * @param tableID the ID of the table.
+     * @return the ID of the current order for the specified table, or 0 if no
+     * order is found or an error occurs.
+     */
     public int getOrderID(int tableID) {
         try {
             this.currentOrderPrep.setInt(1, tableID);
@@ -448,6 +582,13 @@ public class Proxy implements ExceptionReport {
         return 0;
     }
 
+    /**
+     * Returns the data of the current order associated with a specific table.
+     *
+     * @param tableID the ID of the table.
+     * @return an Order object containing the ID and current number of diners
+     * for the current order, or null if no order is found or an error occurs.
+     */
     public Order getOrderData(int tableID) {
         try {
             this.currentOrderPrep.setInt(1, tableID);
@@ -461,6 +602,12 @@ public class Proxy implements ExceptionReport {
         return null;
     }
 
+    /**
+     * Removes a specified quantity of a product from the current order.
+     *
+     * @param product the product to be removed from the order.
+     * @param quantity the quantity of the product to be removed.
+     */
     public void removeProductFromOrder(Product product, int quantity) {
         try {
             this.removeProductPrep.setInt(1, this.currentOrder.getOrderID());
@@ -472,11 +619,17 @@ public class Proxy implements ExceptionReport {
         }
     }
 
+    /**
+     * Sends a list of pending products to an order.
+     *
+     * @param array the list of products to send.
+     * @param orderID the ID of the order to send the products to.
+     * @return true if the products were successfully sent, false otherwise.
+     */
     public boolean sendPendingProducts(ArrayList<Product> array, int orderID) {
         Iterator<Product> iteratorProducts = array.iterator();
         while (iteratorProducts.hasNext()) {
             Product productToSend = iteratorProducts.next();
-            System.out.println("order:" + orderID + "productID:" + productToSend.getProductID() + "quantity:" + productToSend.getProductQuantity());
             this.insertProduct(orderID, productToSend.getProductID(), productToSend.getProductQuantity());
         }
         return true;
@@ -497,11 +650,8 @@ public class Proxy implements ExceptionReport {
     private void closeOrder(int orderID) {
         try {
             if (this.easyRestoInterface.getChargeOrderCardPayment().hasFocus() || this.easyRestoInterface.getChargeOrderCardPaymentButton1().hasFocus()) {
-
-                System.out.println("TARJETA");
                 this.closeOrderPrep.setString(1, "TARJETA");
             } else {
-                System.out.println("EFECTIVO");
                 this.closeOrderPrep.setString(1, "EFECTIVO");
             }
             this.closeOrderPrep.setInt(2, orderID);
@@ -521,6 +671,15 @@ public class Proxy implements ExceptionReport {
         return true;
     }
 
+    /**
+     * Returns the products associated with an order and adds them in a
+     * JTable.
+     *
+     * @param orderID the ID of the order to retrieve the products from.
+     * @param table the JTable to populate with the retrieved products.
+     * @return true if the products were successfully retrieved and added to the
+     * table, false otherwise.
+     */
     public boolean getOrderProducts(int orderID, JTable table) {
         DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
         try {
@@ -536,6 +695,12 @@ public class Proxy implements ExceptionReport {
         return true;
     }
 
+    /**
+     * Returns the total amount of an order.
+     *
+     * @param orderID the ID of the order to retrieve the total amount from.
+     * @return the total amount of the order, or 0.0 if an error occurred.
+     */
     public double getTotalOrder(int orderID) {
         try {
             this.totalOrderPrep.setInt(1, orderID);
@@ -549,6 +714,12 @@ public class Proxy implements ExceptionReport {
         return 0.0;
     }
 
+    /**
+     * Reports an exception by writing it to a file and displaying an error
+     * message.
+     *
+     * @param exception the exception to be reported.
+     */
     @Override
     public void reportException(Exception exception) {
         PrintWriter salida = null;

@@ -4,32 +4,42 @@
  */
 package Model;
 
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Date;
+import javax.swing.JOptionPane;
+
 /**
+ * Represents the database connection for EasyResto application.
  *
- * @author matut
+ * @author a22lucasmpg
  */
-public class EasyRestoDB {
-    private String user;
-    private String pass;
-    private String server;
-    private String port;
-    private String dataBase;
+public class EasyRestoDB implements ExceptionReport {
+
+  
     private Connection easyRestoConnection;
     private Statement mysqlSelect;
 
+    /**
+     * Constructs a new EasyRestoDB instance and initializes the database
+     * connection. This constructor establishes a connection to the database
+     * using the provided connection parameters. It also creates a statement for
+     * executing SQL queries.
+     *
+     * @throws SQLException if a database access error occurs
+     */
     public EasyRestoDB() {
         try {
-            this.easyRestoConnection=this.openConnection();
-            this.mysqlSelect =this.easyRestoConnection.createStatement();
+            this.easyRestoConnection = this.openConnection();
+            this.mysqlSelect = this.easyRestoConnection.createStatement();
         } catch (SQLException ex) {
-            Logger.getLogger(EasyRestoDB.class.getName()).log(Level.SEVERE, null, ex);
+            this.reportException(ex);
         }
     }
 
@@ -38,13 +48,9 @@ public class EasyRestoDB {
         try {
             conexionServer = DriverManager.getConnection("jdbc:mysql://localhost:3306/easyrestobd", "root", "root");
         } catch (SQLException ex) {
-            Logger.getLogger(EasyRestoDB.class.getName()).log(Level.SEVERE, null, ex);
+            this.reportException(ex);
         }
         return conexionServer;
-    }
-
-    public ResultSet executeQuery(String query) throws SQLException{
-        return this.mysqlSelect.executeQuery(query);
     }
 
     public Statement getMysqlSelect() {
@@ -55,46 +61,6 @@ public class EasyRestoDB {
         this.mysqlSelect = mysqlSelect;
     }
 
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
-
-    public String getPass() {
-        return pass;
-    }
-
-    public void setPass(String pass) {
-        this.pass = pass;
-    }
-
-    public String getServer() {
-        return server;
-    }
-
-    public void setServer(String server) {
-        this.server = server;
-    }
-
-    public String getPort() {
-        return port;
-    }
-
-    public void setPort(String port) {
-        this.port = port;
-    }
-
-    public String getDataBase() {
-        return dataBase;
-    }
-
-    public void setDataBase(String dataBase) {
-        this.dataBase = dataBase;
-    }
-
     public Connection getEasyRestoConnection() {
         return easyRestoConnection;
     }
@@ -102,6 +68,25 @@ public class EasyRestoDB {
     public void setEasyRestoConnection(Connection easyRestoConnection) {
         this.easyRestoConnection = easyRestoConnection;
     }
-    
-   
+
+    @Override
+    public void reportException(Exception exception) {
+        PrintWriter salida = null;
+
+        try {
+            salida = new PrintWriter(new FileWriter("Exceptions.txt", true));
+            salida.write("Se ha producido la excepcion:" + exception.toString() + "\n Fecha: " + new Date().toString() + "\n\n");
+
+        } catch (FileNotFoundException ex2) {
+            JOptionPane.showMessageDialog(null, "NO SE HA PODIDO REPORTAR UN PROBLEMA");
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, "NO SE HA PODIDO REPORTAR UN PROBLEMA");
+        } finally {
+
+            if (salida != null) {
+                salida.close();
+            }
+        }
+    }
+
 }

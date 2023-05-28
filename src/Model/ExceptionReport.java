@@ -7,16 +7,16 @@ package Model;
 
 
 /**
- *
- * @author matut
+ * Interface for reporting exceptions.
+ * @author a22lucasmpg
  */
 public interface ExceptionReport {
 
     
- /**
-  * Trata la exception recibida guardando el nombre de la exception, fecha y causa en un fichero .txt
-  * @param exception  exception a reportar 
-  */
+     /**
+     * Reports an exception.
+     *
+     * @param exception  the exception to report
+     */
     public void reportException(Exception exception);
-       
 }
