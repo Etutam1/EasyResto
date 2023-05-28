@@ -1,0 +1,108 @@
+CHULETARIO DE PROPIEDADES
+
+Modelo de cajas
+===============
+
+	contenido --> content
+	relleno   --> padding
+	margen    --> margin
+	borde     --> border (border-radius CSS3)
+	fondo     --> background
+			color    --> background-color
+			imagen   --> background-image:url("...")
+	(en CSS3 --> gradientes: linear-gradient(direccion,color1,color2,...   colorN)
+			repetición --> background-repeat (no-repeat|repeat-x|repeat-y)
+			posición --> background-position
+			comportamiento --> background-attachment(scroll|fixed)
+
+Propiedades
+===========
+
+shorthand --> padding (1, 2 o 4 valores)
+	padding-top	
+	padding-bottom		
+	padding-right	
+	padding-left	
+
+shorthand --> margin (1, 2 o 4 valores)
+	centrado horizontal  --> auto
+	margin-top	
+	margin-bottom		
+	margin-right	
+	margin-left	
+
+shorthand --> border: 3 características --> ESTILO GROSOR COLOR
+	              4 posiciones --> top bottom right left
+		
+   POSICION+ESTILO:		
+	border-top-style
+	border-right-style	
+	border-bottom-style
+	border-left-style
+
+   POSICION+GROSOR:
+	border-top-width
+	border-right-width
+	border-bottom-width
+	border-left-width
+
+   POSICION+COLOR:
+	border-top-color
+	border-right-color
+	border-bottom-color
+	border-left-color
+
+   POSICION:	
+	border-top				
+	border-bottom
+	border-right
+	border-left
+
+   ESTILO
+	border-style
+
+   GROSOR		
+	border-width
+
+   COLOR
+	border-color
+
+   
+
+   Propiedades del texto
+   =====================
+	color  (CSS3 incluye transparencias)
+
+	font-family
+	font-size
+	font-weight (efecto negrita --> normal-400 bold-700)
+	font-style (italic|normal)
+	line-height (interlineado)
+	text-transform (uppercase|lowercase)
+	text-align (left|right|center|justify)
+	text-indent (sangría de 1ª línea)
+	text-decoration (underline|overlilne|line-through)
+
+	letter-spacing
+	word-spacing
+	
+
+   Propiedades de tablas
+   =====================
+
+	border-collapse
+	caption-side (top|bottom)
+
+
+   Propiedades de listas
+   =====================
+	
+   shorthand --> list-style (3 características --> tipo posición imagen)
+
+	list-style-type (disc|circle|square|decimal|lower-roman... |none)
+        list-style-position (inside|outside)
+        list-style-image:url("...")
+
+   
+
+

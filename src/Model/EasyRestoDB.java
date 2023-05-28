@@ -32,7 +32,7 @@ public class EasyRestoDB implements ExceptionReport {
      * using the provided connection parameters. It also creates a statement for
      * executing SQL queries.
      *
-     * @throws SQLException if a database access error occurs
+     * 
      */
     public EasyRestoDB() {
         try {

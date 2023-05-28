@@ -27,14 +27,12 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A class that acts as a proxy and implements the ExceptionReport interface.
  * @author a22lucasmpg
  */
-public class Proxy implements ExceptionReport {
+public class Proxy implements ExceptionReport { 
 
     private EasyRestoDB easyRestoDb;
     private EasyRestoInterface easyRestoInterface;
