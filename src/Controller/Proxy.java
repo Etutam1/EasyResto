@@ -30,14 +30,16 @@ import java.util.ArrayList;
 
 /**
  * A class that acts as a proxy and implements the ExceptionReport interface.
+ *
  * @author a22lucasmpg
  */
-public class Proxy implements ExceptionReport { 
+public class Proxy implements ExceptionReport {
 
     private EasyRestoDB easyRestoDb;
     private EasyRestoInterface easyRestoInterface;
     private Worker workerLogged;
     private Order currentOrder;
+    private Worker admin = new Worker(this);
     private final String clockOutQuery = "UPDATE HORARIOS_TRABAJADORES SET SALIDA=CURRENT_TIMESTAMP, TOTAL_JORNADA=TIMEDIFF(SALIDA, ENTRADA) WHERE ID_TRABAJADOR =? AND SALIDA IS NULL AND TIMEDIFF(CURRENT_TIMESTAMP, ENTRADA)< '10:00:00'";
     private final String clockOutRememberQuery = "SELECT ID_REGISTRO_HORARIO FROM HORARIOS_TRABAJADORES WHERE ID_TRABAJADOR=? AND TIMEDIFF(CURRENT_TIMESTAMP,(SELECT ENTRADA FROM HORARIOS_TRABAJADORES WHERE DATE(ENTRADA) = CURRENT_DATE AND ID_TRABAJADOR=?)) >= '07:55:00' AND SALIDA IS NULL";
     private final String clockInQuery = "INSERT INTO HORARIOS_TRABAJADORES(ID_TRABAJADOR) VALUES (?)";
@@ -63,6 +65,7 @@ public class Proxy implements ExceptionReport {
     private final String workersDataQuery = "SELECT * FROM TRABAJADORES";
     private final String udpateWorkerDataQuery = "UPDATE TRABAJADORES SET NOMBRE=?, APELLIDOS=?, DNI=?, NSS=?, EMAIL=?, TELEFONO=?,PERMISOS=?, ACTIVO=? WHERE ID_TRABAJADOR=?";
     private final String insertNewProductQuery = "INSERT INTO PRODUCTOS VALUES (DEFAULT,?,?,?,DEFAULT,(SELECT ID_FAMILIA FROM FAMILIAS WHERE NOMBRE=?),DEFAULT,DEFAULT)";
+    private final String checkPermissionsQuery = "SELECT PERMISOS FROM TRABAJADORES WHERE EMAIL=?";
 
     private PreparedStatement clockOutRememberPrep;
     private PreparedStatement clockOutPrep;
@@ -89,6 +92,7 @@ public class Proxy implements ExceptionReport {
     private PreparedStatement workersDataPrep;
     private PreparedStatement updateWorkerDataPrep;
     private PreparedStatement insertNewProductPrep;
+    private PreparedStatement checkPermissionsPrep;
 
     /**
      * Constructs a new instance of Proxy.
@@ -99,6 +103,12 @@ public class Proxy implements ExceptionReport {
         this.easyRestoInterface = easyRestoInterface;
         this.easyRestoDb = new EasyRestoDB();
         this.initPreparedStatements();
+    }
+
+    /**
+     * Constructs an empty Proxy object.
+     */
+    public Proxy() {
     }
 
     private void initPreparedStatements() {
@@ -128,6 +138,8 @@ public class Proxy implements ExceptionReport {
             workersDataPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(this.workersDataQuery);
             updateWorkerDataPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(this.udpateWorkerDataQuery);
             insertNewProductPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(this.insertNewProductQuery);
+            checkPermissionsPrep = this.easyRestoDb.getEasyRestoConnection().prepareStatement(this.checkPermissionsQuery);
+
         } catch (SQLException ex) {
             this.reportException(ex);
         }
@@ -143,8 +155,13 @@ public class Proxy implements ExceptionReport {
      */
     public boolean login(boolean admin, String emailOrID, char[] password) {
         if (admin) {
-            if (this.adminSettingsLogin(emailOrID, password)) {
-                return true;
+            if (this.admin.hasPermission(emailOrID)) {
+                if (this.adminSettingsLogin(emailOrID, password)) {
+                    return true;
+                }
+            } else {
+                JOptionPane.showMessageDialog(this.easyRestoInterface, "PERMISO DENEGADO");
+                return false;
             }
         } else {
             if (this.workerLogin(emailOrID, password)) {
@@ -670,8 +687,7 @@ public class Proxy implements ExceptionReport {
     }
 
     /**
-     * Returns the products associated with an order and adds them in a
-     * JTable.
+     * Returns the products associated with an order and adds them in a JTable.
      *
      * @param orderID the ID of the order to retrieve the products from.
      * @param table the JTable to populate with the retrieved products.
@@ -738,130 +754,378 @@ public class Proxy implements ExceptionReport {
         }
     }
 
+    public PreparedStatement getPasswordWorkerPrep() {
+        return passwordWorkerPrep;
+    }
+
+    public void setPasswordWorkerPrep(PreparedStatement passwordWorkerPrep) {
+        this.passwordWorkerPrep = passwordWorkerPrep;
+    }
+
+    public PreparedStatement getPasswordAdminPrep() {
+        return passwordAdminPrep;
+    }
+
+    public void setPasswordAdminPrep(PreparedStatement passwordAdminPrep) {
+        this.passwordAdminPrep = passwordAdminPrep;
+    }
+
+    public PreparedStatement getCurrentOrderPrep() {
+        return currentOrderPrep;
+    }
+
+    public void setCurrentOrderPrep(PreparedStatement currentOrderPrep) {
+        this.currentOrderPrep = currentOrderPrep;
+    }
+
+    public PreparedStatement getInsertProductPrep() {
+        return insertProductPrep;
+    }
+
+    public void setInsertProductPrep(PreparedStatement insertProductPrep) {
+        this.insertProductPrep = insertProductPrep;
+    }
+
+    public PreparedStatement getCloseOrderPrep() {
+        return closeOrderPrep;
+    }
+
+    public void setCloseOrderPrep(PreparedStatement closeOrderPrep) {
+        this.closeOrderPrep = closeOrderPrep;
+    }
+
+    public PreparedStatement getOrderProductsPrep() {
+        return orderProductsPrep;
+    }
+
+    public void setOrderProductsPrep(PreparedStatement orderProductsPrep) {
+        this.orderProductsPrep = orderProductsPrep;
+    }
+
+    public PreparedStatement getTotalOrderPrep() {
+        return totalOrderPrep;
+    }
+
+    public void setTotalOrderPrep(PreparedStatement totalOrderPrep) {
+        this.totalOrderPrep = totalOrderPrep;
+    }
+
+    public PreparedStatement getRemoveProductPrep() {
+        return removeProductPrep;
+    }
+
+    public void setRemoveProductPrep(PreparedStatement removeProductPrep) {
+        this.removeProductPrep = removeProductPrep;
+    }
+
+    public PreparedStatement getRemoveOrderPrep() {
+        return removeOrderPrep;
+    }
+
+    public void setRemoveOrderPrep(PreparedStatement removeOrderPrep) {
+        this.removeOrderPrep = removeOrderPrep;
+    }
+
+    public PreparedStatement getInsertNewWorkerPrep() {
+        return insertNewWorkerPrep;
+    }
+
+    public void setInsertNewWorkerPrep(PreparedStatement insertNewWorkerPrep) {
+        this.insertNewWorkerPrep = insertNewWorkerPrep;
+    }
+
+    public PreparedStatement getCheckNewWorkerPrep() {
+        return checkNewWorkerPrep;
+    }
+
+    public void setCheckNewWorkerPrep(PreparedStatement checkNewWorkerPrep) {
+        this.checkNewWorkerPrep = checkNewWorkerPrep;
+    }
+
+    public PreparedStatement getWorkersDataPrep() {
+        return workersDataPrep;
+    }
+
+    public void setWorkersDataPrep(PreparedStatement workersDataPrep) {
+        this.workersDataPrep = workersDataPrep;
+    }
+
+    public PreparedStatement getUpdateWorkerDataPrep() {
+        return updateWorkerDataPrep;
+    }
+
+    public void setUpdateWorkerDataPrep(PreparedStatement updateWorkerDataPrep) {
+        this.updateWorkerDataPrep = updateWorkerDataPrep;
+    }
+
+    public PreparedStatement getInsertNewProductPrep() {
+        return insertNewProductPrep;
+    }
+
+    public void setInsertNewProductPrep(PreparedStatement insertNewProductPrep) {
+        this.insertNewProductPrep = insertNewProductPrep;
+    }
+
+    public PreparedStatement getCheckPermissionsPrep() {
+        return checkPermissionsPrep;
+    }
+
+    public void setCheckPermissionsPrep(PreparedStatement checkPermissionsPrep) {
+        this.checkPermissionsPrep = checkPermissionsPrep;
+    }
+
+    /**
+     *
+     * @return
+     */
     public Order getCurrentOrder() {
         return currentOrder;
     }
 
+    /**
+     *
+     * @param currentOrder
+     */
     public void setCurrentOrder(Order currentOrder) {
         this.currentOrder = currentOrder;
     }
 
+    /**
+     *
+     * @return
+     */
     public EasyRestoDB getEasyRestoDb() {
         return easyRestoDb;
     }
 
+    /**
+     *
+     * @param easyRestoDb
+     */
     public void setEasyRestoDb(EasyRestoDB easyRestoDb) {
         this.easyRestoDb = easyRestoDb;
     }
 
+    /**
+     *
+     * @return
+     */
     public EasyRestoInterface getEasyRestoInterface() {
         return easyRestoInterface;
     }
 
+    /**
+     *
+     * @param easyRestoInterface
+     */
     public void setEasyRestoInterface(EasyRestoInterface easyRestoInterface) {
         this.easyRestoInterface = easyRestoInterface;
     }
 
+    /**
+     *
+     * @return
+     */
     public Worker getWorkerLogged() {
         return workerLogged;
     }
 
+    /**
+     *
+     * @param workerLogged
+     */
     public void setWorkerLogged(Worker workerLogged) {
         this.workerLogged = workerLogged;
     }
 
+    /**
+     *
+     * @return
+     */
     public PreparedStatement getClockOutRememberPrep() {
         return clockOutRememberPrep;
     }
 
+    /**
+     *
+     * @param clockOutRememberPrep
+     */
     public void setClockOutRememberPrep(PreparedStatement clockOutRememberPrep) {
         this.clockOutRememberPrep = clockOutRememberPrep;
     }
 
+    /**
+     *
+     * @return
+     */
     public PreparedStatement getClockOutPrep() {
         return clockOutPrep;
     }
 
+    /**
+     *
+     * @param clockOutPrep
+     */
     public void setClockOutPrep(PreparedStatement clockOutPrep) {
         this.clockOutPrep = clockOutPrep;
     }
 
+    /**
+     *
+     * @return
+     */
     public PreparedStatement getClockInPrep() {
         return clockInPrep;
     }
 
+    /**
+     *
+     * @param clockInPrep
+     */
     public void setClockInPrep(PreparedStatement clockInPrep) {
         this.clockInPrep = clockInPrep;
     }
 
+    /**
+     *
+     * @return
+     */
     public PreparedStatement getCheckClockInPrep() {
         return checkClockInPrep;
     }
 
+    /**
+     *
+     * @param checkClockInPrep
+     */
     public void setCheckClockInPrep(PreparedStatement checkClockInPrep) {
         this.checkClockInPrep = checkClockInPrep;
     }
 
+    /**
+     *
+     * @return
+     */
     public PreparedStatement getWorkerDataPrep() {
         return workerDataPrep;
     }
 
+    /**
+     *
+     * @param workerDataPrep
+     */
     public void setWorkerDataPrep(PreparedStatement workerDataPrep) {
         this.workerDataPrep = workerDataPrep;
     }
 
+    /**
+     *
+     * @return
+     */
     public PreparedStatement getPasswordPrep() {
         return passwordWorkerPrep;
     }
 
+    /**
+     *
+     * @param passwordPrep
+     */
     public void setPasswordPrep(PreparedStatement passwordPrep) {
         this.passwordWorkerPrep = passwordPrep;
     }
 
+    /**
+     *
+     * @return
+     */
     public PreparedStatement getActiveWorkerNamePrep() {
         return activeWorkerNamePrep;
     }
 
+    /**
+     *
+     * @param activeWorkerNamePrep
+     */
     public void setActiveWorkerNamePrep(PreparedStatement activeWorkerNamePrep) {
         this.activeWorkerNamePrep = activeWorkerNamePrep;
     }
 
+    /**
+     *
+     * @return
+     */
     public PreparedStatement getActiveEmailPrep() {
         return activeEmailPrep;
     }
 
+    /**
+     *
+     * @param activeEmailPrep
+     */
     public void setActiveEmailPrep(PreparedStatement activeEmailPrep) {
         this.activeEmailPrep = activeEmailPrep;
     }
 
+    /**
+     *
+     * @return
+     */
     public PreparedStatement getTablesPrep() {
         return tablesPrep;
     }
 
+    /**
+     *
+     * @param tablesPrep
+     */
     public void setTablesPrep(PreparedStatement tablesPrep) {
         this.tablesPrep = tablesPrep;
     }
 
+    /**
+     *
+     * @return
+     */
     public PreparedStatement getFamilyProductPrep() {
         return familyProductPrep;
     }
 
+    /**
+     *
+     * @param familyProductPrep
+     */
     public void setFamilyProductPrep(PreparedStatement familyProductPrep) {
         this.familyProductPrep = familyProductPrep;
     }
 
+    /**
+     *
+     * @return
+     */
     public PreparedStatement getProductPrep() {
         return productPrep;
     }
 
+    /**
+     *
+     * @param productPrep
+     */
     public void setProductPrep(PreparedStatement productPrep) {
         this.productPrep = productPrep;
     }
 
+    /**
+     *
+     * @return
+     */
     public PreparedStatement getInsertOrderPrep() {
         return insertOrderPrep;
     }
 
+    /**
+     *
+     * @param insertOrderPrep
+     */
     public void setInsertOrderPrep(PreparedStatement insertOrderPrep) {
         this.insertOrderPrep = insertOrderPrep;
     }

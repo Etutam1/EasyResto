@@ -53,18 +53,34 @@ public class EasyRestoDB implements ExceptionReport {
         return conexionServer;
     }
 
+    /**
+     *
+     * @return
+     */
     public Statement getMysqlSelect() {
         return mysqlSelect;
     }
 
+    /**
+     *
+     * @param mysqlSelect
+     */
     public void setMysqlSelect(Statement mysqlSelect) {
         this.mysqlSelect = mysqlSelect;
     }
 
+    /**
+     *
+     * @return
+     */
     public Connection getEasyRestoConnection() {
         return easyRestoConnection;
     }
 
+    /**
+     *
+     * @param easyRestoConnection
+     */
     public void setEasyRestoConnection(Connection easyRestoConnection) {
         this.easyRestoConnection = easyRestoConnection;
     }

@@ -25,8 +25,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.ImageIcon;
@@ -1977,1050 +1975,2099 @@ public class EasyRestoInterface extends javax.swing.JFrame implements ExceptionR
     }
 
     // <editor-fold defaultstate="collapsed" desc="GETTERS&SETTERS"> 
+
+    /**
+     *
+     * @return
+     */
     public DefaultTableModel getWorkersTableModel() {
         return workersTableModel;
     }
 
+    /**
+     *
+     * @param workersTableModel
+     */
     public void setWorkersTableModel(DefaultTableModel workersTableModel) {
         this.workersTableModel = workersTableModel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getAdminTabPanelBackButton() {
         return adminTabPanelBackButton;
     }
 
+    /**
+     *
+     * @param adminTabPanelBackButton
+     */
     public void setAdminTabPanelBackButton(JButton adminTabPanelBackButton) {
         this.adminTabPanelBackButton = adminTabPanelBackButton;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getAdminTabPanelBackButton2() {
         return adminTabPanelBackButton2;
     }
 
+    /**
+     *
+     * @param adminTabPanelBackButton2
+     */
     public void setAdminTabPanelBackButton2(JButton adminTabPanelBackButton2) {
         this.adminTabPanelBackButton2 = adminTabPanelBackButton2;
     }
 
+    /**
+     *
+     * @return
+     */
     public JFileChooser getFileChooser() {
         return fileChooser;
     }
 
+    /**
+     *
+     * @param fileChooser
+     */
     public void setFileChooser(JFileChooser fileChooser) {
         this.fileChooser = fileChooser;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getjLabel10() {
         return jLabel10;
     }
 
+    /**
+     *
+     * @param jLabel10
+     */
     public void setjLabel10(JLabel jLabel10) {
         this.jLabel10 = jLabel10;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getjLabel11() {
         return jLabel11;
     }
 
+    /**
+     *
+     * @param jLabel11
+     */
     public void setjLabel11(JLabel jLabel11) {
         this.jLabel11 = jLabel11;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getjLabel4() {
         return jLabel4;
     }
 
+    /**
+     *
+     * @param jLabel4
+     */
     public void setjLabel4(JLabel jLabel4) {
         this.jLabel4 = jLabel4;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getjLabel5() {
         return jLabel5;
     }
 
+    /**
+     *
+     * @param jLabel5
+     */
     public void setjLabel5(JLabel jLabel5) {
         this.jLabel5 = jLabel5;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getjLabel6() {
         return jLabel6;
     }
 
+    /**
+     *
+     * @param jLabel6
+     */
     public void setjLabel6(JLabel jLabel6) {
         this.jLabel6 = jLabel6;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getjLabel8() {
         return jLabel8;
     }
 
+    /**
+     *
+     * @param jLabel8
+     */
     public void setjLabel8(JLabel jLabel8) {
         this.jLabel8 = jLabel8;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getjLabel9() {
         return jLabel9;
     }
 
+    /**
+     *
+     * @param jLabel9
+     */
     public void setjLabel9(JLabel jLabel9) {
         this.jLabel9 = jLabel9;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getModifyWorkerDataOkButton() {
         return modifyWorkerDataOkButton;
     }
 
+    /**
+     *
+     * @param modifyWorkerDataOkButton
+     */
     public void setModifyWorkerDataOkButton(JButton modifyWorkerDataOkButton) {
         this.modifyWorkerDataOkButton = modifyWorkerDataOkButton;
     }
 
+    /**
+     *
+     * @return
+     */
     public JPanel getModifyWorkerPanel() {
         return modifyWorkerPanel;
     }
 
+    /**
+     *
+     * @param modifyWorkerPanel
+     */
     public void setModifyWorkerPanel(JPanel modifyWorkerPanel) {
         this.modifyWorkerPanel = modifyWorkerPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JComboBox<String> getNewProductFamilyCombo() {
         return newProductFamilyCombo;
     }
 
+    /**
+     *
+     * @param newProductFamilyCombo
+     */
     public void setNewProductFamilyCombo(JComboBox<String> newProductFamilyCombo) {
         this.newProductFamilyCombo = newProductFamilyCombo;
     }
 
+    /**
+     *
+     * @return
+     */
     public JTextField getNewProductIMGField() {
         return newProductIMGField;
     }
 
+    /**
+     *
+     * @param newProductIMGField
+     */
     public void setNewProductIMGField(JTextField newProductIMGField) {
         this.newProductIMGField = newProductIMGField;
     }
 
+    /**
+     *
+     * @return
+     */
     public JTextField getNewProductNameField() {
         return newProductNameField;
     }
 
+    /**
+     *
+     * @param newProductNameField
+     */
     public void setNewProductNameField(JTextField newProductNameField) {
         this.newProductNameField = newProductNameField;
     }
 
+    /**
+     *
+     * @return
+     */
     public JPanel getNewProductPanel() {
         return newProductPanel;
     }
 
+    /**
+     *
+     * @param newProductPanel
+     */
     public void setNewProductPanel(JPanel newProductPanel) {
         this.newProductPanel = newProductPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getNewProductPanelOkButton() {
         return newProductPanelOkButton;
     }
 
+    /**
+     *
+     * @param newProductPanelOkButton
+     */
     public void setNewProductPanelOkButton(JButton newProductPanelOkButton) {
         this.newProductPanelOkButton = newProductPanelOkButton;
     }
 
+    /**
+     *
+     * @return
+     */
     public JTextField getNewProductPriceField() {
         return newProductPriceField;
     }
 
+    /**
+     *
+     * @param newProductPriceField
+     */
     public void setNewProductPriceField(JTextField newProductPriceField) {
         this.newProductPriceField = newProductPriceField;
     }
 
+    /**
+     *
+     * @return
+     */
     public JTabbedPane getProductTabPanel() {
         return productTabPanel;
     }
 
+    /**
+     *
+     * @param productTabPanel
+     */
     public void setProductTabPanel(JTabbedPane productTabPanel) {
         this.productTabPanel = productTabPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JTabbedPane getWorkerTabPanel() {
         return workerTabPanel;
     }
 
+    /**
+     *
+     * @param workerTabPanel
+     */
     public void setWorkerTabPanel(JTabbedPane workerTabPanel) {
         this.workerTabPanel = workerTabPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JScrollPane getWorkersDataScrollPane() {
         return workersDataScrollPane;
     }
 
+    /**
+     *
+     * @param workersDataScrollPane
+     */
     public void setWorkersDataScrollPane(JScrollPane workersDataScrollPane) {
         this.workersDataScrollPane = workersDataScrollPane;
     }
 
+    /**
+     *
+     * @return
+     */
     public JTable getWorkersTable() {
         return workersTable;
     }
 
+    /**
+     *
+     * @param workersTable
+     */
     public void setWorkersTable(JTable workersTable) {
         this.workersTable = workersTable;
     }
 
+    /**
+     *
+     * @return
+     */
     public JPanel getAdminLoginPanel() {
         return adminLoginPanel;
     }
 
+    /**
+     *
+     * @param adminLoginPanel
+     */
     public void setAdminLoginPanel(JPanel adminLoginPanel) {
         this.adminLoginPanel = adminLoginPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JTabbedPane getAdminTabPanel() {
         return adminTabPanel;
     }
 
+    /**
+     *
+     * @param adminTabPanel
+     */
     public void setAdminTabPanel(JTabbedPane adminTabPanel) {
         this.adminTabPanel = adminTabPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JTextField getNewWorkerDniField() {
         return newWorkerDniField;
     }
 
+    /**
+     *
+     * @param newWorkerDniField
+     */
     public void setNewWorkerDniField(JTextField newWorkerDniField) {
         this.newWorkerDniField = newWorkerDniField;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getNewWorkerDniLabel() {
         return newWorkerDniLabel;
     }
 
+    /**
+     *
+     * @param newWorkerDniLabel
+     */
     public void setNewWorkerDniLabel(JLabel newWorkerDniLabel) {
         this.newWorkerDniLabel = newWorkerDniLabel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JTextField getNewWorkerEmailField() {
         return newWorkerEmailField;
     }
 
+    /**
+     *
+     * @param newWorkerEmailField
+     */
     public void setNewWorkerEmailField(JTextField newWorkerEmailField) {
         this.newWorkerEmailField = newWorkerEmailField;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getNewWorkerEmailLabel() {
         return newWorkerEmailLabel;
     }
 
+    /**
+     *
+     * @param newWorkerEmailLabel
+     */
     public void setNewWorkerEmailLabel(JLabel newWorkerEmailLabel) {
         this.newWorkerEmailLabel = newWorkerEmailLabel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JTextField getNewWorkerLastNameField() {
         return newWorkerLastNameField;
     }
 
+    /**
+     *
+     * @param newWorkerLastNameField
+     */
     public void setNewWorkerLastNameField(JTextField newWorkerLastNameField) {
         this.newWorkerLastNameField = newWorkerLastNameField;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getNewWorkerLastNameLabel() {
         return newWorkerLastNameLabel;
     }
 
+    /**
+     *
+     * @param newWorkerLastNameLabel
+     */
     public void setNewWorkerLastNameLabel(JLabel newWorkerLastNameLabel) {
         this.newWorkerLastNameLabel = newWorkerLastNameLabel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JTextField getNewWorkerNameField() {
         return newWorkerNameField;
     }
 
+    /**
+     *
+     * @param newWorkerNameField
+     */
     public void setNewWorkerNameField(JTextField newWorkerNameField) {
         this.newWorkerNameField = newWorkerNameField;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getNewWorkerNameLabel() {
         return newWorkerNameLabel;
     }
 
+    /**
+     *
+     * @param newWorkerNameLabel
+     */
     public void setNewWorkerNameLabel(JLabel newWorkerNameLabel) {
         this.newWorkerNameLabel = newWorkerNameLabel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JTextField getNewWorkerNssField() {
         return newWorkerNssField;
     }
 
+    /**
+     *
+     * @param newWorkerNssField
+     */
     public void setNewWorkerNssField(JTextField newWorkerNssField) {
         this.newWorkerNssField = newWorkerNssField;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getNewWorkerNssLabel() {
         return newWorkerNssLabel;
     }
 
+    /**
+     *
+     * @param newWorkerNssLabel
+     */
     public void setNewWorkerNssLabel(JLabel newWorkerNssLabel) {
         this.newWorkerNssLabel = newWorkerNssLabel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getNewWorkerOkButton() {
         return newWorkerOkButton;
     }
 
+    /**
+     *
+     * @param newWorkerOkButton
+     */
     public void setNewWorkerOkButton(JButton newWorkerOkButton) {
         this.newWorkerOkButton = newWorkerOkButton;
     }
 
+    /**
+     *
+     * @return
+     */
     public JPanel getNewWorkerPanel() {
         return newWorkerPanel;
     }
 
+    /**
+     *
+     * @param newWorkerPanel
+     */
     public void setNewWorkerPanel(JPanel newWorkerPanel) {
         this.newWorkerPanel = newWorkerPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JTextField getNewWorkerPassField() {
         return newWorkerPassField;
     }
 
+    /**
+     *
+     * @param newWorkerPassField
+     */
     public void setNewWorkerPassField(JTextField newWorkerPassField) {
         this.newWorkerPassField = newWorkerPassField;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getNewWorkerPassLabel() {
         return newWorkerPassLabel;
     }
 
+    /**
+     *
+     * @param newWorkerPassLabel
+     */
     public void setNewWorkerPassLabel(JLabel newWorkerPassLabel) {
         this.newWorkerPassLabel = newWorkerPassLabel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JComboBox<String> getNewWorkerPermissionsComboBox() {
         return newWorkerPermissionsComboBox;
     }
 
+    /**
+     *
+     * @param newWorkerPermissionsComboBox
+     */
     public void setNewWorkerPermissionsComboBox(JComboBox<String> newWorkerPermissionsComboBox) {
         this.newWorkerPermissionsComboBox = newWorkerPermissionsComboBox;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getNewWorkerPermissionsLabel() {
         return newWorkerPermissionsLabel;
     }
 
+    /**
+     *
+     * @param newWorkerPermissionsLabel
+     */
     public void setNewWorkerPermissionsLabel(JLabel newWorkerPermissionsLabel) {
         this.newWorkerPermissionsLabel = newWorkerPermissionsLabel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JTextField getNewWorkerPhoneField() {
         return newWorkerPhoneField;
     }
 
+    /**
+     *
+     * @param newWorkerPhoneField
+     */
     public void setNewWorkerPhoneField(JTextField newWorkerPhoneField) {
         this.newWorkerPhoneField = newWorkerPhoneField;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getNewWorkerPhoneLabel() {
         return newWorkerPhoneLabel;
     }
 
+    /**
+     *
+     * @param newWorkerPhoneLabel
+     */
     public void setNewWorkerPhoneLabel(JLabel newWorkerPhoneLabel) {
         this.newWorkerPhoneLabel = newWorkerPhoneLabel;
     }
 
+    /**
+     *
+     * @return
+     */
     public DefaultTableModel getTableModel1() {
         return tableModel1;
     }
 
+    /**
+     *
+     * @param tableModel1
+     */
     public void setTableModel1(DefaultTableModel tableModel1) {
         this.tableModel1 = tableModel1;
     }
 
+    /**
+     *
+     * @return
+     */
     public DefaultTableModel getTableModel2() {
         return tableModel2;
     }
 
+    /**
+     *
+     * @param tableModel2
+     */
     public void setTableModel2(DefaultTableModel tableModel2) {
         this.tableModel2 = tableModel2;
     }
 
+    /**
+     *
+     * @return
+     */
     public DefaultTableModel getTableModel3() {
         return tableModel3;
     }
 
+    /**
+     *
+     * @param tableModel3
+     */
     public void setTableModel3(DefaultTableModel tableModel3) {
         this.tableModel3 = tableModel3;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getPaxLabelPanel() {
         return PaxLabelPanel;
     }
 
+    /**
+     *
+     * @param PaxLabelPanel
+     */
     public void setPaxLabelPanel(JLabel PaxLabelPanel) {
         this.PaxLabelPanel = PaxLabelPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getChargeOrderCardPaymentButton() {
         return chargeOrderCardPaymentButton;
     }
 
+    /**
+     *
+     * @param chargeOrderCardPaymentButton
+     */
     public void setChargeOrderCardPaymentButton(JButton chargeOrderCardPaymentButton) {
         this.chargeOrderCardPaymentButton = chargeOrderCardPaymentButton;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getChargeOrderCardPaymentButton1() {
         return chargeOrderCardPaymentButton1;
     }
 
+    /**
+     *
+     * @param chargeOrderCardPaymentButton1
+     */
     public void setChargeOrderCardPaymentButton1(JButton chargeOrderCardPaymentButton1) {
         this.chargeOrderCardPaymentButton1 = chargeOrderCardPaymentButton1;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getChargeOrderCashPaymentButton() {
         return chargeOrderCashPaymentButton;
     }
 
+    /**
+     *
+     * @param chargeOrderCashPaymentButton
+     */
     public void setChargeOrderCashPaymentButton(JButton chargeOrderCashPaymentButton) {
         this.chargeOrderCashPaymentButton = chargeOrderCashPaymentButton;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getChargeOrderCashPaymentButton1() {
         return chargeOrderCashPaymentButton1;
     }
 
+    /**
+     *
+     * @param chargeOrderCashPaymentButton1
+     */
     public void setChargeOrderCashPaymentButton1(JButton chargeOrderCashPaymentButton1) {
         this.chargeOrderCashPaymentButton1 = chargeOrderCashPaymentButton1;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getjLabel3() {
         return jLabel3;
     }
 
+    /**
+     *
+     * @param jLabel3
+     */
     public void setjLabel3(JLabel jLabel3) {
         this.jLabel3 = jLabel3;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getLeftButton() {
         return leftButton;
     }
 
+    /**
+     *
+     * @param leftButton
+     */
     public void setLeftButton(JButton leftButton) {
         this.leftButton = leftButton;
     }
 
+    /**
+     *
+     * @return
+     */
     public JPanel getOrderPanel() {
         return orderPanel;
     }
 
+    /**
+     *
+     * @param orderPanel
+     */
     public void setOrderPanel(JPanel orderPanel) {
         this.orderPanel = orderPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getPaxLabel() {
         return paxLabel;
     }
 
+    /**
+     *
+     * @param paxLabel
+     */
     public void setPaxLabel(JLabel paxLabel) {
         this.paxLabel = paxLabel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getPaxOkButton() {
         return paxOkButton;
     }
 
+    /**
+     *
+     * @param paxOkButton
+     */
     public void setPaxOkButton(JButton paxOkButton) {
         this.paxOkButton = paxOkButton;
     }
 
+    /**
+     *
+     * @return
+     */
     public JPanel getPaxPanel() {
         return paxPanel;
     }
 
+    /**
+     *
+     * @param paxPanel
+     */
     public void setPaxPanel(JPanel paxPanel) {
         this.paxPanel = paxPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JTextField getPaxTextField() {
         return paxTextField;
     }
 
+    /**
+     *
+     * @param paxTextField
+     */
     public void setPaxTextField(JTextField paxTextField) {
         this.paxTextField = paxTextField;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getRigthButton() {
         return rigthButton;
     }
 
+    /**
+     *
+     * @param rigthButton
+     */
     public void setRigthButton(JButton rigthButton) {
         this.rigthButton = rigthButton;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getSplitBillButton() {
         return splitBillButton;
     }
 
+    /**
+     *
+     * @param splitBillButton
+     */
     public void setSplitBillButton(JButton splitBillButton) {
         this.splitBillButton = splitBillButton;
     }
 
+    /**
+     *
+     * @return
+     */
     public JPanel getSplitBillPanel() {
         return splitBillPanel;
     }
 
+    /**
+     *
+     * @param splitBillPanel
+     */
     public void setSplitBillPanel(JPanel splitBillPanel) {
         this.splitBillPanel = splitBillPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JTable getTableProducts2() {
         return tableProducts2;
     }
 
+    /**
+     *
+     * @param tableProducts2
+     */
     public void setTableProducts2(JTable tableProducts2) {
         this.tableProducts2 = tableProducts2;
     }
 
+    /**
+     *
+     * @return
+     */
     public JTable getTableProducts3() {
         return tableProducts3;
     }
 
+    /**
+     *
+     * @param tableProducts3
+     */
     public void setTableProducts3(JTable tableProducts3) {
         this.tableProducts3 = tableProducts3;
     }
 
+    /**
+     *
+     * @return
+     */
     public JScrollPane getTableProductsScroll1() {
         return tableProductsScroll1;
     }
 
+    /**
+     *
+     * @param tableProductsScroll1
+     */
     public void setTableProductsScroll1(JScrollPane tableProductsScroll1) {
         this.tableProductsScroll1 = tableProductsScroll1;
     }
 
+    /**
+     *
+     * @return
+     */
     public JScrollPane getTableProductsScroll2() {
         return tableProductsScroll2;
     }
 
+    /**
+     *
+     * @param tableProductsScroll2
+     */
     public void setTableProductsScroll2(JScrollPane tableProductsScroll2) {
         this.tableProductsScroll2 = tableProductsScroll2;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getChargeOrderCardPayment() {
         return chargeOrderCardPaymentButton;
     }
 
+    /**
+     *
+     * @param chargeOrderCardPayment1
+     */
     public void setChargeOrderCardPayment(JButton chargeOrderCardPayment1) {
         this.chargeOrderCardPaymentButton = chargeOrderCardPayment1;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getChargeOrderCashPayment() {
         return chargeOrderCashPaymentButton;
     }
 
+    /**
+     *
+     * @param chargeOrderCashPayment
+     */
     public void setChargeOrderCashPayment(JButton chargeOrderCashPayment) {
         this.chargeOrderCashPaymentButton = chargeOrderCashPayment;
     }
 
+    /**
+     *
+     * @return
+     */
     public Proxy getProxy() {
         return proxy;
     }
 
+    /**
+     *
+     * @param proxy
+     */
     public void setProxy(Proxy proxy) {
         this.proxy = proxy;
     }
 
+    /**
+     *
+     * @return
+     */
     public JPanel getAdminBackgroundPanel() {
         return adminBackgroundPanel;
     }
 
+    /**
+     *
+     * @param adminBackgroundPanel
+     */
     public void setAdminBackgroundPanel(JPanel adminBackgroundPanel) {
         this.adminBackgroundPanel = adminBackgroundPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JPanel getAdminPanel() {
         return adminLoginPanel;
     }
 
+    /**
+     *
+     * @param adminPanel
+     */
     public void setAdminPanel(JPanel adminPanel) {
         this.adminLoginPanel = adminPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getAdminPanelBackButton() {
         return adminPanelBackButton;
     }
 
+    /**
+     *
+     * @param adminPanelBackButton
+     */
     public void setAdminPanelBackButton(JButton adminPanelBackButton) {
         this.adminPanelBackButton = adminPanelBackButton;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getAdminSettingsButton() {
         return adminSettingsButton;
     }
 
+    /**
+     *
+     * @param adminSettingsButton
+     */
     public void setAdminSettingsButton(JButton adminSettingsButton) {
         this.adminSettingsButton = adminSettingsButton;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getAdmingLoginButton() {
         return admingLoginButton;
     }
 
+    /**
+     *
+     * @param admingLoginButton
+     */
     public void setAdmingLoginButton(JButton admingLoginButton) {
         this.admingLoginButton = admingLoginButton;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getClockOutButton() {
         return clockOutButton;
     }
 
+    /**
+     *
+     * @param clockOutButton
+     */
     public void setClockOutButton(JButton clockOutButton) {
         this.clockOutButton = clockOutButton;
     }
 
+    /**
+     *
+     * @return
+     */
     public JDialog getClockOutDialog() {
         return clockOutDialog;
     }
 
+    /**
+     *
+     * @param clockOutDialog
+     */
     public void setClockOutDialog(JDialog clockOutDialog) {
         this.clockOutDialog = clockOutDialog;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getClockOutDialogLabel() {
         return clockOutDialogLabel;
     }
 
+    /**
+     *
+     * @param clockOutDialogLabel
+     */
     public void setClockOutDialogLabel(JLabel clockOutDialogLabel) {
         this.clockOutDialogLabel = clockOutDialogLabel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JPanel getClockOutDialogPanel() {
         return clockOutDialogPanel;
     }
 
+    /**
+     *
+     * @param clockOutDialogPanel
+     */
     public void setClockOutDialogPanel(JPanel clockOutDialogPanel) {
         this.clockOutDialogPanel = clockOutDialogPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getConfirmClockOutButton() {
         return confirmClockOutButton;
     }
 
+    /**
+     *
+     * @param confirmClockOutButton
+     */
     public void setConfirmClockOutButton(JButton confirmClockOutButton) {
         this.confirmClockOutButton = confirmClockOutButton;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getjLabel1() {
         return jLabel1;
     }
 
+    /**
+     *
+     * @param jLabel1
+     */
     public void setjLabel1(JLabel jLabel1) {
         this.jLabel1 = jLabel1;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getjLabel2() {
         return jLabel2;
     }
 
+    /**
+     *
+     * @param jLabel2
+     */
     public void setjLabel2(JLabel jLabel2) {
         this.jLabel2 = jLabel2;
     }
 
+    /**
+     *
+     * @return
+     */
     public JScrollPane getjScrollPane1() {
         return workerScrollPanel;
     }
 
+    /**
+     *
+     * @param jScrollPane1
+     */
     public void setjScrollPane1(JScrollPane jScrollPane1) {
         this.workerScrollPanel = jScrollPane1;
     }
 
+    /**
+     *
+     * @return
+     */
     public JPanel getMainPanel() {
         return mainPanel;
     }
 
+    /**
+     *
+     * @param mainPanel
+     */
     public void setMainPanel(JPanel mainPanel) {
         this.mainPanel = mainPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getMainPanelBackButton() {
         return scrollBackButton;
     }
 
+    /**
+     *
+     * @param mainPanelBackButton
+     */
     public void setMainPanelBackButton(JButton mainPanelBackButton) {
         this.scrollBackButton = mainPanelBackButton;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getRefuseClockOutButton() {
         return refuseClockOutButton;
     }
 
+    /**
+     *
+     * @param refuseClockOutButton
+     */
     public void setRefuseClockOutButton(JButton refuseClockOutButton) {
         this.refuseClockOutButton = refuseClockOutButton;
     }
 
+    /**
+     *
+     * @return
+     */
     public JPanel getTableMapPanel() {
         return tableMapPanel;
     }
 
+    /**
+     *
+     * @param tableMapPanel
+     */
     public void setTableMapPanel(JPanel tableMapPanel) {
         this.tableMapPanel = tableMapPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JPanel getWorkerBackgroundPanel() {
         return workerBackgroundPanel;
     }
 
+    /**
+     *
+     * @param workerBackgroundPanel
+     */
     public void setWorkerBackgroundPanel(JPanel workerBackgroundPanel) {
         this.workerBackgroundPanel = workerBackgroundPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getWorkerIDLabel() {
         return workerIDLabel;
     }
 
+    /**
+     *
+     * @param workerIDLabel
+     */
     public void setWorkerIDLabel(JLabel workerIDLabel) {
         this.workerIDLabel = workerIDLabel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getWorkerLoginButton() {
         return workerLoginButton;
     }
 
+    /**
+     *
+     * @param workerLoginButton
+     */
     public void setWorkerLoginButton(JButton workerLoginButton) {
         this.workerLoginButton = workerLoginButton;
     }
 
+    /**
+     *
+     * @return
+     */
     public JPanel getWorkerPasswordPanel() {
         return workerPasswordPanel;
     }
 
+    /**
+     *
+     * @param workerPasswordPanel
+     */
     public void setWorkerPasswordPanel(JPanel workerPasswordPanel) {
         this.workerPasswordPanel = workerPasswordPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JPanel getWorkersPanel() {
         return workersPanel;
     }
 
+    /**
+     *
+     * @param workersPanel
+     */
     public void setWorkersPanel(JPanel workersPanel) {
         this.workersPanel = workersPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JPanel getBackgroundPanel() {
         return adminBackgroundPanel;
     }
 
+    /**
+     *
+     * @param backgroundPanel
+     */
     public void setBackgroundPanel(JPanel backgroundPanel) {
         this.adminBackgroundPanel = backgroundPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getEmailLabel() {
         return emailLabel;
     }
 
+    /**
+     *
+     * @param emailLabel
+     */
     public void setEmailLabel(JLabel emailLabel) {
         this.emailLabel = emailLabel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JTextField getEmailTextField() {
         return emailTextField;
     }
 
+    /**
+     *
+     * @param emailTextField
+     */
     public void setEmailTextField(JTextField emailTextField) {
         this.emailTextField = emailTextField;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getLoginButton() {
         return admingLoginButton;
     }
 
+    /**
+     *
+     * @param loginButton
+     */
     public void setLoginButton(JButton loginButton) {
         this.admingLoginButton = loginButton;
     }
 
+    /**
+     *
+     * @return
+     */
     public JPanel getLoginButtonsPanel() {
         return workersPanel;
     }
 
+    /**
+     *
+     * @param loginButtonsPanel
+     */
     public void setLoginButtonsPanel(JPanel loginButtonsPanel) {
         this.workersPanel = loginButtonsPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JPanel getLoginPanel() {
         return adminLoginPanel;
     }
 
+    /**
+     *
+     * @param loginPanel
+     */
     public void setLoginPanel(JPanel loginPanel) {
         this.adminLoginPanel = loginPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getLoginTitleLabel() {
         return loginTitleLabel;
     }
 
+    /**
+     *
+     * @param loginTitleLabel
+     */
     public void setLoginTitleLabel(JLabel loginTitleLabel) {
         this.loginTitleLabel = loginTitleLabel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getPassLabel() {
         return passLabel;
     }
 
+    /**
+     *
+     * @param passLabel
+     */
     public void setPassLabel(JLabel passLabel) {
         this.passLabel = passLabel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JPasswordField getPassTextField() {
         return passTextField;
     }
 
+    /**
+     *
+     * @param passTextField
+     */
     public void setPassTextField(JPasswordField passTextField) {
         this.passTextField = passTextField;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getEnterPasswordLabel() {
         return enterPasswordLabel;
     }
 
+    /**
+     *
+     * @param enterPasswordLabel
+     */
     public void setEnterPasswordLabel(JLabel enterPasswordLabel) {
         this.enterPasswordLabel = enterPasswordLabel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getLoginButton2() {
         return workerLoginButton;
     }
 
+    /**
+     *
+     * @param loginButton2
+     */
     public void setLoginButton2(JButton loginButton2) {
         this.workerLoginButton = loginButton2;
     }
 
+    /**
+     *
+     * @return
+     */
     public JPanel getPasswordButtonPanel() {
         return workerPasswordPanel;
     }
 
+    /**
+     *
+     * @param passwordButtonPanel
+     */
     public void setPasswordButtonPanel(JPanel passwordButtonPanel) {
         this.workerPasswordPanel = passwordButtonPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JPasswordField getPasswordButtonPanelTextField() {
         return passwordButtonPanelTextField;
     }
 
+    /**
+     *
+     * @param passwordButtonPanelTextField
+     */
     public void setPasswordButtonPanelTextField(JPasswordField passwordButtonPanelTextField) {
         this.passwordButtonPanelTextField = passwordButtonPanelTextField;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getPasswordPanelBackButton() {
         return passwordPanelBackButton;
     }
 
+    /**
+     *
+     * @param passwordPanelBackButton
+     */
     public void setPasswordPanelBackButton(JButton passwordPanelBackButton) {
         this.passwordPanelBackButton = passwordPanelBackButton;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getWorkerNameLabel() {
         return workerNameLabel;
     }
 
+    /**
+     *
+     * @param workerNameLabel
+     */
     public void setWorkerNameLabel(JLabel workerNameLabel) {
         this.workerNameLabel = workerNameLabel;
     }
 
+    /**
+     *
+     * @return
+     */
     public DefaultTableModel getTableModel() {
         return tableModel1;
     }
 
+    /**
+     *
+     * @param tableModel
+     */
     public void setTableModel(DefaultTableModel tableModel) {
         this.tableModel1 = tableModel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getScrollBackButton() {
         return scrollBackButton;
     }
 
+    /**
+     *
+     * @param ScrollBackButton
+     */
     public void setScrollBackButton(JButton ScrollBackButton) {
         this.scrollBackButton = ScrollBackButton;
     }
 
+    /**
+     *
+     * @return
+     */
     public JPanel getBillButtonsPanel() {
         return billButtonsPanel;
     }
 
+    /**
+     *
+     * @param billButtonsPanel
+     */
     public void setBillButtonsPanel(JPanel billButtonsPanel) {
         this.billButtonsPanel = billButtonsPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getChargeButton() {
         return splitBillButton;
     }
 
+    /**
+     *
+     * @param chargeButton
+     */
     public void setChargeButton(JButton chargeButton) {
         this.splitBillButton = chargeButton;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getDeleteProductButton() {
         return deleteProductButton;
     }
 
+    /**
+     *
+     * @param deleteProductButton
+     */
     public void setDeleteProductButton(JButton deleteProductButton) {
         this.deleteProductButton = deleteProductButton;
     }
 
+    /**
+     *
+     * @return
+     */
     public JPanel getFamilyPanel() {
         return familyPanel;
     }
 
+    /**
+     *
+     * @param familyPanel
+     */
     public void setFamilyPanel(JPanel familyPanel) {
         this.familyPanel = familyPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JScrollPane getFamilyScrollPanel() {
         return familyScrollPanel;
     }
 
+    /**
+     *
+     * @param familyScrollPanel
+     */
     public void setFamilyScrollPanel(JScrollPane familyScrollPanel) {
         this.familyScrollPanel = familyScrollPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getPriceLabel() {
         return priceLabel;
     }
 
+    /**
+     *
+     * @param priceLabel
+     */
     public void setPriceLabel(JLabel priceLabel) {
         this.priceLabel = priceLabel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getPrintBillButton() {
         return printBillButton;
     }
 
+    /**
+     *
+     * @param printBillButton
+     */
     public void setPrintBillButton(JButton printBillButton) {
         this.printBillButton = printBillButton;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getProductPriceLabel() {
         return productPriceLabel;
     }
 
+    /**
+     *
+     * @param productPriceLabel
+     */
     public void setProductPriceLabel(JLabel productPriceLabel) {
         this.productPriceLabel = productPriceLabel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JScrollPane getProductScrollPanel() {
         return productScrollPanel;
     }
 
+    /**
+     *
+     * @param productScrollPanel
+     */
     public void setProductScrollPanel(JScrollPane productScrollPanel) {
         this.productScrollPanel = productScrollPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JPanel getProductsPanel() {
         return productsPanel;
     }
 
+    /**
+     *
+     * @param productsPanel
+     */
     public void setProductsPanel(JPanel productsPanel) {
         this.productsPanel = productsPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getSendProductsButton() {
         return sendProductsButton;
     }
 
+    /**
+     *
+     * @param sendProductsButton
+     */
     public void setSendProductsButton(JButton sendProductsButton) {
         this.sendProductsButton = sendProductsButton;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getTableIDLabel() {
         return tableIDLabel;
     }
 
+    /**
+     *
+     * @param tableIDLabel
+     */
     public void setTableIDLabel(JLabel tableIDLabel) {
         this.tableIDLabel = tableIDLabel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getTableLabel() {
         return tableLabel;
     }
 
+    /**
+     *
+     * @param tableLabel
+     */
     public void setTableLabel(JLabel tableLabel) {
         this.tableLabel = tableLabel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JTable getTableProducts() {
         return tableProducts;
     }
 
+    /**
+     *
+     * @param tableProducts
+     */
     public void setTableProducts(JTable tableProducts) {
         this.tableProducts = tableProducts;
     }
 
+    /**
+     *
+     * @return
+     */
     public JScrollPane getTableProductsScroll() {
         return tableProductsScroll;
     }
 
+    /**
+     *
+     * @param tableProductsScroll
+     */
     public void setTableProductsScroll(JScrollPane tableProductsScroll) {
         this.tableProductsScroll = tableProductsScroll;
     }
 
+    /**
+     *
+     * @return
+     */
     public JScrollPane getWorkerScrollPanel() {
         return workerScrollPanel;
     }
 
+    /**
+     *
+     * @param workerScrollPanel
+     */
     public void setWorkerScrollPanel(JScrollPane workerScrollPanel) {
         this.workerScrollPanel = workerScrollPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public Product getSelectedProduct() {
         return selectedProduct;
     }
 
+    /**
+     *
+     * @param selectedProduct
+     */
     public void setSelectedProduct(Product selectedProduct) {
         this.selectedProduct = selectedProduct;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getQuantityLabel() {
         return QuantityLabel;
     }
 
+    /**
+     *
+     * @param QuantityLabel
+     */
     public void setQuantityLabel(JLabel QuantityLabel) {
         this.QuantityLabel = QuantityLabel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JButton getDeleteDialogButton() {
         return deleteDialogButton;
     }
 
+    /**
+     *
+     * @param deleteDialogButton
+     */
     public void setDeleteDialogButton(JButton deleteDialogButton) {
         this.deleteDialogButton = deleteDialogButton;
     }
 
+    /**
+     *
+     * @return
+     */
     public JDialog getDeleteProductDialog() {
         return deleteProductDialog;
     }
 
+    /**
+     *
+     * @param deleteProductDialog
+     */
     public void setDeleteProductDialog(JDialog deleteProductDialog) {
         this.deleteProductDialog = deleteProductDialog;
     }
 
+    /**
+     *
+     * @return
+     */
     public JPanel getDeleteProductDialogPanel() {
         return deleteProductDialogPanel;
     }
 
+    /**
+     *
+     * @param deleteProductDialogPanel
+     */
     public void setDeleteProductDialogPanel(JPanel deleteProductDialogPanel) {
         this.deleteProductDialogPanel = deleteProductDialogPanel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JComboBox<String> getQuantityCombo() {
         return quantityCombo;
     }
 
+    /**
+     *
+     * @param quantityCombo
+     */
     public void setQuantityCombo(JComboBox<String> quantityCombo) {
         this.quantityCombo = quantityCombo;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getTotalLabel() {
         return totalLabel;
     }
 
+    /**
+     *
+     * @param totalLabel
+     */
     public void setTotalLabel(JLabel totalLabel) {
         this.totalLabel = totalLabel;
     }
 
+    /**
+     *
+     * @return
+     */
     public JLabel getTotalOrderLabel() {
         return totalOrderLabel;
     }
 
+    /**
+     *
+     * @param totalOrderLabel
+     */
     public void setTotalOrderLabel(JLabel totalOrderLabel) {
         this.totalOrderLabel = totalOrderLabel;
     }

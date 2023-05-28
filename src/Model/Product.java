@@ -60,36 +60,66 @@ public class Product {
         this.productQuantity = quantity;
     }
     
-    
-
+    /**
+     *
+     * @return
+     */
     public int getProductID() {
         return productID;
     }
 
+    /**
+     *
+     * @param productID
+     */
     public void setProductID(int productID) {
         this.productID = productID;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getProductName() {
         return productName;
     }
 
+    /**
+     *
+     * @param productName
+     */
     public void setProductName(String productName) {
         this.productName = productName;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getProductQuantity() {
         return productQuantity;
     }
 
+    /**
+     *
+     * @param productQuantity
+     */
     public void setProductQuantity(int productQuantity) {
         this.productQuantity = productQuantity;
     }
 
+    /**
+     *
+     * @return
+     */
     public double getProductPrice() {
         return productPrice;
     }
 
+    /**
+     *
+     * @param productPrice
+     */
     public void setProductPrice(double productPrice) {
         this.productPrice = productPrice;
     }

@@ -15,3 +15,9 @@ Se ha producido la excepcion:java.sql.SQLIntegrityConstraintViolationException: 
 Se ha producido la excepcion:java.sql.SQLIntegrityConstraintViolationException: Duplicate entry 'matias@gmail.com' for key 'trabajadores.AK_EMAIL'
  Fecha: Sun May 28 00:15:56 CEST 2023
 
+Se ha producido la excepcion:java.sql.SQLSyntaxErrorException: Unknown column 'EMIAL' in 'where clause'
+ Fecha: Sun May 28 23:33:29 CEST 2023
+
+Se ha producido la excepcion:java.sql.SQLSyntaxErrorException: Unknown column 'EMIAL' in 'where clause'
+ Fecha: Sun May 28 23:33:36 CEST 2023
+

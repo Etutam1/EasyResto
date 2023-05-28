@@ -99,44 +99,82 @@ public class Order {
         return 0;
     }
 
-    
-
+    /**
+     *
+     * @return
+     */
     public ArrayList<Product> getPendingProductsArray() {
         return pendingProductsArray;
     }
 
+    /**
+     *
+     * @param pendingProductsArray
+     */
     public void setPendingProductsArray(ArrayList<Product> pendingProductsArray) {
         this.pendingProductsArray = pendingProductsArray;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getOrderID() {
         return orderID;
     }
 
+    /**
+     *
+     * @param orderID
+     */
     public void setOrderID(int orderID) {
         this.orderID = orderID;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getPax() {
         return pax;
     }
 
+    /**
+     *
+     * @param pax
+     */
     public void setPax(int pax) {
         this.pax = pax;
     }
 
+    /**
+     *
+     * @return
+     */
     public ArrayList<Product> getSubOrderpendingProductsArray() {
         return subOrderpendingProductsArray;
     }
 
+    /**
+     *
+     * @param subOrderpendingProductsArray
+     */
     public void setSubOrderpendingProductsArray(ArrayList<Product> subOrderpendingProductsArray) {
         this.subOrderpendingProductsArray = subOrderpendingProductsArray;
     }
 
+    /**
+     *
+     * @return
+     */
     public ArrayList<Product> getTotalProductsArray() {
         return totalProductsArray;
     }
 
+    /**
+     *
+     * @param totalProductsArray
+     */
     public void setTotalProductsArray(ArrayList<Product> totalProductsArray) {
         this.totalProductsArray = totalProductsArray;
     }
